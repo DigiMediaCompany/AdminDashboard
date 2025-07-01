@@ -6,16 +6,17 @@ import "flatpickr/dist/flatpickr.css";
 import App from "./App.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
-import { SupabaseProvider } from "./context/SupabaseContext.tsx";
+import { Provider } from 'react-redux';
+import { store } from "./store";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
-            <SupabaseProvider>
+            <Provider store={store}>
                 <AppWrapper>
                     <App />
                 </AppWrapper>
-            </SupabaseProvider>
+            </Provider>
         </ThemeProvider>
     </StrictMode>,
 );
