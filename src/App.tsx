@@ -20,6 +20,9 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
 import {useAuthListener} from "./hooks/useAuthListener.ts";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
+import Quizzes from "./pages/PostFunny/Quizzes.tsx";
+import Ads from "./pages/PostFunny/Ads.tsx";
+import Default from "./pages/Default.tsx";
 
 export default function App() {
   useAuthListener();
@@ -31,30 +34,27 @@ export default function App() {
           <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
             {/* Dashboard Layout */}
             <Route element={<AppLayout />}>
-              <Route index path="/" element={<Home />} />
+              <Route path="/" element={<Default />} />
 
-              {/* Others Page */}
+              {/* PostFunny */}
+              <Route path="post-funny/quizzes" element={<Quizzes />} />
+              <Route path="post-funny/ads" element={<Ads />} />
+
+              {/* Showcases */}
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
-
-              {/* Forms */}
               <Route path="/form-elements" element={<FormElements />} />
-
-              {/* Tables */}
               <Route path="/basic-tables" element={<BasicTables />} />
-
-              {/* Ui Elements */}
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/avatars" element={<Avatars />} />
               <Route path="/badge" element={<Badges />} />
               <Route path="/buttons" element={<Buttons />} />
               <Route path="/images" element={<Images />} />
               <Route path="/videos" element={<Videos />} />
-
-              {/* Charts */}
               <Route path="/line-chart" element={<LineChart />} />
               <Route path="/bar-chart" element={<BarChart />} />
+              <Route index path="/dashboard" element={<Home />} />
             </Route>
           </Route>
 
