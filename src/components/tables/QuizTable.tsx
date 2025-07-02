@@ -10,6 +10,13 @@ import Badge from "../ui/badge/Badge";
 import {Quiz} from "../../types/PostFunny.ts";
 import {useEffect, useState} from "react";
 import {getQuizzes} from "../../services/postFunnyService.ts";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
+
+enum AnswerState {
+  WARNING = "WARNING",
+  SUCCESS = "SUCCESS",
+  ERROR = "ERROR",
+}
 
 export default function QuizTable() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
@@ -34,75 +41,100 @@ export default function QuizTable() {
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                User
+                Id
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Project Name
+                Thumbnail
+              </TableCell>
+              <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+              >
+                Title
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Team
+                Questions
               </TableCell>
               <TableCell
                 isHeader
                 className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
               >
-                Status
+                Answers
               </TableCell>
-              <TableCell
-                isHeader
-                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-              >
-                Budget
-              </TableCell>
+              {/*<TableCell*/}
+              {/*  isHeader*/}
+              {/*  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"*/}
+              {/*>*/}
+              {/*  Actions*/}
+              {/*</TableCell>*/}
             </TableRow>
           </TableHeader>
 
           {/* Table Body */}
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-            {quizzes.map((quiz: Quiz) => (
+            {quizzes.map((quiz: Quiz) => {
+              let answerState: AnswerState = AnswerState.ERROR;
+              const results = quiz.answers;
+              if (results && results.length > 0) {
+                answerState = AnswerState.WARNING;
+                let isPointingCorrectly = true;
+                quiz.quizzes.forEach((q) => {
+                  q.answers.forEach((a) => {
+                    if (results.find(r => r.id === a.score)) {
+                      isPointingCorrectly = false;
+                    }
+                  })
+                });
+                if (isPointingCorrectly) answerState = AnswerState.SUCCESS;
+              }
+
+              return (
               <TableRow key={quiz.id}>
+                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                  {quiz.id}
+                </TableCell>
                 <TableCell className="px-5 py-4 sm:px-6 text-start">
                   <div className="flex items-center gap-3">
-                    {/*<div className="w-10 h-10 overflow-hidden rounded-full">*/}
-                    {/*  <img*/}
-                    {/*    width={40}*/}
-                    {/*    height={40}*/}
-                    {/*    src={quiz.createdBy.img}*/}
-                    {/*    alt={quiz.createdBy.name}*/}
-                    {/*  />*/}
-                    {/*</div>*/}
-                    {/*<div>*/}
-                    {/*  <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">*/}
-                    {/*    {quiz.createdBy.name}*/}
-                    {/*  </span>*/}
-                    {/*  <span className="block text-gray-500 text-theme-xs dark:text-gray-400">*/}
-                    {/*    {quiz.createdBy.name}*/}
-                    {/*  </span>*/}
-                    {/*</div>*/}
+                    <div className="w-20 overflow-hidden">
+                      <img
+                        src={quiz.img}
+                        alt={quiz.title}
+                      />
+                    </div>
+                    <div>
+                      <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 w-25
+                      truncate overflow-hidden whitespace-nowrap">
+                        {quiz.createdBy}
+                      </span>
+                      <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                        {quiz.createdAt}
+                      </span>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400 w-60">
+                  <div className="line-clamp-2 overflow-hidden text-ellipsis break-words">
+                    {quiz.title}
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                  {quiz.title}
-                </TableCell>
-                <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                   <div className="flex -space-x-2">
-                    {quiz.quizzes.map((teamImage, index) => (
+                    {quiz.quizzes.map((question, index) => (
                       <div
                         key={index}
-                        className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
+                        className="w-12 h-12 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
                       >
-                        {teamImage.img ?(<img
-                          width={24}
-                          height={24}
-                          src={teamImage.img}
+                        {question.img ?(<img
+                          src={question.img}
                           alt={`Team member ${index + 1}`}
-                          className="w-full size-6"
+                          className="h-full w-full"
+                          title={question.question}
                         />
                         ): null}
                       </div>
@@ -113,21 +145,28 @@ export default function QuizTable() {
                   <Badge
                     size="sm"
                     color={
-                      quiz.createdAt === "Active"
+                      answerState === AnswerState.SUCCESS
                         ? "success"
-                        : quiz.createdAt === "Pending"
+                        : answerState === AnswerState.WARNING
                         ? "warning"
                         : "error"
                     }
                   >
-                    {quiz.createdAt}
+                    {answerState}
                   </Badge>
                 </TableCell>
                 <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                  {quiz.description}
+                  <div className="flex items-center gap-3">
+                    <button className="flex items-center gap-2 text-sm text-gray-300">
+                      <PencilSquareIcon className="w-6 h-6" />
+                    </button>
+                    <button className="flex items-center gap-2 text-sm text-gray-300">
+                      <TrashIcon className="w-6 h-6" />
+                    </button>
+                  </div>
                 </TableCell>
               </TableRow>
-            ))}
+            )})}
           </TableBody>
         </Table>
       </div>

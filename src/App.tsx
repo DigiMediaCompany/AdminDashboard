@@ -23,6 +23,8 @@ import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import Quizzes from "./pages/PostFunny/Quizzes.tsx";
 import Ads from "./pages/PostFunny/Ads.tsx";
 import Default from "./pages/Default.tsx";
+import Unauthorized from "./pages/OtherPage/Unauthorized.tsx";
+import {constants} from "./utils/constants.ts";
 
 export default function App() {
   useAuthListener();
@@ -32,14 +34,24 @@ export default function App() {
         <ScrollToTop />
         <Routes>
           <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
-            {/* Dashboard Layout */}
+
             <Route element={<AppLayout />}>
               <Route path="/" element={<Default />} />
+            </Route>
+          </Route>
+          <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.ADMIN,
+            constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
 
+            <Route element={<AppLayout />}>
               {/* PostFunny */}
               <Route path="post-funny/quizzes" element={<Quizzes />} />
               <Route path="post-funny/ads" element={<Ads />} />
 
+
+            </Route>
+          </Route>
+          <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
+            <Route element={<AppLayout />}>
               {/* Showcases */}
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
@@ -61,6 +73,7 @@ export default function App() {
           {/* Auth Layout */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/* Fallback Route */}
           <Route path="*" element={<NotFound />} />
