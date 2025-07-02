@@ -13,6 +13,8 @@ export interface Question {
 export interface Answer {
     img: string;
     id: number;
+    title: string;
+    description: string;
 }
 
 export interface Quiz {

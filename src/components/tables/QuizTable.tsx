@@ -10,7 +10,7 @@ import Badge from "../ui/badge/Badge";
 import {Quiz} from "../../types/PostFunny.ts";
 import {useEffect, useState} from "react";
 import {getQuizzes} from "../../services/postFunnyService.ts";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
+import {PencilSquareIcon, PlusCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
 import Button from "../ui/button/Button.tsx";
@@ -18,6 +18,7 @@ import {Modal} from "../ui/modal";
 import {useModal} from "../../hooks/useModal.ts";
 import TextArea from "../form/input/TextArea.tsx";
 import FileInput from "../form/input/FileInput.tsx";
+import Alert from "../ui/alert/Alert.tsx";
 
 enum AnswerState {
   WARNING = "WARNING",
@@ -295,36 +296,76 @@ export default function QuizTable() {
                   </div>
               ))}
               <div className="mt-7">
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Questions
-                </h5>
+                <div className="flex items-center gap-2 mb-5">
+                  <h5 className="text-lg font-medium text-gray-800 dark:text-white/90">
+                    Answers
+                  </h5>
+                  <button className="text-gray-400" onClick={() => {}}>
+                    <PlusCircleIcon className="w-6 h-6" />
+                  </button>
+                </div>
 
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
-                  </div>
+                {selectedQuiz?.answers && selectedQuiz?.answers.length > 1 ? (
+                    // More than 1 result
+                    <div></div>
+                ) : selectedQuiz?.answers && selectedQuiz?.answers.length === 1 ? (
+                    // Only 1 result
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-5 mb-7">
+                      <div className="col-span-1">
+                        <Alert
+                            variant="warning"
+                            title="Only one result"
+                            message="Please add more result."
+                        />
+                      </div>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-x-6 gap-y-5 mb-7">
+                      <div className="col-span-1">
+                        <Alert
+                            variant="error"
+                            title="No result"
+                            message="Please add at least one result."
+                        />
+                      </div>
+                    </div>
+                )}
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
-                  </div>
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
-                  </div>
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
-                  </div>
-
-                  <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
-                  </div>
-
+                <div className="grid grid-cols-8 gap-x-6 gap-y-5 lg:grid-cols-16">
+                  {selectedQuiz?.answers.map((answer, index) => (
+                      <>
+                        <div className="col-span-2 lg:col-span-2 flex items-center justify-center h-full">
+                          <Badge size="md" color={"light"}>
+                            ID - {answer.id}
+                          </Badge>
+                        </div>
+                        <div className="col-span-6 lg:col-span-14">
+                          <Input type="text" value={answer.title} />
+                        </div>
+                        <div className="col-span-3 lg:col-span-6 h-auto flex items-center justify-center">
+                          <div className="w-20  mr-1">
+                            {answer.img?.trim() ? (
+                                <img
+                                    src={answer.img}
+                                    alt={`Choice ${index + 1}`}
+                                    className="h-10"
+                                />
+                            ): (
+                                <div className="h-full w-full bg-gray-800"></div>
+                            )}
+                          </div>
+                          <FileInput />
+                        </div>
+                        <div className="col-span-5 lg:col-span-10">
+                          <TextArea
+                              value={answer.description}
+                              rows={4}
+                          />
+                        </div>
+                      </>
+                  ))}
                 </div>
               </div>
             </div>
