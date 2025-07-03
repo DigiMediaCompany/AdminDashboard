@@ -12,7 +12,7 @@ export default function Quizzes() {
       />
       <PageBreadcrumb pageTitle="Quizzes" />
       <div className="space-y-6">
-        <ComponentCard title="Quizzes">
+        <ComponentCard title="">
           <QuizTable />
         </ComponentCard>
       </div>
