@@ -1,3 +1,5 @@
+import { constants } from "../utils/constants";
+
 export interface Pagination<T> {
     data: T[];
     current_page: number;
@@ -14,3 +16,5 @@ export interface Info {
     email?: string;
     author?: string;
 }
+
+export type Site = (typeof constants.SITES)[keyof typeof constants.SITES];

@@ -25,7 +25,11 @@ import Ads from "./pages/PostFunny/Ads.tsx";
 import Default from "./pages/Default.tsx";
 import Unauthorized from "./pages/OtherPage/Unauthorized.tsx";
 import {constants} from "./utils/constants.ts";
-import Info from "./pages/PostFunny/Info.tsx";
+import PostFunnyInfo from "./pages/PostFunny/PostFunnyInfo.tsx";
+import FreeApkInfo from "./pages/FreeApk/FreeApkInfo.tsx";
+import GonoGameInfo from "./pages/GonoGame/GonoGameInfo.tsx";
+import MzGenzInfo from "./pages/MzGenz/MzGenzInfo.tsx";
+import TikGameInfo from "./pages/TikGame/TikGameInfo.tsx";
 
 export default function App() {
   useAuthListener();
@@ -45,9 +49,21 @@ export default function App() {
 
             <Route element={<AppLayout />}>
               {/* PostFunny */}
-              <Route path="post-funny/info" element={<Info />} />
+              <Route path="post-funny/info" element={<PostFunnyInfo />} />
               <Route path="post-funny/quizzes" element={<Quizzes />} />
               <Route path="post-funny/ads" element={<Ads />} />
+
+              {/* FreeApk */}
+              <Route path="free-apk/info" element={<FreeApkInfo />} />
+
+              {/* GonoGame */}
+              <Route path="gono-game/info" element={<GonoGameInfo />} />
+
+              {/* MzGenz */}
+              <Route path="mz-genz/info" element={<MzGenzInfo />} />
+
+              {/* TikGame */}
+              <Route path="tik-game/info" element={<TikGameInfo />} />
 
 
             </Route>

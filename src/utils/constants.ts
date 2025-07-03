@@ -9,6 +9,6 @@ export const constants = {
         GONOGAME: "GonoGame",
         FREEAPK: "FreeAPK",
         MZGENZ: "MzGens",
-        TIK_GAME: "TikGame",
+        TIKGAME: "TikGame",
     }
 }

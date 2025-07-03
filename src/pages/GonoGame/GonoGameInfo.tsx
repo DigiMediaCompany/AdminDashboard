@@ -1,9 +1,10 @@
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb.tsx";
 import WebsiteInfoCard from "../../components/UserProfile/WebsiteInfoCard.tsx";
+import {constants} from "../../utils/constants.ts";
 
 
-export default function Info() {
+export default function GonoGameInfo() {
     return (
         <>
             <PageMeta
@@ -16,7 +17,7 @@ export default function Info() {
                     Info
                 </h3>
                 <div className="space-y-6">
-                    <WebsiteInfoCard />
+                    <WebsiteInfoCard site={constants.SITES.GONOGAME} />
                 </div>
             </div>
         </>

@@ -15,7 +15,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import {FaceSmileIcon} from "@heroicons/react/24/outline";
+import {FaceSmileIcon, FolderArrowDownIcon, PuzzlePieceIcon} from "@heroicons/react/24/outline";
 // import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -38,6 +38,34 @@ const navItems: NavItem[] = [
         { name: "Info", path: "/post-funny/info", pro: false },
         { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
         { name: "Ads", path: "/post-funny/ads", pro: false },
+    ],
+  },
+  {
+    name: "FreeApk",
+    icon: <FolderArrowDownIcon />,
+    subItems: [
+      { name: "Info", path: "/free-apk/info", pro: false },
+    ],
+  },
+  {
+    name: "GonoGame",
+    icon: <PuzzlePieceIcon />,
+    subItems: [
+      { name: "Info", path: "/gono-game/info", pro: false },
+    ],
+  },
+  {
+    name: "MzGenz",
+    icon: <PuzzlePieceIcon />,
+    subItems: [
+      { name: "Info", path: "/mz-genz/info", pro: false },
+    ],
+  },
+  {
+    name: "TikGame",
+    icon: <PuzzlePieceIcon />,
+    subItems: [
+      { name: "Info", path: "/tik-game/info", pro: false },
     ],
   }
 ];

@@ -4,14 +4,16 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import {useEffect, useState} from "react";
-import {Info} from "../../types/Common.ts";
+import {Info, Site} from "../../types/Common.ts";
 import {getInfo, saveInfo} from "../../services/commonApiService.ts";
-import {constants} from "../../utils/constants.ts";
 import {snakeToTitleCase} from "../../utils/helper.ts";
 import Toast from "../../pages/UiElements/Toast.tsx";
 
-export default function WebsiteInfoCard() {
-    const SITE = constants.SITES.POSTFUNNY;
+type WebsiteInfoCardProps = {
+    site: Site;
+};
+
+export default function WebsiteInfoCard({ site }: WebsiteInfoCardProps) {
     const { isOpen, openModal, closeModal } = useModal();
     const [info, setInfo] = useState<Info | null>(null);
     const [loading, setLoading] = useState(true);
@@ -28,7 +30,7 @@ export default function WebsiteInfoCard() {
     });
     const handleSave = () => {
         if (info) {
-            saveInfo(SITE, info)
+            saveInfo(site, info)
                 .then(() => {
                     console.log("Successfully Saved!");
                     setToast({
@@ -51,7 +53,7 @@ export default function WebsiteInfoCard() {
     };
 
     useEffect(() => {
-        getInfo(SITE)
+        getInfo(site)
             .then(result => setInfo(result))
             .catch(() => {
                 setToast({
@@ -62,7 +64,7 @@ export default function WebsiteInfoCard() {
                 });
             })
             .finally(() => setLoading(false))
-    }, [SITE])
+    }, [site])
 
     if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading info...</p>
     return (
