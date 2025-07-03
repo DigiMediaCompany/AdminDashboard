@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import Alert from "../../components/ui/alert/Alert.tsx";
 
 type ToastProps = {
@@ -6,18 +6,17 @@ type ToastProps = {
     title: string;
     message: string;
     duration?: number;
+    changeState:  () => void;
 };
 
-export default function Toast({
-                                  variant = "info",
-                                  title,
-                                  message,
-                                  duration = 3000,
-                              }: ToastProps) {
+export default function Toast({variant = "info", title, message, duration = 3000, changeState}: ToastProps) {
     const [visible, setVisible] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => setVisible(false), duration);
+        const timer = setTimeout(() => {
+            setVisible(false);
+            changeState()
+        }, duration);
         return () => clearTimeout(timer);
     }, [duration]);
 

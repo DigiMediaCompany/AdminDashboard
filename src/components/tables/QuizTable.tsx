@@ -31,6 +31,7 @@ export default function QuizTable() {
   const [loading, setLoading] = useState(true)
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
 
+  // TODO: need toast here
   useEffect(() => {
     getQuizzes()
         .then(result => setQuizzes(result.data))
@@ -40,7 +41,7 @@ export default function QuizTable() {
 
   const { isOpen, openModal, closeModal } = useModal();
   const handleSave = () => {
-    // Handle save logic here
+    // TODO: Handle save logic here
     closeModal();
   };
 

@@ -110,6 +110,12 @@ export default function WebsiteInfoCard({ site }: SiteProps) {
                         variant={toast.variant}
                         title={toast.title}
                         message={toast.message}
+                        changeState={() => setToast({
+                            show: false,
+                            variant: "success",
+                            title: "",
+                            message: ""
+                        })}
                     />
                 )}
             </div>

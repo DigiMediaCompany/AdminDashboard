@@ -25,25 +25,23 @@ export default function AdTable({site}: SiteProps) {
     });
 
     const handleSave = (ad: Ads) => {
-        if (ad) {
-            updateAds(ad.script, ad.id)
-                .then(() => {
-                    setToast({
-                        show: true,
-                        variant: "success",
-                        title: "Saved",
-                        message: "Ad saved successfully."
-                    });
-                })
-                .catch(() => {
-                    setToast({
-                        show: true,
-                        variant: "error",
-                        title: "Error",
-                        message: "Failed to save ad."
-                    });
+        updateAds(ad.script, ad.id)
+            .then(() => {
+                setToast({
+                    show: true,
+                    variant: "success",
+                    title: "Saved",
+                    message: "Ad saved successfully."
                 });
-        }
+            })
+            .catch(() => {
+                setToast({
+                    show: true,
+                    variant: "error",
+                    title: "Error",
+                    message: "Failed to save ad."
+                });
+            });
     };
 
     useEffect(() => {
@@ -101,6 +99,11 @@ export default function AdTable({site}: SiteProps) {
                     variant={toast.variant}
                     title={toast.title}
                     message={toast.message}
+                    changeState={() => setToast({ show: false,
+                        variant: "success",
+                        title: "",
+                        message: ""
+                    })}
                 />
             )}
         </>
