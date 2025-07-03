@@ -15,6 +15,7 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import {FaceSmileIcon} from "@heroicons/react/24/outline";
 // import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -32,8 +33,9 @@ const navItems: NavItem[] = [
   },
   {
     name: "PostFunny",
-    icon: <TableIcon />,
+    icon: <FaceSmileIcon />,
     subItems: [
+        { name: "Info", path: "/post-funny/info", pro: false },
         { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
         { name: "Ads", path: "/post-funny/ads", pro: false },
     ],
@@ -363,7 +365,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "Showcase"
                 ) : (
                   <HorizontaLDots />
                 )}

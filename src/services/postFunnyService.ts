@@ -4,7 +4,7 @@ import {Pagination} from "../types/Common.ts";
 import {Quiz} from "../types/PostFunny.ts";
 
 const BASE_URL = import.meta.env.VITE_CLOUDFLARE_D1_URL;
-export const getQuizzes = async (page: number=0): Promise<Pagination> => {
+export const getQuizzes = async (page: number=0): Promise<Pagination<Quiz>> => {
     const response = await axios.get(`${BASE_URL}/quizzes`, {
         params: {
             offset:  page * constants.STANDARD_LIMIT,

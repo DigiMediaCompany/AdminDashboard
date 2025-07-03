@@ -25,6 +25,7 @@ import Ads from "./pages/PostFunny/Ads.tsx";
 import Default from "./pages/Default.tsx";
 import Unauthorized from "./pages/OtherPage/Unauthorized.tsx";
 import {constants} from "./utils/constants.ts";
+import Info from "./pages/PostFunny/Info.tsx";
 
 export default function App() {
   useAuthListener();
@@ -44,6 +45,7 @@ export default function App() {
 
             <Route element={<AppLayout />}>
               {/* PostFunny */}
+              <Route path="post-funny/info" element={<Info />} />
               <Route path="post-funny/quizzes" element={<Quizzes />} />
               <Route path="post-funny/ads" element={<Ads />} />
 
