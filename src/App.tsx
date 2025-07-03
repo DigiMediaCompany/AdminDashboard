@@ -21,7 +21,7 @@ import Home from "./pages/Dashboard/Home";
 import {useAuthListener} from "./hooks/useAuthListener.ts";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import Quizzes from "./pages/PostFunny/Quizzes.tsx";
-import Ads from "./pages/PostFunny/Ads.tsx";
+import PostFunnyAds from "./pages/PostFunny/PostFunnyAds.tsx";
 import Default from "./pages/Default.tsx";
 import Unauthorized from "./pages/OtherPage/Unauthorized.tsx";
 import {constants} from "./utils/constants.ts";
@@ -30,6 +30,10 @@ import FreeApkInfo from "./pages/FreeApk/FreeApkInfo.tsx";
 import GonoGameInfo from "./pages/GonoGame/GonoGameInfo.tsx";
 import MzGenzInfo from "./pages/MzGenz/MzGenzInfo.tsx";
 import TikGameInfo from "./pages/TikGame/TikGameInfo.tsx";
+import FreeApkAds from "./pages/FreeApk/FreeApkAds.tsx";
+import GonoGameAds from "./pages/GonoGame/GonoGameAds.tsx";
+import MzGenzAds from "./pages/MzGenz/MzGenzAds.tsx";
+import TikGameAds from "./pages/TikGame/TikGameAds.tsx";
 
 export default function App() {
   useAuthListener();
@@ -51,19 +55,23 @@ export default function App() {
               {/* PostFunny */}
               <Route path="post-funny/info" element={<PostFunnyInfo />} />
               <Route path="post-funny/quizzes" element={<Quizzes />} />
-              <Route path="post-funny/ads" element={<Ads />} />
+              <Route path="post-funny/ads" element={<PostFunnyAds />} />
 
               {/* FreeApk */}
               <Route path="free-apk/info" element={<FreeApkInfo />} />
+              <Route path="free-apk/ads" element={<FreeApkAds />} />
 
               {/* GonoGame */}
               <Route path="gono-game/info" element={<GonoGameInfo />} />
+              <Route path="gono-game/ads" element={<GonoGameAds />} />
 
               {/* MzGenz */}
               <Route path="mz-genz/info" element={<MzGenzInfo />} />
+              <Route path="mz-genz/ads" element={<MzGenzAds />} />
 
               {/* TikGame */}
               <Route path="tik-game/info" element={<TikGameInfo />} />
+              <Route path="tik-game/ads" element={<TikGameAds />} />
 
 
             </Route>

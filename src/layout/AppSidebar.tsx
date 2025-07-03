@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
     icon: <FolderArrowDownIcon />,
     subItems: [
       { name: "Info", path: "/free-apk/info", pro: false },
+      { name: "Ads", path: "/free-apk/ads", pro: false },
     ],
   },
   {
@@ -52,6 +53,7 @@ const navItems: NavItem[] = [
     icon: <PuzzlePieceIcon />,
     subItems: [
       { name: "Info", path: "/gono-game/info", pro: false },
+      { name: "Ads", path: "/gono-game/ads", pro: false },
     ],
   },
   {
@@ -59,6 +61,7 @@ const navItems: NavItem[] = [
     icon: <PuzzlePieceIcon />,
     subItems: [
       { name: "Info", path: "/mz-genz/info", pro: false },
+      { name: "Ads", path: "/mz-genz/ads", pro: false },
     ],
   },
   {
@@ -66,6 +69,7 @@ const navItems: NavItem[] = [
     icon: <PuzzlePieceIcon />,
     subItems: [
       { name: "Info", path: "/tik-game/info", pro: false },
+      { name: "Ads", path: "/tik-game/ads", pro: false },
     ],
   }
 ];

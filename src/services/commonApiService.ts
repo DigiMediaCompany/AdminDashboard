@@ -1,4 +1,4 @@
-import {Info} from "../types/Common.ts";
+import {Ads, Info, Pagination} from "../types/Common.ts";
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_CLOUDFLARE_D1_URL;
@@ -13,4 +13,13 @@ export const saveInfo = async (site: string, data: Info): Promise<unknown> => {
             "Content-Type": "application/json"
         }
     });
+}
+
+export const getAds = async (site: string): Promise<Pagination<Ads>> => {
+    const response = await axios.get(`${BASE_URL}/ads`, {
+        params: {
+            site: site
+        }}
+    )
+    return response.data;
 }

@@ -4,16 +4,13 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import {useEffect, useState} from "react";
-import {Info, Site} from "../../types/Common.ts";
+import {Info, SiteProps} from "../../types/Common.ts";
 import {getInfo, saveInfo} from "../../services/commonApiService.ts";
 import {snakeToTitleCase} from "../../utils/helper.ts";
 import Toast from "../../pages/UiElements/Toast.tsx";
 
-type WebsiteInfoCardProps = {
-    site: Site;
-};
 
-export default function WebsiteInfoCard({ site }: WebsiteInfoCardProps) {
+export default function WebsiteInfoCard({ site }: SiteProps) {
     const { isOpen, openModal, closeModal } = useModal();
     const [info, setInfo] = useState<Info | null>(null);
     const [loading, setLoading] = useState(true);
@@ -32,7 +29,6 @@ export default function WebsiteInfoCard({ site }: WebsiteInfoCardProps) {
         if (info) {
             saveInfo(site, info)
                 .then(() => {
-                    console.log("Successfully Saved!");
                     setToast({
                         show: true,
                         variant: "success",
