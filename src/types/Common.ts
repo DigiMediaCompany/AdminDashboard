@@ -20,11 +20,11 @@ export interface Info {
 export type Site = (typeof constants.SITES)[keyof typeof constants.SITES];
 
 export interface Ads {
-    id?: number;
-    site?: string;
-    slot?: number;
-    description?: string;
-    script?: string;
+    id: number;
+    site: string;
+    slot: number;
+    description: string;
+    script: string;
 }
 
 export type SiteProps = {

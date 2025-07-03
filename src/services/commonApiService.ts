@@ -23,3 +23,11 @@ export const getAds = async (site: string): Promise<Pagination<Ads>> => {
     )
     return response.data;
 }
+
+export const updateAds = async (script: string, id: number): Promise<unknown> => {
+    return await axios.patch(`${BASE_URL}/ads/${id}`, {
+        params: {
+            script: script
+        }}
+    )
+}

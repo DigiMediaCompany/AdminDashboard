@@ -2,14 +2,14 @@ import ComponentCard from "../common/ComponentCard.tsx";
 import Label from "../form/Label.tsx";
 import TextArea from "../form/input/TextArea.tsx";
 import {Ads, SiteProps} from "../../types/Common.ts";
-import {getAds} from "../../services/commonApiService.ts";
+import {getAds, updateAds} from "../../services/commonApiService.ts";
 import {useEffect, useState} from "react";
 import Toast from "../../pages/UiElements/Toast.tsx";
-import {useModal} from "../../hooks/useModal.ts";
 import Input from "../form/input/InputField.tsx";
+import Button from "../ui/button/Button.tsx";
+import {FolderArrowDownIcon} from "@heroicons/react/24/outline";
 
-export default function AdTable({ site }: SiteProps) {
-    const {isOpen, openModal, closeModal } = useModal();
+export default function AdTable({site}: SiteProps) {
     const [ads, setAds] = useState<Ads[]>([]);
     const [loading, setLoading] = useState(true);
     const [toast, setToast] = useState<{
@@ -24,28 +24,26 @@ export default function AdTable({ site }: SiteProps) {
         message: ""
     });
 
-    const handleSave = () => {
-        // if (info) {
-        //     saveInfo(site, info)
-        //         .then(() => {
-        //             console.log("Successfully Saved!");
-        //             setToast({
-        //                 show: true,
-        //                 variant: "success",
-        //                 title: "Saved",
-        //                 message: "Information saved successfully."
-        //             });
-        //         })
-        //         .catch(() => {
-        //             setToast({
-        //                 show: true,
-        //                 variant: "error",
-        //                 title: "Error",
-        //                 message: "Failed to save information."
-        //             });
-        //         });
-        //     closeModal();
-        // }
+    const handleSave = (ad: Ads) => {
+        if (ad) {
+            updateAds(ad.script, ad.id)
+                .then(() => {
+                    setToast({
+                        show: true,
+                        variant: "success",
+                        title: "Saved",
+                        message: "Ad saved successfully."
+                    });
+                })
+                .catch(() => {
+                    setToast({
+                        show: true,
+                        variant: "error",
+                        title: "Error",
+                        message: "Failed to save ad."
+                    });
+                });
+        }
     };
 
     useEffect(() => {
@@ -68,18 +66,36 @@ export default function AdTable({ site }: SiteProps) {
     return (
         <>
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                {ads && ads.length > 0 ? (ads.map(ad => (
-                    <div className="space-y-6">
-                        <ComponentCard title={ad?.description || '' }>
-                            <Label>Id</Label>
-                            <Input type="text" value={ad?.id} disabled={true}/>
-                            <Label>Ad slot</Label>
+                {ads && ads.length > 0 ? (ads.map((ad) => (
+                    <ComponentCard key={ad.id} title={ad?.description || ''}>
+                        <div className="flex space-x-6 items-center">
+
+                            <Label>Slot</Label>
                             <Input type="text" value={ad?.slot} disabled={true}/>
-                            <TextArea rows={6} value={ad?.script} />
-                        </ComponentCard>
-                    </div>
+
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    handleSave(ad)
+                                }}
+                                startIcon={<FolderArrowDownIcon className="size-5"/>}
+                            >
+                                Save
+                            </Button>
+                        </div>
+                        <TextArea rows={6} value={ad?.script}
+                                  onChange={(newScript) => {
+                                      setAds((prevAds) =>
+                                          prevAds.map((a) =>
+                                              a.id === ad.id ? {...a, ...{script: newScript}} : a
+                                          )
+                                      );
+                                  }}
+                        />
+                    </ComponentCard>
                 ))) : null}
-        </div>
+            </div>
             {toast.show && (
                 <Toast
                     variant={toast.variant}
