@@ -1,7 +1,7 @@
 import {Ads, Info, Pagination} from "../types/Common.ts";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_CLOUDFLARE_D1_URL;
+const BASE_URL = import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_URL;
 export const getInfo = async (site: string): Promise<Info> => {
     const response = await axios.get(`${BASE_URL}/git/${site}`)
     return response.data;
