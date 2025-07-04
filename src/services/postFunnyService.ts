@@ -1,7 +1,7 @@
 import axios from "axios"
 import {constants} from "../utils/constants.ts";
 import {Pagination} from "../types/Common.ts";
-import {Answer, FileUploadResponse, Quiz} from "../types/PostFunny.ts";
+import {FileUploadResponse, Quiz} from "../types/PostFunny.ts";
 
 const BASE_URL_D1 = import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_URL;
 const BASE_URL_R2 = import.meta.env.VITE_PUBLIC_CLOUDFLARE_R2_URL;
@@ -38,13 +38,7 @@ export const getQuizzes = async (page: number=0): Promise<Pagination<Quiz>> => {
 }
 
 export const saveQuiz = async (data: Quiz): Promise<unknown> => {
-    const changes = data.answers.map((answer: Answer) => ({
-        img: answer.img,
-        description: answer.description,
-        title: answer.title,
-    }));
-
-    return await axios.patch(`${BASE_URL_D1}/quizzes/${data.id}`, {answers: JSON.stringify(changes)}, {
+    return await axios.patch(`${BASE_URL_D1}/quizzes/${data.id}`, {answers: JSON.stringify(data.answers)}, {
         headers: {
             "Content-Type": "application/json"
         }
@@ -54,11 +48,12 @@ export const saveQuiz = async (data: Quiz): Promise<unknown> => {
 export const uploadImage = async (file: File): Promise<FileUploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
-    return await axios.post(`${BASE_URL_R2}/files`, formData, {
+    const response = await axios.post(`${BASE_URL_R2}/files`, formData, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
     });
+    return response.data;
 }
 
 export const deleteImage = async (filename: string): Promise<unknown> => {

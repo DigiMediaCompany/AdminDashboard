@@ -7,7 +7,7 @@ import {
 } from "../ui/table";
 
 import Badge from "../ui/badge/Badge";
-import {FileUploadResponse, Quiz} from "../../types/PostFunny.ts";
+import {Answer, FileUploadResponse, Quiz} from "../../types/PostFunny.ts";
 import {useEffect, useState} from "react";
 import {deleteImage, getQuizzes, saveQuiz, uploadImage} from "../../services/postFunnyService.ts";
 import {PencilSquareIcon, PlusCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
@@ -68,6 +68,9 @@ export default function QuizTable() {
           title: "Saved",
           message: "Quiz saved successfully."
         });
+        setQuizzes(prev =>
+            prev.map(q => (q.id === selectedQuiz.id ? selectedQuiz : q))
+        );
       }).catch(() => {
         setToast({
           show: true,
@@ -111,8 +114,30 @@ export default function QuizTable() {
         });
       })
     }
-
   };
+  const handleAdd = () => {
+    let answers = selectedQuiz?.answers
+    console.log(answers)
+    const newAnswer: Answer = {
+      id: (selectedQuiz?.answers.length || 0) + 1,
+      title: "",
+      img: "",
+      description: "",
+    };
+    if (answers && answers.length > 0) {
+      answers = [...answers, newAnswer];
+    } else {
+      answers = [newAnswer];
+    }
+    setSelectedQuiz(prev =>
+        prev
+            ? {
+              ...prev,
+              answers: answers,
+            }
+            : null
+    );
+  }
 
   if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading quizzes...</p>
   return (
@@ -382,9 +407,7 @@ export default function QuizTable() {
                   <h5 className="text-lg font-medium text-gray-800 dark:text-white/90">
                     Answers
                   </h5>
-                  <button className="text-gray-400" onClick={() => {}}>
-                    <PlusCircleIcon className="w-6 h-6" />
-                  </button>
+                  <PlusCircleIcon className="w-6 h-6 text-gray-400" onClick={() => {handleAdd()}} />
                 </div>
 
                 {selectedQuiz?.answers && selectedQuiz?.answers.length > 1 ? (
@@ -419,9 +442,13 @@ export default function QuizTable() {
                   {selectedQuiz?.answers.map((answer, index) => (
                       <>
                         <div className="col-span-3 lg:col-span-3 flex items-center justify-center h-full gap-x-2">
-                          <button className="text-gray-400" onClick={() => {}}>
-                            <TrashIcon className="w-6 h-6" />
-                          </button>
+                          <TrashIcon className="w-6 h-6 text-gray-400" onClick={() => {
+                            const updatedQuiz: Quiz = {
+                              ...selectedQuiz,
+                              answers: selectedQuiz.answers.filter(a => a.id !== answer.id),
+                            };
+                            setSelectedQuiz(updatedQuiz);
+                          }} />
                           <Badge size="md" color={"light"}>
                             ID - {answer.id}
                           </Badge>
@@ -454,7 +481,7 @@ export default function QuizTable() {
                                 <img
                                     src={answer.img}
                                     alt={`Choice ${index + 1}`}
-                                    className="h-10"
+                                    className="h-10 text-gray-400"
                                 />
                             ): (
                                 <div className="h-full w-full bg-gray-800"></div>
