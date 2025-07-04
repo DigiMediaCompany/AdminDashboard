@@ -38,7 +38,10 @@ export const getQuizzes = async (page: number=0): Promise<Pagination<Quiz>> => {
 }
 
 export const saveQuiz = async (data: Quiz): Promise<unknown> => {
-    return await axios.patch(`${BASE_URL_D1}/quizzes/${data.id}`, {answers: JSON.stringify(data.answers)}, {
+    return await axios.patch(`${BASE_URL_D1}/quizzes/${data.id}`, {
+        answers: JSON.stringify(data.answers),
+        quizzes: JSON.stringify(data.quizzes)
+    }, {
         headers: {
             "Content-Type": "application/json"
         }

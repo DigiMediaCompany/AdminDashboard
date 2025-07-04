@@ -20,6 +20,7 @@ import TextArea from "../form/input/TextArea.tsx";
 import FileInput from "../form/input/FileInput.tsx";
 import Alert from "../ui/alert/Alert.tsx";
 import Toast from "../../pages/UiElements/Toast.tsx";
+import Select from "../form/Select.tsx";
 
 enum AnswerState {
   WARNING = "WARNING",
@@ -46,7 +47,9 @@ export default function QuizTable() {
 
   useEffect(() => {
     getQuizzes()
-        .then(result => setQuizzes(result.data))
+        .then(result => {
+          setQuizzes(result.data);
+        })
         .catch(() => {
           setToast({
             show: true,
@@ -117,9 +120,9 @@ export default function QuizTable() {
   };
   const handleAdd = () => {
     let answers = selectedQuiz?.answers
-    console.log(answers)
+    const newId = Math.floor(100000 + Math.random() * 900000);
     const newAnswer: Answer = {
-      id: (selectedQuiz?.answers.length || 0) + 1,
+      id: newId,
       title: "",
       img: "",
       description: "",
@@ -137,6 +140,25 @@ export default function QuizTable() {
             }
             : null
     );
+  }
+  const handleSelectChange = (newScore: string, quizIndex: number, choiceIndex: number) => {
+    if (selectedQuiz) {
+      const updatedQuestions = selectedQuiz.quizzes.map((question, qIdx) => {
+        if (qIdx !== quizIndex) return question;
+
+        const updatedAnswers = question.answers.map((choice, cIdx) => {
+          if (cIdx !== choiceIndex) return choice;
+          return { ...choice, score: parseInt(newScore) };
+        });
+
+        return { ...question, answers: updatedAnswers };
+      });
+
+      setSelectedQuiz({
+        ...selectedQuiz,
+        quizzes: updatedQuestions,
+      });
+    }
   }
 
   if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading quizzes...</p>
@@ -209,7 +231,7 @@ export default function QuizTable() {
                   let isPointingCorrectly = true;
                   quiz.quizzes.forEach((q) => {
                     q.answers.forEach((a) => {
-                      if (results.find(r => r.id === a.score)) {
+                      if (!results.some(r => r.id === a.score)) {
                         isPointingCorrectly = false;
                       }
                     })
@@ -287,8 +309,8 @@ export default function QuizTable() {
                         <PencilSquareIcon className="w-6 h-6" />
                       </button>
                       <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
-                        setSelectedQuiz(quizzes[index]);
-                        openModal();
+                        // setSelectedQuiz(quizzes[index]);
+                        // openModal();
                       }}>
                         <TrashIcon className="w-6 h-6" />
                       </button>
@@ -380,9 +402,16 @@ export default function QuizTable() {
                             <div className="col-span-13 lg:col-span-15">
                               <Input type="text" value={choice.choice} disabled={true}/>
                             </div>
-                            <div className="col-span-3 lg:col-span-4">
-                              <Input type="text" value={choice.score} disabled={true}/>
-                            </div>
+                            <Select
+                                options={selectedQuiz.answers.map(a => ({
+                                  value: a.id.toString(),
+                                  label: a.title
+                                }))}
+                                defaultValue={selectedQuiz.answers.find((x) => x.id === choice.score) ? choice.score.toString() : ""}
+                                placeholder="Select Result"
+                                onChange={(change) => {handleSelectChange(change, index, i)}}
+                                className={`col-span-3 lg:col-span-4${!selectedQuiz.answers.find(x => x.id === choice.score) ? " border-red-900" : ""}`}
+                            />
                             <div className="col-span-11 lg:col-span-12 flex">
                               <div className="w-20 flex items-center justify-center mr-1">
                                 {choice.img?.trim() ? (
