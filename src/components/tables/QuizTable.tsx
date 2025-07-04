@@ -7,9 +7,9 @@ import {
 } from "../ui/table";
 
 import Badge from "../ui/badge/Badge";
-import {Quiz} from "../../types/PostFunny.ts";
+import {FileUploadResponse, Quiz} from "../../types/PostFunny.ts";
 import {useEffect, useState} from "react";
-import {getQuizzes} from "../../services/postFunnyService.ts";
+import {deleteImage, getQuizzes, saveQuiz, uploadImage} from "../../services/postFunnyService.ts";
 import {PencilSquareIcon, PlusCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
@@ -19,6 +19,7 @@ import {useModal} from "../../hooks/useModal.ts";
 import TextArea from "../form/input/TextArea.tsx";
 import FileInput from "../form/input/FileInput.tsx";
 import Alert from "../ui/alert/Alert.tsx";
+import Toast from "../../pages/UiElements/Toast.tsx";
 
 enum AnswerState {
   WARNING = "WARNING",
@@ -27,27 +28,107 @@ enum AnswerState {
 }
 
 export default function QuizTable() {
+  const BASE_URL_R2 = import.meta.env.VITE_PUBLIC_CLOUDFLARE_R2_URL;
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null)
+  const [toast, setToast] = useState<{
+    show: boolean;
+    variant: "success" | "error";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "success",
+    title: "",
+    message: ""
+  });
 
-  // TODO: need toast here
   useEffect(() => {
     getQuizzes()
         .then(result => setQuizzes(result.data))
-        .catch(err => console.error(err))
+        .catch(() => {
+          setToast({
+            show: true,
+            variant: "error",
+            title: "Error",
+            message: 'Failed to load quizzes.'
+          });
+        })
         .finally(() => setLoading(false))
   }, [])
 
   const { isOpen, openModal, closeModal } = useModal();
   const handleSave = () => {
-    // TODO: Handle save logic here
+    if(selectedQuiz) {
+      saveQuiz(selectedQuiz).then(() => {
+        setToast({
+          show: true,
+          variant: "success",
+          title: "Saved",
+          message: "Quiz saved successfully."
+        });
+      }).catch(() => {
+        setToast({
+          show: true,
+          variant: "error",
+          title: "Error",
+          message: 'Failed to update quiz.'
+        });
+      })
+    }
     closeModal();
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const file = e.target.files?.[0];
+    if (file && selectedQuiz) {
+      uploadImage(file).then((r: FileUploadResponse) => {
+        const selectedAnswer = selectedQuiz.answers.find(a => a.id === id);
+        if (selectedAnswer && selectedAnswer?.img && selectedAnswer?.img.trim() !== "") {
+          // Delete old img if there's any
+          const oldFileName = selectedAnswer.img.split("/").pop() || "";
+          deleteImage(oldFileName).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+        }
+        // Set img to selected quiz
+        setSelectedQuiz(prev =>
+            prev
+                ? {
+                  ...prev,
+                  answers: prev.answers.map(ans =>
+                      ans.id === id
+                          ? { ...ans, img: `${BASE_URL_R2}/files/${r.filename}`}
+                          : ans
+                  )
+                }
+                : prev
+        );
+      }).catch(() => {
+        setToast({
+          show: true,
+          variant: "error",
+          title: "Error",
+          message: 'Failed to upload image.'
+        });
+      })
+    }
+
   };
 
   if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading quizzes...</p>
   return (
     <>
+      {toast.show && (
+          <Toast
+              variant={toast.variant}
+              title={toast.title}
+              message={toast.message}
+              changeState={() => setToast({ show: false,
+                variant: "success",
+                title: "",
+                message: ""
+              })}
+          />
+      )}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
         <div className="max-w-full overflow-x-auto">
           <Table>
@@ -98,7 +179,7 @@ export default function QuizTable() {
               {quizzes.map((quiz: Quiz, index) => {
                 let answerState: AnswerState = AnswerState.ERROR;
                 const results = quiz.answers;
-                if (results && results.length > 0) {
+                if (results && results.length > 1) {
                   answerState = AnswerState.WARNING;
                   let isPointingCorrectly = true;
                   quiz.quizzes.forEach((q) => {
@@ -257,7 +338,7 @@ export default function QuizTable() {
                 </div>
               </div>
               {selectedQuiz?.quizzes.map((quiz, index) => (
-                  <div className="mt-7">
+                  <div className="mt-7" key={`${selectedQuiz}-${index}`}>
                     <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                       Question {index + 1}
                     </h5>
@@ -289,7 +370,7 @@ export default function QuizTable() {
                                     <div className="h-full w-full bg-gray-800"></div>
                                 )}
                               </div>
-                              <FileInput />
+                              <FileInput disabled={true}/>
                             </div>
                           </>
                       ))}
@@ -337,13 +418,35 @@ export default function QuizTable() {
                 <div className="grid grid-cols-8 gap-x-6 gap-y-5 lg:grid-cols-16">
                   {selectedQuiz?.answers.map((answer, index) => (
                       <>
-                        <div className="col-span-2 lg:col-span-2 flex items-center justify-center h-full">
+                        <div className="col-span-3 lg:col-span-3 flex items-center justify-center h-full gap-x-2">
+                          <button className="text-gray-400" onClick={() => {}}>
+                            <TrashIcon className="w-6 h-6" />
+                          </button>
                           <Badge size="md" color={"light"}>
                             ID - {answer.id}
                           </Badge>
                         </div>
-                        <div className="col-span-6 lg:col-span-14">
-                          <Input type="text" value={answer.title} />
+                        <div className="col-span-5 lg:col-span-13">
+                          <Input
+                              type="text"
+                              value={answer.title}
+                              onChange={(e) => {
+                                const newTitle = e.target.value;
+
+                                setSelectedQuiz(prev =>
+                                    prev
+                                        ? {
+                                          ...prev,
+                                          answers: prev.answers.map(ans =>
+                                              ans.id === answer.id
+                                                  ? { ...ans, title: newTitle }
+                                                  : ans
+                                          )
+                                        }
+                                        : prev
+                                );
+                              }}
+                          />
                         </div>
                         <div className="col-span-3 lg:col-span-6 h-auto flex items-center justify-center">
                           <div className="w-20  mr-1">
@@ -357,12 +460,30 @@ export default function QuizTable() {
                                 <div className="h-full w-full bg-gray-800"></div>
                             )}
                           </div>
-                          <FileInput />
+                          <FileInput
+                              onChange={(e) => {
+                                handleFileChange(e, answer.id)
+                              }}
+                          />
                         </div>
                         <div className="col-span-5 lg:col-span-10">
                           <TextArea
                               value={answer.description}
                               rows={4}
+                              onChange={(newDescription) => {
+                                setSelectedQuiz(prev =>
+                                    prev
+                                        ? {
+                                          ...prev,
+                                          answers: prev.answers.map(ans =>
+                                              ans.id === answer.id
+                                                  ? { ...ans, description: newDescription }
+                                                  : ans
+                                          )
+                                        }
+                                        : prev
+                                );
+                              }}
                           />
                         </div>
                       </>

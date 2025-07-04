@@ -27,3 +27,7 @@ export interface Quiz {
     quizzes: Question[];
     answers: Answer[];
 }
+
+export interface FileUploadResponse {
+    filename: string;
+}
