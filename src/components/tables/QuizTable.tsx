@@ -21,6 +21,7 @@ import FileInput from "../form/input/FileInput.tsx";
 import Alert from "../ui/alert/Alert.tsx";
 import Toast from "../../pages/UiElements/Toast.tsx";
 import Select from "../form/Select.tsx";
+import {QuizPagination} from "../ui/pagination/QuizPagination.tsx";
 
 enum AnswerState {
   WARNING = "WARNING",
@@ -44,11 +45,14 @@ export default function QuizTable() {
     title: "",
     message: ""
   });
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     getQuizzes()
         .then(result => {
           setQuizzes(result.data);
+          setTotalPages(result.total_pages)
         })
         .catch(() => {
           setToast({
@@ -321,6 +325,13 @@ export default function QuizTable() {
             </TableBody>
           </Table>
         </div>
+      </div>
+      <div className="mt-6">
+        <QuizPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+        />
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="w-full m-4 lg:max-w-[900px]">
         <div className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
