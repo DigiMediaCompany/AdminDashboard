@@ -12,7 +12,7 @@ type Props = {
 }
 
 export function QuizPagination({ currentPage, totalPages, onPageChange }: Props) {
-    const MAX_VISIBLE = 5 // Number of page buttons to show
+    const MAX_VISIBLE = 5
 
     function getPageNumbers() {
         const pages: (number | string)[] = []
@@ -43,8 +43,9 @@ export function QuizPagination({ currentPage, totalPages, onPageChange }: Props)
                 <PaginationItem>
                     <PaginationLink
                         href=""
-                        onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                        onClick={() => onPageChange(currentPage - 1)}
                         isActive={false}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
                     >
                         Prev
                     </PaginationLink>
@@ -69,8 +70,9 @@ export function QuizPagination({ currentPage, totalPages, onPageChange }: Props)
                 <PaginationItem>
                     <PaginationLink
                         href=""
-                        onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                        onClick={() => onPageChange(currentPage + 1)}
                         isActive={false}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
                     >
                         Next
                     </PaginationLink>
