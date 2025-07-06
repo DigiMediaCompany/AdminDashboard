@@ -6,23 +6,71 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
 import {signIn} from "../../services/authService.ts";
+import Toast from "../../pages/UiElements/Toast.tsx";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [toast, setToast] = useState<{
+    show: boolean;
+    variant: "success" | "error" | "warning" | "info";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "success",
+    title: "",
+    message: ""
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const { error } = await signIn(email, password);
-    if (error) return alert(error.message);
-    navigate("/");
+    if (error) {
+      setToast({
+        show: true,
+        variant: "error",
+        title: "Error",
+        message: error.message
+      });
+      setLoading(false);
+    } else {
+      setTimeout(() => {
+        setLoading(false);
+        navigate("/")
+      }, 3000)
+    }
   };
 
+  const handleComingSoon = () => {
+    setToast({
+      show: true,
+      variant: "info",
+      title: "Hang in there",
+      message: "Feature is coming soon."
+    })
+  }
+
   return (
+      <>
+        {toast.show && (
+            <Toast
+                variant={toast.variant}
+                title={toast.title}
+                message={toast.message}
+                changeState={() => setToast({ show: false,
+                  variant: "success",
+                  title: "",
+                  message: ""
+                })}
+            />
+        )}
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
         <Link
@@ -45,7 +93,9 @@ export default function SignInForm() {
           </div>
           <div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button
+                  onClick={handleComingSoon}
+                  className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
                   height="20"
@@ -72,7 +122,9 @@ export default function SignInForm() {
                 </svg>
                 Sign in with Google
               </button>
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button
+                  onClick={handleComingSoon}
+                  className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="21"
                   className="fill-current"
@@ -102,7 +154,8 @@ export default function SignInForm() {
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
+                  <Input placeholder="info@gmail.com" value={email} onChange={e => setEmail(e.target.value)}
+                         disabled={loading}/>
                 </div>
                 <div>
                   <Label>
@@ -113,6 +166,7 @@ export default function SignInForm() {
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       value={password} onChange={e => setPassword(e.target.value)}
+                      disabled={loading}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -128,7 +182,7 @@ export default function SignInForm() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={isChecked} onChange={setIsChecked} />
+                    <Checkbox checked={isChecked} onChange={setIsChecked} disabled={loading} />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
                       Keep me logged in
                     </span>
@@ -141,8 +195,8 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
-                    Sign in
+                  <Button className="w-full" disabled={loading} size="sm">
+                    {loading ? "Signing In..." : "Sign In"}
                   </Button>
                 </div>
               </div>
@@ -163,5 +217,6 @@ export default function SignInForm() {
         </div>
       </div>
     </div>
+      </>
   );
 }

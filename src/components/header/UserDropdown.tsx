@@ -2,12 +2,13 @@ import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import {Link, useNavigate} from "react-router";
-import { useAppDispatch } from "../../store";
+import {useAppDispatch, useAppSelector} from "../../store";
 import {signOut} from "../../services/authService";
 import {logout} from "../../store/authSlice.ts";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const authState = useAppSelector((state) => state.auth)
 
   function toggleDropdown() {
     setIsOpen(!isOpen);

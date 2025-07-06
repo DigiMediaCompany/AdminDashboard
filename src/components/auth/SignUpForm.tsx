@@ -5,31 +5,112 @@ import Label from "../form/Label";
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import { signUp } from "../../services/authService";
+import Toast from "../../pages/UiElements/Toast.tsx";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [name, setName] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const [toast, setToast] = useState<{
+    show: boolean;
+    variant: "success" | "error" | "warning" | "info";
+    title: string;
+    message: string;
+  }>({
+    show: false,
+    variant: "success",
+    title: "",
+    message: ""
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
 
-    const { error } = await signUp(email, password)
-    setLoading(false)
+    let errorMessage = "";
+    if (!email) {
+      errorMessage = "Email is required"
+    } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+      errorMessage = "Email is invalid"
+    }
 
-    if (error) {
-      alert(error.message)
+    if (!name.trim()) {
+      errorMessage = "Full name is required"
+    }
+
+    if (!password) {
+      errorMessage = "Password is required"
+    } else if (password.length < 12) {
+      errorMessage = "Password must be at least 12 characters"
+    }
+
+    if (!isChecked) {
+      errorMessage = "You must accept our Terms, Conditions and Policy"
+    }
+    if (errorMessage.trim()) {
+      setToast({
+        show: true,
+        variant: "error",
+        title: "Error",
+        message: errorMessage
+      })
     } else {
-      alert("Signup successful! Check your email to confirm.")
-      navigate("/signin")
+
+      setLoading(true)
+
+      const { error } = await signUp(email, password, name)
+      setLoading(false)
+
+      if (error) {
+        setToast({
+          show: true,
+          variant: "error",
+          title: error.name,
+          message: error.message
+        })
+      } else {
+        setToast({
+          show: true,
+          variant: "success",
+          title: "Success",
+          message: "Signup successful! Check your email to confirm."
+        })
+        setLoading(true)
+        setTimeout(() => {
+          setLoading(false)
+          navigate("/signin")
+        }, 3000)
+
+      }
     }
   }
 
+  const handleComingSoon = () => {
+    setToast({
+      show: true,
+      variant: "info",
+      title: "Hang in there",
+      message: "Feature is coming soon."
+    })
+  }
+
   return (
+      <>
+        {toast.show && (
+            <Toast
+                variant={toast.variant}
+                title={toast.title}
+                message={toast.message}
+                changeState={() => setToast({ show: false,
+                  variant: "success",
+                  title: "",
+                  message: ""
+                })}
+            />
+        )}
     <div className="flex flex-col flex-1 w-full overflow-y-auto lg:w-1/2 no-scrollbar">
       <div className="w-full max-w-md mx-auto mb-5 sm:pt-10">
         <Link
@@ -52,7 +133,9 @@ export default function SignUpForm() {
           </div>
           <div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button
+                  onClick={handleComingSoon}
+                  className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="20"
                   height="20"
@@ -79,7 +162,9 @@ export default function SignUpForm() {
                 </svg>
                 Sign up with Google
               </button>
-              <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              <button
+                  onClick={handleComingSoon}
+                  className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
                 <svg
                   width="21"
                   className="fill-current"
@@ -107,29 +192,32 @@ export default function SignUpForm() {
               <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {/* <!-- First Name --> */}
-                  <div className="sm:col-span-1">
+                  <div className="sm:col-span-2">
                     <Label>
-                      First Name<span className="text-error-500">*</span>
+                      Full Name<span className="text-error-500">*</span>
                     </Label>
                     <Input
                       type="text"
                       id="fname"
                       name="fname"
-                      placeholder="Enter your first name"
+                      placeholder="Enter your full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      disabled={loading}
                     />
                   </div>
                   {/* <!-- Last Name --> */}
-                  <div className="sm:col-span-1">
-                    <Label>
-                      Last Name<span className="text-error-500">*</span>
-                    </Label>
-                    <Input
-                      type="text"
-                      id="lname"
-                      name="lname"
-                      placeholder="Enter your last name"
-                    />
-                  </div>
+                  {/*<div className="sm:col-span-1">*/}
+                  {/*  <Label>*/}
+                  {/*    Last Name<span className="text-error-500">*</span>*/}
+                  {/*  </Label>*/}
+                  {/*  <Input*/}
+                  {/*    type="text"*/}
+                  {/*    id="lname"*/}
+                  {/*    name="lname"*/}
+                  {/*    placeholder="Enter your last name"*/}
+                  {/*  />*/}
+                  {/*</div>*/}
                 </div>
                 {/* <!-- Email --> */}
                 <div>
@@ -143,6 +231,7 @@ export default function SignUpForm() {
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading}
                   />
                 </div>
                 {/* <!-- Password --> */}
@@ -156,6 +245,7 @@ export default function SignUpForm() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      disabled={loading}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -175,6 +265,7 @@ export default function SignUpForm() {
                     className="w-5 h-5"
                     checked={isChecked}
                     onChange={setIsChecked}
+                    disabled={loading}
                   />
                   <p className="inline-block font-normal text-gray-500 dark:text-gray-400">
                     By creating an account means you agree to the{" "}
@@ -211,5 +302,6 @@ export default function SignUpForm() {
         </div>
       </div>
     </div>
+      </>
   );
 }
