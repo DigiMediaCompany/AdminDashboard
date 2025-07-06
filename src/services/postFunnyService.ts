@@ -5,10 +5,11 @@ import {FileUploadResponse, Quiz} from "../types/PostFunny.ts";
 
 const BASE_URL_D1 = import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_URL;
 const BASE_URL_R2 = import.meta.env.VITE_PUBLIC_CLOUDFLARE_R2_URL;
-export const getQuizzes = async (page: number=0): Promise<Pagination<Quiz>> => {
+export const getQuizzes = async (page: number=1): Promise<Pagination<Quiz>> => {
+    const offset = page >= 1 ? page - 1 : 0;
     const response = await axios.get(`${BASE_URL_D1}/quizzes`, {
         params: {
-            offset:  page * constants.STANDARD_LIMIT,
+            offset:  offset * constants.STANDARD_LIMIT,
             limit:  constants.STANDARD_LIMIT,
         }
     })

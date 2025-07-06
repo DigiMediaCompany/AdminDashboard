@@ -22,6 +22,7 @@ import Alert from "../ui/alert/Alert.tsx";
 import Toast from "../../pages/UiElements/Toast.tsx";
 import Select from "../form/Select.tsx";
 import {QuizPagination} from "../ui/pagination/QuizPagination.tsx";
+import {useSearchParams} from "react-router";
 
 enum AnswerState {
   WARNING = "WARNING",
@@ -45,11 +46,17 @@ export default function QuizTable() {
     title: "",
     message: ""
   });
-  const [currentPage, setCurrentPage] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const currentPage = parseInt(searchParams.get("page") || "1")
   const [totalPages, setTotalPages] = useState(1)
 
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() })
+  }
+
   useEffect(() => {
-    getQuizzes()
+    setLoading(true)
+    getQuizzes(currentPage)
         .then(result => {
           setQuizzes(result.data);
           setTotalPages(result.total_pages)
@@ -251,10 +258,12 @@ export default function QuizTable() {
                   <TableCell className="px-5 py-4 sm:px-6 text-start">
                     <div className="flex items-center gap-3">
                       <div className="w-20 overflow-hidden">
-                        <img
-                          src={quiz.img}
-                          alt={quiz.title}
-                        />
+                        {quiz.img?.trim() ?(
+                            <img
+                                src={quiz.img}
+                                alt={quiz.title}
+                            />
+                        ): null}
                       </div>
                       <div>
                         <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90 w-25
@@ -330,7 +339,7 @@ export default function QuizTable() {
         <QuizPagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={handlePageChange}
         />
       </div>
       <Modal isOpen={isOpen} onClose={closeModal} className="w-full m-4 lg:max-w-[900px]">
