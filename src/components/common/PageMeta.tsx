@@ -1,11 +1,12 @@
 import { HelmetProvider, Helmet } from "react-helmet-async";
+import {constants} from "../../utils/constants.ts";
 
 const PageMeta = ({
-  title,
-  description,
+  title = constants.SITE_METADATA.TITLE,
+  description = constants.SITE_METADATA.DESCRIPTION,
 }: {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }) => (
   <Helmet>
     <title>{title}</title>

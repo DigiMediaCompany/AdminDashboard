@@ -10,5 +10,9 @@ export const constants = {
         FREEAPK: "FreeAPK",
         MZGENZ: "MzGens",
         TIKGAME: "TikGame",
+    },
+    SITE_METADATA: {
+        TITLE: "Cool Dashboard",
+        DESCRIPTION: "Very cool dashboard created by Mjho",
     }
 }

@@ -22,7 +22,6 @@ import {useAuthListener} from "./hooks/useAuthListener.ts";
 import ProtectedRoute from "./components/auth/ProtectedRoute.tsx";
 import Quizzes from "./pages/PostFunny/Quizzes.tsx";
 import PostFunnyAds from "./pages/PostFunny/PostFunnyAds.tsx";
-import Default from "./pages/Default.tsx";
 import Unauthorized from "./pages/OtherPage/Unauthorized.tsx";
 import {constants} from "./utils/constants.ts";
 import PostFunnyInfo from "./pages/PostFunny/PostFunnyInfo.tsx";
@@ -34,6 +33,8 @@ import FreeApkAds from "./pages/FreeApk/FreeApkAds.tsx";
 import GonoGameAds from "./pages/GonoGame/GonoGameAds.tsx";
 import MzGenzAds from "./pages/MzGenz/MzGenzAds.tsx";
 import TikGameAds from "./pages/TikGame/TikGameAds.tsx";
+import Dashboard from "./pages/Dashboard/Dashboard.tsx";
+import Profile from "./pages/Profile.tsx";
 
 export default function App() {
   useAuthListener();
@@ -45,7 +46,8 @@ export default function App() {
           <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
 
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Default />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
           </Route>
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.ADMIN,
@@ -79,7 +81,7 @@ export default function App() {
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
             <Route element={<AppLayout />}>
               {/* Showcases */}
-              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/profile-showcase" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/blank" element={<Blank />} />
               <Route path="/form-elements" element={<FormElements />} />

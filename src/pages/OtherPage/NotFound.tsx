@@ -7,7 +7,7 @@ export default function NotFound() {
     <>
       <PageMeta
         title="Page Not Found"
-        description="This is React.js 404 page"
+        description="This is 404 page"
       />
       <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
         <GridShape />
