@@ -3,9 +3,11 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import {useAppSelector} from "../../store";
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
+  const user = useAppSelector((state) => state.auth).user
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
@@ -25,25 +27,25 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {user?.user_metadata.name}
               </p>
             </div>
 
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
-              </p>
-            </div>
+            {/*<div>*/}
+            {/*  <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">*/}
+            {/*    Last Name*/}
+            {/*  </p>*/}
+            {/*  <p className="text-sm font-medium text-gray-800 dark:text-white/90">*/}
+            {/*    Chowdhury*/}
+            {/*  </p>*/}
+            {/*</div>*/}
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {user?.email}
               </p>
             </div>
 
@@ -52,7 +54,7 @@ export default function UserInfoCard() {
                 Phone
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                +84 904448221
               </p>
             </div>
 
