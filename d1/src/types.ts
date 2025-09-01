@@ -1,18 +1,8 @@
-import { DateTime, Str } from "chanfana";
-import type { Context } from "hono";
-import { z } from "zod";
+import { D1Database } from '@cloudflare/workers-types';
 
-export type AppContext = Context<{ Bindings: Env }>;
+export interface Env {
+	D1_DATABASE: D1Database;
+	API_TOKEN: string;
+}
 
-export const Task = z.object({
-	name: Str({ example: "lorem" }),
-	slug: Str(),
-	description: Str({ required: false }),
-	completed: z.boolean().default(false),
-	due_date: DateTime(),
-});
-
-export const Job = z.object({
-	name: Str({ example: "lorem" }),
-
-});
+export type ModelSchema = Record<string, "string" | "number" | "boolean">;

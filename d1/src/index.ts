@@ -1,26 +1,20 @@
-import { fromHono } from "chanfana";
-import { Hono } from "hono";
-import { TaskCreate } from "./endpoints/taskCreate";
-import { TaskDelete } from "./endpoints/taskDelete";
-import { TaskFetch } from "./endpoints/taskFetch";
-import { TaskList } from "./endpoints/taskList";
+import { Env } from "./types";
+import { requireAuth } from "./auth";
+import { createCrudRoutes } from "./routes/crud";
+import {StatusModel} from "./models/status";
 
-// Start a Hono app
-const app = new Hono<{ Bindings: Env }>();
+const statusRoutes = createCrudRoutes("statuses", StatusModel);
 
-// Setup OpenAPI registry
-const openapi = fromHono(app, {
-	docs_url: "/",
-});
+export default {
+	async fetch(request: Request, env: Env) {
+		const authError = requireAuth(request, env);
+		if (authError) return authError;
 
-// Register OpenAPI endpoints
-openapi.get("/api/tasks", TaskList);
-openapi.post("/api/tasks", TaskCreate);
-openapi.get("/api/tasks/:taskSlug", TaskFetch);
-openapi.delete("/api/tasks/:taskSlug", TaskDelete);
+		const url = new URL(request.url);
+		if (url.pathname.startsWith("/statuses")) {
+			return await statusRoutes(request, env);
+		}
 
-// You may also register routes for non OpenAPI directly on Hono
-// app.get('/test', (c) => c.text('Hono!'))
-
-// Export the Hono app
-export default app;
+		return new Response("Not Found", { status: 404 });
+	},
+};

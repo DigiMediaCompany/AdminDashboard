@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "d1",
+	"name": "d1-admin",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-08-31",
 	"observability": {
@@ -23,16 +23,18 @@
 	 */
 	"d1_databases": [
 		{
-			"binding": "DB",
+			"binding": "D1_DATABASE",
 			"database_name": "admin",
 			"database_id": "955bae11-19fe-439d-974e-aeb534afb368"
 		}
-	]
+	],
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 	 */
-	// "vars": { "MY_VARIABLE": "production_value" }
+	 "vars": {
+		 "API_TOKEN": "A9f3Q7b2W1pR6sD4L8hT0vA5nM3kJ2cBXy4Z8mQ6rP1tV9wN0eS5uL3dF7gH2kM1"
+	 }
 	/**
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
