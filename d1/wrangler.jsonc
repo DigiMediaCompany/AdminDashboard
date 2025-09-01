@@ -23,9 +23,9 @@
 	 */
 	"d1_databases": [
 		{
-			"binding": "adminDB",
+			"binding": "DB",
 			"database_name": "admin",
-			"database_id": "88103d96-44c4-4b2e-8112-bc9f7068d028"
+			"database_id": "955bae11-19fe-439d-974e-aeb534afb368"
 		}
 	]
 	/**

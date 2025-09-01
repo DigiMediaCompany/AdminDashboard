@@ -1,36 +1,49 @@
--- Migration number: 0001 	 2025-09-01T04:19:10.258Z
+-- Migration number: 0001    2025-09-01T04:19:10.258Z
 
-CREATE TABLE Categories (
+CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE Series (
+CREATE TABLE series (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     category_id INTEGER NOT NULL,
     big_context_file TEXT,
-    FOREIGN KEY (category_id) REFERENCES Categories(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
-CREATE TABLE Statuses (
+CREATE TABLE statuses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     type TEXT NOT NULL,
+    position INTEGER NOT NULL
 );
 
-CREATE TABLE Jobs (
-     id INTEGER PRIMARY KEY AUTOINCREMENT,
-     raw_youtube_link TEXT NOT NULL UNIQUE,
-     youtube_id TEXT NOT NULL UNIQUE,
-     gpt_conversation_id TEXT,
-     series_id INTEGER,
-     episode INTEGER,
-     priority INTEGER NOT NULL DEFAULT 0,
-     status_id INTEGER,
-     context_file TEXT,
-     article_file TEXT,
-     FOREIGN KEY (series_id) REFERENCES Series(id),
-     FOREIGN KEY (status_id) REFERENCES Statuses(id),
-     UNIQUE (series_id, espisode)
+CREATE TABLE jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    raw_youtube_link TEXT UNIQUE,
+    youtube_id TEXT UNIQUE,
+    gpt_conversation_id TEXT,
+    series_id INTEGER,
+    episode INTEGER,
+    priority INTEGER NOT NULL DEFAULT 0,
+    status_id INTEGER,
+    context_file TEXT,
+    article_file TEXT,
+    FOREIGN KEY (series_id) REFERENCES series(id),
+    FOREIGN KEY (status_id) REFERENCES statuses(id),
+    UNIQUE (series_id, episode)
 );
+
+-- Seeding
+INSERT INTO statuses (name, type, position) VALUES
+('Pending', 'article', 1),
+('Extracting Youtube', 'article', 2),
+('Context review required', 'article', 3),
+('Generating article', 'article', 4),
+('Article review required', 'article', 5),
+('Generating big context', 'article', 6),
+('Big context review required', 'article', 7),
+('Done', 'article', 8),
+('Failed', 'article', 9);
