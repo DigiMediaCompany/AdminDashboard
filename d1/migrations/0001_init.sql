@@ -8,8 +8,8 @@ CREATE TABLE categories (
 CREATE TABLE series (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    category_id INTEGER NOT NULL,
-    big_context_file TEXT,
+    category_id INTEGER DEFAULT NULL,
+    big_context_file TEXT DEFAULT NULL,
     FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 
@@ -24,13 +24,13 @@ CREATE TABLE jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     raw_youtube_link TEXT UNIQUE,
     youtube_id TEXT UNIQUE,
-    gpt_conversation_id TEXT,
-    series_id INTEGER,
-    episode INTEGER,
+    gpt_conversation_id TEXT DEFAULT NULL,
+    series_id INTEGER DEFAULT NULL,
+    episode INTEGER DEFAULT NULL,
     priority INTEGER NOT NULL DEFAULT 0,
-    status_id INTEGER,
-    context_file TEXT,
-    article_file TEXT,
+    status_id INTEGER NOT NULL,
+    context_file TEXT DEFAULT NULL,
+    article_file TEXT DEFAULT NULL,
     FOREIGN KEY (series_id) REFERENCES series(id),
     FOREIGN KEY (status_id) REFERENCES statuses(id),
     UNIQUE (series_id, episode)

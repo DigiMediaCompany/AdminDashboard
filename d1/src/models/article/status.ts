@@ -1,4 +1,4 @@
-import { ModelSchema } from "../types";
+import { ModelSchema } from "../../types";
 
 export const StatusModel: ModelSchema = {
     id: "number",       // auto-increment primary key

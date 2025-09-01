@@ -1,7 +1,7 @@
 import { Env, ModelSchema } from "../types";
 
 export function createCrudRoutes(tableName: string, schema: ModelSchema) {
-    const json = (data: any, status = 200) =>
+    const json = (data: unknown, status = 200) =>
         new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
 
     return async (request: Request, env: Env) => {
@@ -26,11 +26,16 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema) {
 
         // POST
         if (request.method === "POST") {
-            const data = await request.json();
+            const data: object = await request.json();
+
             for (const key of Object.keys(schema)) {
+                const field = schema[key];
+                // skip optional fields
                 if (key === "id") continue;
+                if (typeof field === "object" && field.optional) continue;
                 if (!(key in data)) return json({ error: `${key} is required` }, 400);
             }
+
             const cols = Object.keys(data).join(",");
             const vals = Object.values(data);
             const placeholders = vals.map(() => "?").join(",");
