@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 /.env
+
+admin/node_modules
+admin/.env
