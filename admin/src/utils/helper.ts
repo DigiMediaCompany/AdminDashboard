@@ -9,20 +9,24 @@ export function snakeToTitleCase(input: string): string {
         .join(' ');
 }
 
-const adminApi = axios.create({
-    baseURL: import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL,
-    headers: {
-        "Content-Type": "application/json",
-    },
-});
+export function getAdminApiInstance(module: string) {
+    const api = axios.create({
+        baseURL: `${import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL}/${module}`,
+        headers: {
+            "Content-Type": "application/json",
+            // "Access-Control-Allow-Origin": "*"
+            // TODO: handle this later
+        },
+    });
+    api.interceptors.request.use((config) => {
+        const token = import.meta.env.VITE_PUBLIC_API_TOKEN;
 
-// Add a token dynamically if needed
-adminApi.interceptors.request.use((config) => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
 
-export default adminApi;
+    return api;
+}
+

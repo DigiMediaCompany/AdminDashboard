@@ -1,11 +1,12 @@
-import axios from "axios"
 import {constants} from "../utils/constants.ts";
 import {Pagination} from "../types/Common.ts";
 import {Job} from "../types/Article.ts";
+import {getAdminApiInstance} from "../utils/helper.ts";
 
-const BASE_URL_D1_ADMIN = `${import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL}/article`;
+// const BASE_URL_D1_ADMIN = `${import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL}/article`;
+const api = getAdminApiInstance('article')
 export const getJobs = async (page: number=1): Promise<Pagination<Job>> => {
-    const response = await axios.get(`${BASE_URL_D1_ADMIN}/jobs`, {
+    const response = await api.get('/jobs', {
         params: {
             page:  page,
             limit:  constants.STANDARD_LIMIT,

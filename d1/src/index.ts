@@ -13,6 +13,19 @@ const jobRoutes = createCrudRoutes("jobs", JobModel);
 
 export default {
 	async fetch(request: Request, env: Env) {
+		// TODO: here
+		if (request.method === "OPTIONS") {
+			return new Response(null, {
+				status: 204,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+					"Access-Control-Allow-Headers": "Content-Type, Authorization",
+					// TODO: handle here again, this is just temporary
+					// "Access-Control-Max-Age": "86400",
+				},
+			});
+		}
 		const authError = requireAuth(request, env);
 		if (authError) return authError;
 

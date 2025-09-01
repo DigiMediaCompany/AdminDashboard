@@ -1,8 +1,25 @@
 import { Env, ModelSchema } from "../types";
 
 export function createCrudRoutes(tableName: string, schema: ModelSchema) {
-    const json = (data: unknown, status = 200) =>
-        new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+
+    // TODO: add auth
+    // TODO: CORS, rate limit, throttle, black/white list
+    // TODO: injection
+    // TODO: add clear cache by handling cache manually, add cache handling
+    const json = (data: unknown, status = 200, hit = false) =>
+        // new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+
+        new Response(JSON.stringify(data), {
+            status: status,
+            headers: {
+                "Content-Type": "application/json",
+                // "Cache-Control": `public, max-age=${CACHE_TTL}`,
+                "X-Cache": hit ? "HIT" : "MISS",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            },
+        })
 
     return async (request: Request, env: Env) => {
         const db = env.D1_DATABASE;
@@ -10,6 +27,11 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema) {
         const id = url.pathname.split("/").pop();
 
         try {
+            // OPTION
+            if (request.method === "OPTIONS") {
+                return json({})
+            }
+
             // GET / or GET /:id
             if (request.method === "GET") {
                 if (id && id !== tableName) {
