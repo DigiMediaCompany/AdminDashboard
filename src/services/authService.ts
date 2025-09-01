@@ -11,7 +11,7 @@ export const signOut = async () => {
 
 export const signUp = async (email: string, password: string, name: string) => {
     return supabase.auth.signUp({ email, password, options: { data: {
-        role: constants.ROLES.ADMIN,
+        role: constants.ROLES.SUPER_ADMIN,
         name: name,
     }}})
 }

@@ -12,10 +12,11 @@ import {
   // TableIcon,
   // BoxCubeIcon,
   // CalenderIcon,
-  GridIcon
+  GridIcon, PieChartIcon, BoxCubeIcon,
+  CalenderIcon, ListIcon, PageIcon, TableIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import {FaceSmileIcon, FolderArrowDownIcon, PuzzlePieceIcon} from "@heroicons/react/24/outline";
+import {FaceSmileIcon, FolderArrowDownIcon, PlayCircleIcon, PuzzlePieceIcon} from "@heroicons/react/24/outline";
 // import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {
@@ -82,61 +83,72 @@ const othersItems: NavItem[] = [
   }
 ]
 
-// const othersItems2: NavItem[] = [
-//   {
-//     icon: <PieChartIcon />,
-//     name: "Charts",
-//     subItems: [
-//       { name: "Line Chart", path: "/line-chart", pro: false },
-//       { name: "Bar Chart", path: "/bar-chart", pro: false },
-//     ],
-//   },
-//   {
-//     icon: <BoxCubeIcon />,
-//     name: "UI Elements",
-//     subItems: [
-//       { name: "Alerts", path: "/alerts", pro: false },
-//       { name: "Avatar", path: "/avatars", pro: false },
-//       { name: "Badge", path: "/badge", pro: false },
-//       { name: "Buttons", path: "/buttons", pro: false },
-//       { name: "Images", path: "/images", pro: false },
-//       { name: "Videos", path: "/videos", pro: false },
-//     ],
-//   },
-//   {
-//     icon: <GridIcon />,
-//     name: "Dashboard",
-//     subItems: [{ name: "Ecommerce", path: "/dashboard", pro: false }],
-//   },
-//   {
-//     icon: <CalenderIcon />,
-//     name: "Calendar",
-//     path: "/calendar",
-//   },
-//   {
-//     name: "Forms",
-//     icon: <ListIcon />,
-//     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-//   },
-//   {
-//     name: "Pages",
-//     icon: <PageIcon />,
-//     subItems: [
-//       { name: "Blank Page", path: "/blank", pro: false },
-//       { name: "404 Error", path: "/error-404", pro: false },
-//     ],
-//   },
-//   {
-//     name: "Tables",
-//     icon: <TableIcon />,
-//     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-//   },
-//   {
-//     icon: <UserCircleIcon />,
-//     name: "User Profile",
-//     path: "/profile",
-//   },
-// ];
+const products: NavItem[] = [
+  {
+    name: "Youtube",
+    icon: <PlayCircleIcon />,
+    subItems: [
+      { name: "Article", path: "/youtube/articles", pro: false },
+      { name: "Translate", path: "/youtube/translate", pro: false },
+    ],
+  }
+]
+
+const showcase: NavItem[] = [
+  {
+    icon: <PieChartIcon />,
+    name: "Charts",
+    subItems: [
+      { name: "Line Chart", path: "/line-chart", pro: false },
+      { name: "Bar Chart", path: "/bar-chart", pro: false },
+    ],
+  },
+  {
+    icon: <BoxCubeIcon />,
+    name: "UI Elements",
+    subItems: [
+      { name: "Alerts", path: "/alerts", pro: false },
+      { name: "Avatar", path: "/avatars", pro: false },
+      { name: "Badge", path: "/badge", pro: false },
+      { name: "Buttons", path: "/buttons", pro: false },
+      { name: "Images", path: "/images", pro: false },
+      { name: "Videos", path: "/videos", pro: false },
+    ],
+  },
+  {
+    icon: <GridIcon />,
+    name: "Dashboard",
+    subItems: [{ name: "Ecommerce", path: "/dashboard", pro: false }],
+  },
+  {
+    icon: <CalenderIcon />,
+    name: "Calendar",
+    path: "/calendar",
+  },
+  {
+    name: "Forms",
+    icon: <ListIcon />,
+    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+  },
+  {
+    name: "Pages",
+    icon: <PageIcon />,
+    subItems: [
+      { name: "Blank Page", path: "/blank", pro: false },
+      { name: "404 Error", path: "/error-404", pro: false },
+    ],
+  },
+  {
+    name: "Tables",
+    icon: <TableIcon />,
+    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+  },
+  {
+    icon: <UserCircleIcon />,
+    name: "User Profile",
+    path: "/profile",
+  },
+];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -414,6 +426,38 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
+            </div>
+            <div className="">
+              <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                      !isExpanded && !isHovered
+                          ? "lg:justify-center"
+                          : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                    "Product"
+                ) : (
+                    <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(products, "others")}
+            </div>
+            <div className="">
+              <h2
+                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                      !isExpanded && !isHovered
+                          ? "lg:justify-center"
+                          : "justify-start"
+                  }`}
+              >
+                {isExpanded || isHovered || isMobileOpen ? (
+                    "Showcase"
+                ) : (
+                    <HorizontaLDots />
+                )}
+              </h2>
+              {renderMenuItems(showcase, "others")}
             </div>
           </div>
         </nav>
