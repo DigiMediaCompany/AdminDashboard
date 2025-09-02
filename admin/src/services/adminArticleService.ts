@@ -34,9 +34,9 @@ export const getApi = async <T>(
     };
 };
 
-export const postApi = async <T>(
+export const postApi = async (
     model: string,
-    payload: T
+    payload: object
 ): Promise<unknown> => {
     const response = await api.post(`/${model}`, payload);
     return response.data;

@@ -1,11 +1,15 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
+import {getApi} from "../../services/adminArticleService.ts";
+import {Series} from "../../types/Article.ts";
+import Select from "../form/Select.tsx";
 
 interface JobData {
-    id: string;
+    name: string;
+    series?: number
 }
 
 interface BaseModalProps {
@@ -19,13 +23,26 @@ export default function JobModal({
                                      onClose,
                                      onSave,
                                  }: BaseModalProps) {
-    const [quiz, setQuiz] = useState<JobData>({ id: "" });
+    const [name, setName] = useState<string>("");
+    const [series, setSeries] = useState<Series[]>([]);
+    const [selectedSeries, setSelectedSeries] = useState<number | null>(null);
 
     const handleSave = () => {
-        if (quiz.id.trim()) {
-            onSave(quiz);
-        }
+        onSave({
+            name: name,
+            series: selectedSeries
+        });
+        onClose()
     };
+
+    useEffect(() => {
+        getApi<Series>('series')
+            .then(result => {
+                setSeries(result.data);
+            })
+            .catch(() => {
+            })
+    }, [])
 
     return (
         <Modal
@@ -54,16 +71,26 @@ export default function JobModal({
                     <div className="custom-scrollbar flex-1 overflow-y-auto px-2 pb-3">
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                             <div>
-                                <Label>Id</Label>
+                                <Label>Youtube Id</Label>
                                 <Input
                                     type="text"
-                                    value={quiz.id}
+                                    value={name}
                                     onChange={(e) =>
-                                        setQuiz((prev) => ({
-                                            ...prev,
-                                            id: e.target.value,
-                                        }))
+                                        setName(e.target.value)
                                     }
+                                />
+                            </div>
+                            <div>
+                                <Label>Series</Label>
+                                <Select
+                                    options={series.map(a => ({
+                                        value: a.id.toString(),
+                                        label: a.name
+                                    }))}
+                                    // defaultValue={""}
+                                    placeholder="Select series"
+                                    onChange={(change) => {setSelectedSeries(parseInt(change))}}
+                                    className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
                         </div>
@@ -74,8 +101,8 @@ export default function JobModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        <Button size="sm" onClick={() => {
-                            // e.preventDefault();
+                        <Button size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                            e.preventDefault();
                             handleSave();
                         }}>
                             Save Changes

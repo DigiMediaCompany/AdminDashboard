@@ -16,6 +16,7 @@ const jobRoutes = createCrudRoutes(
 			table: "series",
 			field: "series_id",   // jobs.series_id → series.id
 			alias: "series",
+			refField: "id"
 		}
 	],
 	[

@@ -21,25 +21,19 @@ export default function ArticleSeriesItem({ series }: ArticleSeriesItemProps) {
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                     >
-                        Youtube ID
+                        Name
                     </TableCell>
                     <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                     >
-                        Series - Episode
+                        Category
                     </TableCell>
                     <TableCell
                         isHeader
                         className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                     >
-                        Progress
-                    </TableCell>
-                    <TableCell
-                        isHeader
-                        className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                    >
-                        Priority
+                        Series context
                     </TableCell>
                 </TableRow>
             </TableHeader>

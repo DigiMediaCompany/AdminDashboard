@@ -52,16 +52,8 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                         <TableCell className="px-5 py-4 sm:px-6 text-start">
                             {job.youtube_id || "—"}
                         </TableCell>
-                        {/* User */}
                         <TableCell className="px-5 py-4 sm:px-6 text-start">
-                            <div className="flex items-center gap-3">
-
-                                <div>
-                  <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {job.youtube_id}
-                  </span>
-                                </div>
-                            </div>
+                            {job.series?.name || "—"}
                         </TableCell>
 
 
