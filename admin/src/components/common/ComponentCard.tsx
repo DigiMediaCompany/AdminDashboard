@@ -5,6 +5,7 @@ interface ComponentCardProps {
   children: React.ReactNode;
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
+  onClick: () => void;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -12,6 +13,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
+    onClick = () => {}
 }) => {
   return (
     <div
@@ -29,8 +31,8 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
               </p>
           )}
         </div>
-        <Button size="sm" variant="primary">
-          Create article
+        <Button size="sm" variant="primary" onClick={() => {onClick()}}>
+          Create {title.toLowerCase()}
         </Button>
       </div>
 

@@ -11,4 +11,5 @@ export type FieldSchema =
 	| "boolean"
 	| { type: "string" | "number" | "boolean"; optional?: boolean };
 
+// TODO: change this to drizzle maybe?
 export type ModelSchema = Record<string, FieldSchema>;

@@ -14,7 +14,7 @@ export const getQuizzes = async (page: number=1): Promise<Pagination<Quiz>> => {
         }
     })
 
-    const parsedData: Quiz[] = response.data.data.map((quiz: any) => {
+    const parsedData: Quiz[] = response.data.data.map((quiz: unknown) => {
         const {
             created_at,
             created_by,

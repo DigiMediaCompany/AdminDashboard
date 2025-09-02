@@ -35,8 +35,9 @@ import MzGenzAds from "./pages/MzGenz/MzGenzAds.tsx";
 import TikGameAds from "./pages/TikGame/TikGameAds.tsx";
 import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import Profile from "./pages/Profile.tsx";
-import Articles from "./pages/Youtube/Articles.tsx";
-import Translate from "./pages/Youtube/Translate.tsx";
+import Job from "./pages/YoutubeArticle/Job.tsx";
+import Translate from "./pages/YoutubeArticle/Translate.tsx";
+import Series from "./pages/YoutubeArticle/Series.tsx";
 
 export default function App() {
   useAuthListener();
@@ -77,9 +78,12 @@ export default function App() {
               <Route path="tik-game/info" element={<TikGameInfo />} />
               <Route path="tik-game/ads" element={<TikGameAds />} />
 
-              {/* Youtube */}
-              <Route path="youtube/articles" element={<Articles />} />
-              <Route path="youtube/translate" element={<Translate />} />
+              {/* Youtube Article */}
+              <Route path="youtube-article/jobs" element={<Job />} />
+              <Route path="youtube-article/series" element={<Series />} />
+              {/*<Route path="youtube-article/jobs" element={<Job />} />*/}
+              {/*<Route path="youtube-article/jobs" element={<Job />} />*/}
+              <Route path="youtube-article/categories" element={<Translate />} />
 
             </Route>
           </Route>

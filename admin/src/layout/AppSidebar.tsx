@@ -40,59 +40,59 @@ const navItems: NavItem[] = [
 ];
 
 const othersItems: NavItem[] = [
+  // {
+  //   name: "PostFunny",
+  //   icon: <FaceSmileIcon />,
+  //   subItems: [
+  //     { name: "Info", path: "/post-funny/info", pro: false },
+  //     { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
+  //     { name: "Ads", path: "/post-funny/ads", pro: false },
+  //   ],
+  // },
+  // {
+  //   name: "FreeApk",
+  //   icon: <FolderArrowDownIcon />,
+  //   subItems: [
+  //     { name: "Info", path: "/free-apk/info", pro: false },
+  //     { name: "Ads", path: "/free-apk/ads", pro: false },
+  //   ],
+  // },
+  // {
+  //   name: "GonoGame",
+  //   icon: <PuzzlePieceIcon />,
+  //   subItems: [
+  //     { name: "Info", path: "/gono-game/info", pro: false },
+  //     { name: "Ads", path: "/gono-game/ads", pro: false },
+  //   ],
+  // },
+  // {
+  //   name: "MzGenz",
+  //   icon: <PuzzlePieceIcon />,
+  //   subItems: [
+  //     { name: "Info", path: "/mz-genz/info", pro: false },
+  //     { name: "Ads", path: "/mz-genz/ads", pro: false },
+  //   ],
+  // },
+  // {
+  //   name: "TikGame",
+  //   icon: <PuzzlePieceIcon />,
+  //   subItems: [
+  //     { name: "Info", path: "/tik-game/info", pro: false },
+  //     { name: "Ads", path: "/tik-game/ads", pro: false },
+  //   ],
+  // },
   {
-    name: "PostFunny",
-    icon: <FaceSmileIcon />,
+    name: "Youtube Article",
+    icon: <PlayCircleIcon />,
     subItems: [
-      { name: "Info", path: "/post-funny/info", pro: false },
+      { name: "Job", path: "/youtube-article/jobs", pro: false },
+      // { name: "Category", path: "/youtube-article/categories", pro: false },
+      // { name: "Series", path: "/youtube-article/series", pro: false },
       { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
-      { name: "Ads", path: "/post-funny/ads", pro: false },
-    ],
-  },
-  {
-    name: "FreeApk",
-    icon: <FolderArrowDownIcon />,
-    subItems: [
-      { name: "Info", path: "/free-apk/info", pro: false },
-      { name: "Ads", path: "/free-apk/ads", pro: false },
-    ],
-  },
-  {
-    name: "GonoGame",
-    icon: <PuzzlePieceIcon />,
-    subItems: [
-      { name: "Info", path: "/gono-game/info", pro: false },
-      { name: "Ads", path: "/gono-game/ads", pro: false },
-    ],
-  },
-  {
-    name: "MzGenz",
-    icon: <PuzzlePieceIcon />,
-    subItems: [
-      { name: "Info", path: "/mz-genz/info", pro: false },
-      { name: "Ads", path: "/mz-genz/ads", pro: false },
-    ],
-  },
-  {
-    name: "TikGame",
-    icon: <PuzzlePieceIcon />,
-    subItems: [
-      { name: "Info", path: "/tik-game/info", pro: false },
-      { name: "Ads", path: "/tik-game/ads", pro: false },
     ],
   }
 ]
 
-const products: NavItem[] = [
-  {
-    name: "Youtube",
-    icon: <PlayCircleIcon />,
-    subItems: [
-      { name: "Article", path: "/youtube/articles", pro: false },
-      { name: "Translate", path: "/youtube/translate", pro: false },
-    ],
-  }
-]
 
 const showcase: NavItem[] = [
   {
@@ -427,38 +427,23 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(othersItems, "others")}
             </div>
-            <div className="">
-              <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                      !isExpanded && !isHovered
-                          ? "lg:justify-center"
-                          : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                    "Product"
-                ) : (
-                    <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(products, "others")}
-            </div>
-            <div className="">
-              <h2
-                  className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
-                      !isExpanded && !isHovered
-                          ? "lg:justify-center"
-                          : "justify-start"
-                  }`}
-              >
-                {isExpanded || isHovered || isMobileOpen ? (
-                    "Showcase"
-                ) : (
-                    <HorizontaLDots />
-                )}
-              </h2>
-              {renderMenuItems(showcase, "others")}
-            </div>
+
+            {/*<div className="">*/}
+            {/*  <h2*/}
+            {/*      className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${*/}
+            {/*          !isExpanded && !isHovered*/}
+            {/*              ? "lg:justify-center"*/}
+            {/*              : "justify-start"*/}
+            {/*      }`}*/}
+            {/*  >*/}
+            {/*    {isExpanded || isHovered || isMobileOpen ? (*/}
+            {/*        "Showcase"*/}
+            {/*    ) : (*/}
+            {/*        <HorizontaLDots />*/}
+            {/*    )}*/}
+            {/*  </h2>*/}
+            {/*  {renderMenuItems(showcase, "others")}*/}
+            {/*</div>*/}
           </div>
         </nav>
         {/*{isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}*/}

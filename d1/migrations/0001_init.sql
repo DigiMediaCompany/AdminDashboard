@@ -20,6 +20,16 @@ CREATE TABLE statuses (
     position INTEGER NOT NULL
 );
 
+CREATE TABLE progress (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status TEXT NOT NULL CHECK (status IN ('Going', 'Success', 'Failed', 'Standby')) DEFAULT 'Standby',
+    status_id INTEGER NOT NULL,
+    job_id INTEGER NOT NULL,
+    FOREIGN KEY (status_id) REFERENCES statuses(id),
+    FOREIGN KEY (job_id) REFERENCES jobs(id),
+    UNIQUE (status_id, job_id)
+);
+
 CREATE TABLE jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     raw_youtube_link TEXT UNIQUE,
@@ -28,11 +38,9 @@ CREATE TABLE jobs (
     series_id INTEGER DEFAULT NULL,
     episode INTEGER DEFAULT NULL,
     priority INTEGER NOT NULL DEFAULT 0,
-    status_id INTEGER NOT NULL,
     context_file TEXT DEFAULT NULL,
     article_file TEXT DEFAULT NULL,
     FOREIGN KEY (series_id) REFERENCES series(id),
-    FOREIGN KEY (status_id) REFERENCES statuses(id),
     UNIQUE (series_id, episode)
 );
 

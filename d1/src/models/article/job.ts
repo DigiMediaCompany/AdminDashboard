@@ -8,7 +8,6 @@ export const JobModel: ModelSchema = {
     series_id: { type: "number", optional: true },  // FK
     episode: { type: "number", optional: true },
     priority: { type: "number", optional: true },   // default 0
-    status_id: { type: "number", optional: true },  // FK
     context_file: { type: "string", optional: true },
     article_file: { type: "string", optional: true },
 };
