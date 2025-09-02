@@ -96,6 +96,16 @@ const othersItems: NavItem[] = [
 
 const showcase: NavItem[] = [
   {
+    name: "Youtube Article",
+    icon: <PlayCircleIcon />,
+    subItems: [
+      { name: "Job", path: "/youtube-article/jobs", pro: false },
+      // { name: "Category", path: "/youtube-article/categories", pro: false },
+      { name: "Series", path: "/youtube-article/series", pro: false },
+      { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
+    ],
+  },
+  {
     icon: <PieChartIcon />,
     name: "Charts",
     subItems: [
@@ -425,7 +435,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(othersItems, "others")}
+              {renderMenuItems(showcase, "others")}
             </div>
 
             {/*<div className="">*/}

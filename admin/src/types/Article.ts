@@ -9,6 +9,7 @@ export interface Job {
     status_id?: number | null;
     context_file?: string | null;
     article_file?: string | null;
+    progress: object[]
 }
 
 export interface Category {

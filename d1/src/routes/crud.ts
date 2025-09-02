@@ -56,6 +56,30 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
         }
     }
 
+    async function buildParentSelect(db: D1Database, parent: Relation) {
+        // get all columns from parent table
+        const tableInfo = await db.prepare(`PRAGMA table_info(${parent.table})`).all();
+        // alias each column as parentAlias_columnName
+        const alias = parent.alias || parent.table;
+        return tableInfo.results
+            .map((col: any) => `${parent.table}.${col.name} AS ${alias}_${col.name}`)
+            .join(", ");
+    }
+
+    function expandParents(row: any, parents: Relation[]) {
+        for (const parent of parents) {
+            const alias = parent.alias || parent.table;
+            const obj: Record<string, any> = {};
+            for (const key in row) {
+                if (key.startsWith(alias + "_")) {
+                    obj[key.replace(alias + "_", "")] = row[key];
+                    delete row[key];
+                }
+            }
+            row[alias] = obj;
+        }
+    }
+
 
     return async (request: Request, env: Env) => {
         const db = env.D1_DATABASE;
@@ -70,56 +94,41 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
 
             // GET / or GET /:id
             if (request.method === "GET") {
-                const baseCols = `${tableName}.*`;
-                const parentCols = parents
-                    .map(
-                        (r) =>
-                            `${r.table}.${r.refField || "id"} AS ${r.alias || r.table}_${
-                                r.refField || "id"
-                            }`
-                    )
-                    .join(", ");
-                const selectCols = [baseCols, parentCols].filter(Boolean).join(", ");
+                // Build parent columns dynamically
+                const parentColsArr: string[] = [];
+                for (const parent of parents) {
+                    const cols = await buildParentSelect(db, parent);
+                    parentColsArr.push(cols);
+                }
 
+                const selectCols = [ `${tableName}.*`, ...parentColsArr ].filter(Boolean).join(", ");
+
+                // LEFT JOIN parents
                 const joins = parents
-                    .map(
-                        (r) =>
-                            `LEFT JOIN ${r.table} ON ${tableName}.${r.field} = ${
-                                r.table
-                            }.${r.refField || "id"}`
+                    .map(r =>
+                        `LEFT JOIN ${r.table} AS ${r.alias || r.table} ON ${tableName}.${r.field} = ${r.alias || r.table}.${r.refField || "id"}`
                     )
                     .join(" ");
 
                 let rows;
                 if (id && id !== tableName) {
-                    rows = await db
-                        .prepare(
-                            `SELECT ${selectCols} FROM ${tableName} ${joins} WHERE ${tableName}.id = ?`
-                        )
-                        .bind(id)
-                        .all();
+                    rows = await db.prepare(`SELECT ${selectCols} FROM ${tableName} ${joins} WHERE ${tableName}.id = ?`).bind(id).all();
                 } else {
                     const page = Number(url.searchParams.get("page") || 1);
                     const limit = Number(url.searchParams.get("limit") || 10);
                     const offset = (page - 1) * limit;
-                    rows = await db
-                        .prepare(
-                            `SELECT ${selectCols} FROM ${tableName} ${joins} LIMIT ? OFFSET ?`
-                        )
-                        .bind(limit, offset)
-                        .all();
+                    rows = await db.prepare(`SELECT ${selectCols} FROM ${tableName} ${joins} LIMIT ? OFFSET ?`).bind(limit, offset).all();
                 }
 
                 const results = rows.results;
 
-                // expand children recursively
+                // expand parents & children
                 for (const row of results) {
+                    expandParents(row, parents);
                     await expandChildren(db, row, children);
                 }
 
-                if (id && id !== tableName) {
-                    return json(results[0] || {}, results.length ? 200 : 404);
-                }
+                if (id && id !== tableName) return json(results[0] || {}, results.length ? 200 : 404);
                 return json(results);
             }
 
