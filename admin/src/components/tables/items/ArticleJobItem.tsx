@@ -165,8 +165,8 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                                 className={(['Done', 'Context', 'Article', 'Big context'].includes(status ) ) ? "cursor-pointer" : ""}
                                 onClick={(['Done', 'Context', 'Article', 'Big context'].includes(status) ) ? () => {
 
-                                    const a = job.series?.big_context_file
 
+                                    setName(status)
                                     switch (status) {
                                         case "Context":
                                             if (job.context_file !== null) {
@@ -181,8 +181,8 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                                             }
                                             break;
                                         case "Big context":
-                                            if (a){
-                                                setFile(a)
+                                            if (job.series?.big_context_file !== null){
+                                                setFile(job.series?.big_context_file)
                                                 openModal()
                                             }
                                             break;

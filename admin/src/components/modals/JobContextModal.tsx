@@ -2,13 +2,11 @@ import {useEffect, useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
-import {getApi} from "../../services/adminArticleService.ts";
-import {Series} from "../../types/Article.ts";
 import TextArea from "../form/input/TextArea.tsx";
+import { getFile } from "../../services/postFunnyService.ts";
 
 interface JobData {
-    name: string;
-    series?: number
+    fixed: string | null;
 }
 
 interface BaseModalProps {
@@ -26,15 +24,28 @@ export default function JobContextModal({
     text,
     file
                                  }: BaseModalProps) {
-    const [name, setName] = useState<string>(text);
-    const [original, setOriginal] = useState<string>(text);
+    const [fixed, setFixed] = useState<string>("");
+    const [original, setOriginal] = useState<string>("");
 
     const handleSave = () => {
         onSave({
-            name: name,
+            fixed: fixed,
         });
         onClose()
     };
+
+    useEffect(() => {
+        if (file !== null) {
+            getFile(file)
+                .then((result) => result.text())
+                .then((text) => {
+                    setOriginal(text)
+                    setFixed(text)
+                })
+                .catch((err) => console.error(err));
+        }
+
+    }, [file]);
 
 
     return (
@@ -46,7 +57,7 @@ export default function JobContextModal({
             <div className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
                 <div className="px-2 pr-14">
                     <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                        Review context
+                        Review {text}
                     </h4>
                     <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
                         Don't touch anything you are not aware
@@ -75,9 +86,9 @@ export default function JobContextModal({
                             <div>
                                 <Label>Review</Label>
                                 <TextArea
-                                    value={name}
+                                    value={fixed}
                                     rows={40}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={(e: string) => setFixed(e)}
                                 />
                             </div>
                         </div>

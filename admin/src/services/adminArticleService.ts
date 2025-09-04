@@ -3,19 +3,6 @@ import {Pagination} from "../types/Common.ts";
 import {getAdminApiInstance} from "../utils/helper.ts";
 
 const api = getAdminApiInstance('article')
-// export const getJobs = async (page: number=1): Promise<Pagination<Job>> => {
-//     const response = await api.get('/jobs', {
-//         params: {
-//             page:  page,
-//             limit:  constants.STANDARD_LIMIT,
-//         }
-//     })
-//
-//     return {
-//         ...response.data,
-//         data: response.data,
-//     }
-// }
 
 export const getApi = async <T>(
     model: string,
