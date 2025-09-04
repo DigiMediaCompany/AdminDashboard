@@ -9,7 +9,6 @@ import {
 import Badge from "../../ui/badge/Badge.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
 import {postApi} from "../../../services/adminArticleService.ts";
-import JobModal from "../../modals/JobModal.tsx";
 import JobContextModal from "../../modals/JobContextModal.tsx";
 import {useState} from "react";
 import {downloadFile, getFile} from "../../../services/postFunnyService.ts";
@@ -18,7 +17,7 @@ interface ArticleJobItemProps {
     jobs: Job[];
 }
 
-function getProgressStatus(progressList) {
+function getProgressStatus(progressList: object[]) {
     if (!progressList || progressList.length === 0) return "No progress";
 
     // 1. If any record is "Failed"
@@ -59,8 +58,8 @@ function getProgressStatus(progressList) {
 export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
 
     const { isOpen, openModal, closeModal } = useModal();
-    const [file, setFile] = useState<string>(null);
-    const [name, setName] = useState<string>(null);
+    const [file, setFile] = useState<string | null>(null);
+    const [name, setName] = useState<string | null>(null);
     return (
         <>
         <Table>
@@ -105,6 +104,15 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                 {jobs.map((job) => {
 
+                    const statusColorMap: Record<string, BadgeColor> = {
+                        Failed: "error",
+                        Done: "success",
+                        Pending: "light",
+                        Context: "info",
+                        Article: "info",
+                        "Big context": "info",
+                        Generating: "warning",
+                    };
                     const status = getProgressStatus(job.progress)
                     return(
                     <TableRow key={job.id}>
@@ -141,7 +149,7 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                                     return <div
                                         key={index}
                                         className={`w-6 h-6 rounded-full ${bgColor}`}
-                                        title={p.step[0]?.name}
+                                        // title={p.step[0]?.name}
                                     >
                                     </div>
                                 }
@@ -161,12 +169,16 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
 
                                     switch (status) {
                                         case "Context":
-                                            setFile(job.context_file)
-                                            openModal()
+                                            if (job.context_file !== null) {
+                                                setFile(job.context_file)
+                                                openModal()
+                                            }
                                             break;
                                         case "Article":
-                                            setFile(job.article_file)
-                                            openModal()
+                                            if (job.article_file !== null) {
+                                                setFile(job.article_file)
+                                                openModal()
+                                            }
                                             break;
                                         case "Big context":
                                             if (a){
@@ -175,7 +187,9 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                                             }
                                             break;
                                         case "Done":
-                                            downloadFile(job.article_file)
+                                            if (job.article_file != null) {
+                                                downloadFile(job.article_file)
+                                            }
                                             break;
                                         default:
                                             console.log("??")
@@ -185,15 +199,7 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                             >
                                 <Badge
                                     size="sm"
-                                    color={{
-                                        "Failed": "error",
-                                        "Done": "success",
-                                        "Pending": "light",
-                                        "Context": "info",
-                                        "Article": "info",
-                                        "Big context": "info",
-                                        "Generating": "warning"
-                                    }[status] || "default"}
+                                    color={statusColorMap[status] || "default"}
                                 >
                                     {status || "—"}
                                 </Badge>

@@ -15,21 +15,22 @@ export const getQuizzes = async (page: number=1): Promise<Pagination<Quiz>> => {
     })
 
     const parsedData: Quiz[] = response.data.data.map((quiz: unknown) => {
-        const {
-            created_at,
-            created_by,
-            quizzes,
-            answers,
-            ...rest
-        } = quiz
-
-        return {
-            ...rest,
-            createdAt: created_at,
-            createdBy: created_by,
-            quizzes: JSON.parse(quizzes),
-            answers: JSON.parse(answers),
-        }
+        return quiz
+        // const {
+        //     created_at,
+        //     created_by,
+        //     quizzes,
+        //     answers,
+        //     ...rest
+        // } = quiz
+        //
+        // return {
+        //     ...rest,
+        //     createdAt: created_at,
+        //     createdBy: created_by,
+        //     quizzes: JSON.parse(quizzes),
+        //     answers: JSON.parse(answers),
+        // }
     })
 
     return {
@@ -72,7 +73,7 @@ export const getFile = async (filename: string): Promise<Blob> => {
     return response.data;
 };
 
-export const downloadFile = async (filename: string): void => {
+export const downloadFile = async (filename: string): Promise<void> => {
     const blob = await getFile(filename);
 
     // Create a temporary object URL

@@ -2,10 +2,8 @@ import {useEffect, useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
-import Input from "../form/input/InputField.tsx";
 import {getApi} from "../../services/adminArticleService.ts";
 import {Series} from "../../types/Article.ts";
-import Select from "../form/Select.tsx";
 import TextArea from "../form/input/TextArea.tsx";
 
 interface JobData {
@@ -30,25 +28,14 @@ export default function JobContextModal({
                                  }: BaseModalProps) {
     const [name, setName] = useState<string>(text);
     const [original, setOriginal] = useState<string>(text);
-    const [series, setSeries] = useState<Series[]>([]);
-    const [selectedSeries, setSelectedSeries] = useState<number | null>(null);
 
     const handleSave = () => {
         onSave({
             name: name,
-            series: selectedSeries
         });
         onClose()
     };
 
-    useEffect(() => {
-        getApi<Series>('series')
-            .then(result => {
-                setSeries(result.data);
-            })
-            .catch(() => {
-            })
-    }, [])
 
     return (
         <Modal

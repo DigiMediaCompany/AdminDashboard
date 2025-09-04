@@ -16,7 +16,11 @@ import {
   CalenderIcon, ListIcon, PageIcon, TableIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import {FaceSmileIcon, FolderArrowDownIcon, PlayCircleIcon, PuzzlePieceIcon} from "@heroicons/react/24/outline";
+import {
+  // FaceSmileIcon, FolderArrowDownIcon,
+  PlayCircleIcon,
+  // PuzzlePieceIcon
+} from "@heroicons/react/24/outline";
 // import SidebarWidget from "./SidebarWidget";
 
 type NavItem = {

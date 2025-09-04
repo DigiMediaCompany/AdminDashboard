@@ -1,25 +1,23 @@
 
-import {useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import {Modal} from "../ui/modal";
 
 interface BaseModalProps {
     isOpen: boolean;
-    inputData: object | null;
+    // inputData: object | null;
     onClose: () => void;
-    onSave: (quiz: unknown) => void;
+    // onSave: (quiz: unknown) => void;
 }
 
 export default function BaseModal({
                                           isOpen,
-                                        inputData,
                                           onClose,
-                                          onSave,
+                                          // onSave,
                                       }: BaseModalProps) {
-    const [quiz, setQuiz] = useState<unknown | null>(inputData);
+    // const [quiz, setQuiz] = useState<unknown | null>(inputData);
 
     const handleSave = () => {
-        if (quiz) onSave(quiz);
+        // if (quiz) onSave(quiz);
     };
 
 
@@ -47,12 +45,14 @@ export default function BaseModal({
                             Basic
                         </h5>
 
-                        {/*<div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">*/}
-                        {/*    <div>*/}
-                        {/*        <Label>Id</Label>*/}
-                        {/*        <Input type="text" value={quiz?.id} disabled />*/}
-                        {/*    </div>*/}
-                        {/*</div>*/}
+                        <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                            <div>
+                                {/*<Label>Id</Label>*/}
+                                {/*<Input type="text" value={quiz?.id} onChange={(e) =>*/}
+                                {/*    setQuiz(e.target.value)*/}
+                                {/*} disabled />*/}
+                            </div>
+                        </div>
 
                     </div>
 
