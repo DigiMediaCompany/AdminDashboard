@@ -50,7 +50,7 @@ export const saveQuiz = async (data: Quiz): Promise<unknown> => {
     });
 }
 
-export const uploadFile = async (file: File): Promise<FileUploadResponse> => {
+export const uploadR2File = async (file: File): Promise<FileUploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
     const response = await axios.post(`${BASE_URL_R2}/files`, formData, {
@@ -61,7 +61,7 @@ export const uploadFile = async (file: File): Promise<FileUploadResponse> => {
     return response.data;
 }
 
-export const deleteImage = async (filename: string): Promise<unknown> => {
+export const deleteFile = async (filename: string): Promise<unknown> => {
     const res = await axios.delete(`${BASE_URL_R2}/files/${filename}`);
     return res.data;
 };
@@ -89,4 +89,15 @@ export const downloadFile = async (filename: string): Promise<void> => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
+}
+
+export const uploadFile = async (file: File): Promise<FileUploadResponse> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await axios.post(`${BASE_URL_R2}/files`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    });
+    return response.data;
 }

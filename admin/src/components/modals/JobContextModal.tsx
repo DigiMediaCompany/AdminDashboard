@@ -35,17 +35,23 @@ export default function JobContextModal({
     };
 
     useEffect(() => {
-        if (file !== null) {
+        if (isOpen && file) {
             getFile(file)
                 .then((result) => result.text())
                 .then((text) => {
-                    setOriginal(text)
-                    setFixed(text)
+                    setOriginal(text);
+                    setFixed(text);
                 })
                 .catch((err) => console.error(err));
         }
+    }, [isOpen, file]);
 
-    }, [file]);
+    useEffect(() => {
+        if (!isOpen) {
+            setOriginal("");
+            setFixed("");
+        }
+    }, [isOpen]);
 
 
     return (

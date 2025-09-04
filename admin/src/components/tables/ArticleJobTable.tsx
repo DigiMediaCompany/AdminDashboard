@@ -44,6 +44,13 @@ export default function ArticleJobTable() {
             })
             .finally(() => setLoading(false))
     }, [])
+    const updateJob = (id: number, newJob: Job) => {
+        setJobs((prev) =>
+            prev.map((job) =>
+                job.id === id ? newJob : job
+            )
+        );
+    };
 
     if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading quizzes...</p>
     return (
@@ -62,7 +69,9 @@ export default function ArticleJobTable() {
             )}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
                 <div className="max-w-full overflow-x-auto">
-                    <ArticleJobItem jobs={jobs} />
+                    <ArticleJobItem jobs={jobs}
+                                    onUpdateJob={updateJob}
+                    />
                 </div>
             </div>
             <div className="mt-6">

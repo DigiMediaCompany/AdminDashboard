@@ -9,7 +9,7 @@ import {
 import Badge from "../ui/badge/Badge";
 import {Answer, FileUploadResponse, Quiz} from "../../types/PostFunny.ts";
 import {useEffect, useState} from "react";
-import {deleteImage, getQuizzes, saveQuiz, uploadFile} from "../../services/postFunnyService.ts";
+import {deleteFile, getQuizzes, saveQuiz, uploadR2File} from "../../services/postFunnyService.ts";
 import {PencilSquareIcon, PlusCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
@@ -99,12 +99,12 @@ export default function QuizTable() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
     const file = e.target.files?.[0];
     if (file && selectedQuiz) {
-      uploadFile(file).then((r: FileUploadResponse) => {
+      uploadR2File(file).then((r: FileUploadResponse) => {
         const selectedAnswer = selectedQuiz.answers.find(a => a.id === id);
         if (selectedAnswer && selectedAnswer?.img && selectedAnswer?.img.trim() !== "") {
           // Delete old img if there's any
           const oldFileName = selectedAnswer.img.split("/").pop() || "";
-          deleteImage(oldFileName).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+          deleteFile(oldFileName).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
         }
         // Set img to selected quiz
         setSelectedQuiz(prev =>

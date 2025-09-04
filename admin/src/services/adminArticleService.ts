@@ -34,6 +34,6 @@ export const updateApi = async <T, R = T>(
     id: number | string,
     payload: Partial<T>
 ): Promise<R> => {
-    const response = await api.put(`/${model}/${id}`, payload);
+    const response = await api.patch(`/${model}/${id}`, payload);
     return response.data as R;
 };

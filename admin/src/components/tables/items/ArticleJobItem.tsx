@@ -8,13 +8,14 @@ import {
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
-import {postApi} from "../../../services/adminArticleService.ts";
+import {postApi, updateApi} from "../../../services/adminArticleService.ts";
 import JobContextModal from "../../modals/JobContextModal.tsx";
 import {useState} from "react";
-import {downloadFile, getFile} from "../../../services/postFunnyService.ts";
+import {deleteFile, downloadFile, getFile, uploadR2File} from "../../../services/postFunnyService.ts";
 
 interface ArticleJobItemProps {
     jobs: Job[];
+    onUpdateJob: (id: number, newJob: Job) => void;
 }
 
 function getProgressStatus(progressList: object[]) {
@@ -55,11 +56,12 @@ function getProgressStatus(progressList: object[]) {
     return "Generating";
 }
 
-export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
+export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProps) {
 
     const { isOpen, openModal, closeModal } = useModal();
     const [file, setFile] = useState<string | null>(null);
     const [name, setName] = useState<string | null>(null);
+    const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     return (
         <>
         <Table>
@@ -166,6 +168,7 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                                 onClick={(['Done', 'Context', 'Article', 'Big context'].includes(status) ) ? () => {
 
 
+                                    setSelectedJob(job)
                                     setName(status)
                                     switch (status) {
                                         case "Context":
@@ -240,6 +243,62 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                 onClose={closeModal}
                 onSave={(data) => {
                     console.log(data)
+                    console.log(name)
+                    console.log(selectedJob)
+                    console.log(file)
+                    if (data.fixed && name && selectedJob && file) {
+                        const f = new File([data.fixed], "example.txt", {
+                            type: "text/plain",
+                        });
+                        uploadR2File(f)
+                            .then((res) => {
+                                deleteFile(file).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+                                const newFile = res.filename
+                                switch (name) {
+                                    case "Context":
+                                        updateApi("jobs", selectedJob.id, {
+                                            context_file: newFile
+                                        }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+                                        onUpdateJob(selectedJob.id, {
+                                            ...selectedJob,
+                                            context_file: newFile
+                                        })
+                                        break;
+                                    case "Article":
+                                        updateApi("jobs", selectedJob.id, {
+                                            article_file: newFile
+                                        }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+                                        onUpdateJob(selectedJob.id, {
+                                            ...selectedJob,
+                                            article_file: newFile
+                                        })
+                                        break;
+                                    case "Big context":
+                                        if (selectedJob.series_id !== null) {
+                                            updateApi("series", selectedJob.series_id?.toString(), {
+                                                big_context_file: newFile
+                                            }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+                                            onUpdateJob(selectedJob.id, {
+                                                ...selectedJob,
+                                                series: {
+                                                    ...selectedJob.series,
+                                                    big_context_file: newFile,
+                                                },
+                                            })
+                                        }
+
+                                        break;
+                                    default:
+                                        console.log("??")
+                                }
+                            })
+                            .catch((err) => {
+                                console.error("Upload failed:", err);
+                            });
+
+
+                    }
+
                 }}
             />
         </>
