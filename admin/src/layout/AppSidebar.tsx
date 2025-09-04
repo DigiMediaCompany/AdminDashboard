@@ -106,7 +106,7 @@ const showcase: NavItem[] = [
       { name: "Job", path: "/youtube-article/jobs", pro: false },
       // { name: "Category", path: "/youtube-article/categories", pro: false },
       { name: "Series", path: "/youtube-article/series", pro: false },
-      { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
+      // { name: "Quizzes", path: "/post-funny/quizzes", pro: false },
     ],
   },
   {
