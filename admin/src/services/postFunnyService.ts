@@ -49,7 +49,7 @@ export const saveQuiz = async (data: Quiz): Promise<unknown> => {
     });
 }
 
-export const uploadImage = async (file: File): Promise<FileUploadResponse> => {
+export const uploadFile = async (file: File): Promise<FileUploadResponse> => {
     const formData = new FormData();
     formData.append("file", file);
     const response = await axios.post(`${BASE_URL_R2}/files`, formData, {
@@ -64,3 +64,28 @@ export const deleteImage = async (filename: string): Promise<unknown> => {
     const res = await axios.delete(`${BASE_URL_R2}/files/${filename}`);
     return res.data;
 };
+
+export const getFile = async (filename: string): Promise<Blob> => {
+    const response = await axios.get(`${BASE_URL_R2}/files/${filename}`, {
+        responseType: "blob",
+    });
+    return response.data;
+};
+
+export const downloadFile = async (filename: string): void => {
+    const blob = await getFile(filename);
+
+    // Create a temporary object URL
+    const url = window.URL.createObjectURL(blob);
+
+    // Create a hidden <a> element
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename; // suggest the filename
+
+    // Append, click, and cleanup
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+}

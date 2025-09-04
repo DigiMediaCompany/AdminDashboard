@@ -6,6 +6,7 @@ import Input from "../form/input/InputField.tsx";
 import {getApi} from "../../services/adminArticleService.ts";
 import {Series} from "../../types/Article.ts";
 import Select from "../form/Select.tsx";
+import TextArea from "../form/input/TextArea.tsx";
 
 interface JobData {
     name: string;
@@ -16,14 +17,19 @@ interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (quiz: JobData) => void;
+    text: string;
+    file: string;
 }
 
-export default function JobModal({
+export default function JobContextModal({
                                      isOpen,
                                      onClose,
                                      onSave,
+    text,
+    file
                                  }: BaseModalProps) {
-    const [name, setName] = useState<string>("");
+    const [name, setName] = useState<string>(text);
+    const [original, setOriginal] = useState<string>(text);
     const [series, setSeries] = useState<Series[]>([]);
     const [selectedSeries, setSelectedSeries] = useState<number | null>(null);
 
@@ -53,7 +59,7 @@ export default function JobModal({
             <div className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
                 <div className="px-2 pr-14">
                     <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                        Create a new job
+                        Review context
                     </h4>
                     <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
                         Don't touch anything you are not aware
@@ -71,26 +77,20 @@ export default function JobModal({
                     <div className="custom-scrollbar flex-1 overflow-y-auto px-2 pb-3">
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                             <div>
-                                <Label>Youtube Id</Label>
-                                <Input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) =>
-                                        setName(e.target.value)
-                                    }
+                                <Label>Context</Label>
+                                <TextArea
+                                    value={original}
+                                    rows={40}
+                                    disabled={true}
                                 />
+
                             </div>
                             <div>
-                                <Label>Series</Label>
-                                <Select
-                                    options={series.map(a => ({
-                                        value: a.id.toString(),
-                                        label: a.name
-                                    }))}
-                                    // defaultValue={""}
-                                    placeholder="Select series"
-                                    onChange={(change) => {setSelectedSeries(parseInt(change))}}
-                                    className={`col-span-3 lg:col-span-4`}
+                                <Label>Review</Label>
+                                <TextArea
+                                    value={name}
+                                    rows={40}
+                                    onChange={(e) => setName(e.target.value)}
                                 />
                             </div>
                         </div>

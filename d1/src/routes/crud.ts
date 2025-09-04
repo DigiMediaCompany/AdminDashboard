@@ -38,19 +38,35 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
             },
         })
 
-    async function expandChildren(db: D1Database, row: any, children: ChildRelation[]) {
+    async function expandChildren(db: D1Database, rows: any[], children: ChildRelation[]) {
+        if (!children.length || !rows.length) return;
+
         for (const child of children) {
+            const parentIds = rows.map((r) => r.id).filter(Boolean);
+            if (!parentIds.length) continue;
+
             const cols = child.columns?.join(", ") || "*";
+
+            // query all children at once
+            const placeholders = parentIds.map(() => "?").join(",");
             const res = await db
-                .prepare(`SELECT ${cols} FROM ${child.table} WHERE ${child.field} = ?`)
-                .bind(row.id)
+                .prepare(`SELECT ${cols}, ${child.field} as _parent_id FROM ${child.table} WHERE ${child.field} IN (${placeholders})`)
+                .bind(...parentIds)
                 .all();
 
-            row[child.alias || child.table] = res.results;
+            const childRows = res.results;
 
+            // attach children back to their parents
+            for (const row of rows) {
+                row[child.alias || child.table] = childRows.filter(
+                    (c) => c._parent_id === row.id
+                );
+            }
+
+            // recursively expand nested children
             if (child.children?.length) {
-                for (const r of row[child.alias || child.table]) {
-                    await expandChildren(db, r, child.children);
+                for (const row of rows) {
+                    await expandChildren(db, row[child.alias || child.table], child.children);
                 }
             }
         }
@@ -101,34 +117,60 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
                     parentColsArr.push(cols);
                 }
 
-                const selectCols = [ `${tableName}.*`, ...parentColsArr ].filter(Boolean).join(", ");
+                const selectCols = [`${tableName}.*`, ...parentColsArr]
+                    .filter(Boolean)
+                    .join(", ");
 
                 // LEFT JOIN parents
                 const joins = parents
-                    .map(r =>
-                        `LEFT JOIN ${r.table} AS ${r.alias || r.table} ON ${tableName}.${r.field} = ${r.alias || r.table}.${r.refField || "id"}`
+                    .map(
+                        (r) =>
+                            `LEFT JOIN ${r.table} AS ${r.alias || r.table} 
+         ON ${tableName}.${r.field} = ${r.alias || r.table}.${r.refField || "id"}`
                     )
                     .join(" ");
 
                 let rows;
                 if (id && id !== tableName) {
-                    rows = await db.prepare(`SELECT ${selectCols} FROM ${tableName} ${joins} WHERE ${tableName}.id = ?`).bind(id).all();
+                    rows = await db
+                        .prepare(
+                            `SELECT ${selectCols}
+                             FROM ${tableName} ${joins}
+                             WHERE ${tableName}.id = ?
+                             ORDER BY ${tableName}.id DESC`
+                        )
+                        .bind(id)
+                        .all();
                 } else {
                     const page = Number(url.searchParams.get("page") || 1);
                     const limit = Number(url.searchParams.get("limit") || 10);
                     const offset = (page - 1) * limit;
-                    rows = await db.prepare(`SELECT ${selectCols} FROM ${tableName} ${joins} LIMIT ? OFFSET ?`).bind(limit, offset).all();
+
+                    rows = await db
+                        .prepare(
+                            `SELECT ${selectCols}
+                             FROM ${tableName} ${joins}
+                             ORDER BY ${tableName}.id DESC
+                                 LIMIT ? OFFSET ?`
+                        )
+                        .bind(limit, offset)
+                        .all();
                 }
 
                 const results = rows.results;
 
-                // expand parents & children
+                // Expand parents
                 for (const row of results) {
                     expandParents(row, parents);
-                    await expandChildren(db, row, children);
                 }
 
-                if (id && id !== tableName) return json(results[0] || {}, results.length ? 200 : 404);
+                // Expand children in batches (avoids N+1)
+                await expandChildren(db, results, children);
+
+                if (id && id !== tableName) {
+                    return json(results[0] || {}, results.length ? 200 : 404);
+                }
+
                 return json(results);
             }
 

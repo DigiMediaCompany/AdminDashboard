@@ -7,6 +7,12 @@ import {
     TableRow,
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge.tsx";
+import {useModal} from "../../../hooks/useModal.ts";
+import {postApi} from "../../../services/adminArticleService.ts";
+import JobModal from "../../modals/JobModal.tsx";
+import JobContextModal from "../../modals/JobContextModal.tsx";
+import {useState} from "react";
+import {downloadFile, getFile} from "../../../services/postFunnyService.ts";
 
 interface ArticleJobItemProps {
     jobs: Job[];
@@ -34,11 +40,11 @@ function getProgressStatus(progressList) {
 
         switch (highestGoing.status_id) {
             case 3:
-                return "Review context";
+                return "Context";
             case 5:
-                return "Review article";
+                return "Article";
             case 7:
-                return "Review big context";
+                return "Big context";
         }
 
     }
@@ -52,7 +58,11 @@ function getProgressStatus(progressList) {
 
 export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
 
+    const { isOpen, openModal, closeModal } = useModal();
+    const [file, setFile] = useState<string>(null);
+    const [name, setName] = useState<string>(null);
     return (
+        <>
         <Table>
             {/* Table Header */}
             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -99,10 +109,10 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                     return(
                     <TableRow key={job.id}>
                         {/* Project Name */}
-                        <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[250px]">
+                        <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                             {job.youtube_id || "—"}
                         </TableCell>
-                        <TableCell className="px-5 py-4 sm:px-6 text-start   truncate max-w-[250px]">
+                        <TableCell className="px-5 py-4 sm:px-6 text-start   truncate max-w-[200px]">
                             {job.series?.name || "—"}
                         </TableCell>
 
@@ -142,25 +152,53 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
 
 
                         <TableCell
-                            className={(['Done', 'Review context', 'Review article', 'Review big context'].includes(status ) ) ? "cursor-pointer" : ""}
-                            onClick={(['Done', 'Review context', 'Review article', 'Review big context'].includes(status) ) ? () => {
-                                console.log(status )
-                            } : undefined}
-                        >
-                            <Badge
-                                size="sm"
-                                color={{
-                                    "Failed": "error",
-                                    "Done": "success",
-                                    "Pending": "light",
-                                    "Review context": "info",
-                                    "Review article": "info",
-                                    "Review big context": "info",
-                                    "Generating": "warning"
-                                }[status] || "default"}
+                            className="px-5 py-4 sm:px-6 text-start">
+                            <div
+                                className={(['Done', 'Context', 'Article', 'Big context'].includes(status ) ) ? "cursor-pointer" : ""}
+                                onClick={(['Done', 'Context', 'Article', 'Big context'].includes(status) ) ? () => {
+
+                                    const a = job.series?.big_context_file
+
+                                    switch (status) {
+                                        case "Context":
+                                            setFile(job.context_file)
+                                            openModal()
+                                            break;
+                                        case "Article":
+                                            setFile(job.article_file)
+                                            openModal()
+                                            break;
+                                        case "Big context":
+                                            if (a){
+                                                setFile(a)
+                                                openModal()
+                                            }
+                                            break;
+                                        case "Done":
+                                            downloadFile(job.article_file)
+                                            break;
+                                        default:
+                                            console.log("??")
+                                    }
+
+                                } : undefined}
                             >
-                                {status || "—"}
-                            </Badge>
+                                <Badge
+                                    size="sm"
+                                    color={{
+                                        "Failed": "error",
+                                        "Done": "success",
+                                        "Pending": "light",
+                                        "Context": "info",
+                                        "Article": "info",
+                                        "Big context": "info",
+                                        "Generating": "warning"
+                                    }[status] || "default"}
+                                >
+                                    {status || "—"}
+                                </Badge>
+                            </div>
+
                         </TableCell>
 
                         <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
@@ -189,6 +227,16 @@ export default function ArticleJobItem({ jobs }: ArticleJobItemProps) {
                 })}
             </TableBody>
         </Table>
+            <JobContextModal
+                file={file}
+                text={name}
+                isOpen={isOpen}
+                onClose={closeModal}
+                onSave={(data) => {
+                    console.log(data)
+                }}
+            />
+        </>
     );
 };
 

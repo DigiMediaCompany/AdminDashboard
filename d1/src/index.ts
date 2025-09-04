@@ -23,14 +23,14 @@ const jobRoutes = createCrudRoutes(
 			table: "progress",
 			field: "job_id",      // progress.job_id → jobs.id
 			alias: "progress",
-			children: [
-				{
-					table: "statuses",
-					field: "id",          // statuses.id ← progress.status_id
-					refField: "status_id",// tell it to match progress.status_id → statuses.id
-					alias: "step",
-				},
-			]
+			// children: [
+			// 	{
+			// 		table: "statuses",
+			// 		field: "id",          // statuses.id ← progress.status_id
+			// 		refField: "status_id",// tell it to match progress.status_id → statuses.id
+			// 		alias: "step",
+			// 	},
+			// ]
 		},
 	] );
 async function customJobRoutes(request: Request, env: Env) {
