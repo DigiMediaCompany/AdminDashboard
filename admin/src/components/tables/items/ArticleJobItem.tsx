@@ -259,10 +259,17 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                                         updateApi("jobs", selectedJob.id, {
                                             context_file: newFile
                                         }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
+
                                         onUpdateJob(selectedJob.id, {
                                             ...selectedJob,
-                                            context_file: newFile
+                                            context_file: newFile,
+                                            progress: selectedJob.progress.map((item, index) =>
+                                                index === 2 ? { ...item, status: 'Success' } : item
+                                            )
                                         })
+                                        updateApi("progress", selectedJob.progress[2].id, {
+                                            status: 'Success'
+                                        }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         break;
                                     case "Article":
                                         updateApi("jobs", selectedJob.id, {
@@ -270,8 +277,14 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                                         }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         onUpdateJob(selectedJob.id, {
                                             ...selectedJob,
-                                            article_file: newFile
+                                            article_file: newFile,
+                                            progress: selectedJob.progress.map((item, index) =>
+                                                index === 6 ? { ...item, status: 'Success' } : item
+                                            )
                                         })
+                                        updateApi("progress", selectedJob.progress[6].id, {
+                                            status: 'Success'
+                                        }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         break;
                                     case "Big context":
                                         if (selectedJob.series_id !== null) {
@@ -283,8 +296,14 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                                                 series: {
                                                     ...selectedJob.series,
                                                     big_context_file: newFile,
+                                                    progress: selectedJob.progress.map((item, index) =>
+                                                        index === 4 ? { ...item, status: 'Success' } : item
+                                                    )
                                                 },
                                             })
+                                            updateApi("progress", selectedJob.progress[4].id, {
+                                                status: 'Success'
+                                            }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         }
 
                                         break;

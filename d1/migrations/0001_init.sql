@@ -32,8 +32,8 @@ CREATE TABLE progress (
 
 CREATE TABLE jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    raw_youtube_link TEXT UNIQUE,
-    youtube_id TEXT UNIQUE,
+    raw_youtube_link NOT NULL,
+    youtube_id TEXT NOT NULL,
     gpt_conversation_id TEXT DEFAULT NULL,
     series_id INTEGER DEFAULT NULL,
     episode INTEGER DEFAULT NULL,
