@@ -56,6 +56,17 @@ function getProgressStatus(progressList: object[]) {
     return "Generating";
 }
 
+function getYouTubeId(url) {
+    try {
+        const u = new URL(url);
+        return u.searchParams.get("v");
+    }
+    catch (e) {
+        return url
+    }
+
+}
+
 export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProps) {
 
     const { isOpen, openModal, closeModal } = useModal();
@@ -120,7 +131,7 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                     <TableRow key={job.id}>
                         {/* Project Name */}
                         <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
-                            {job.youtube_id || "—"}
+                            {getYouTubeId(job.youtube_id) || "—"}
                         </TableCell>
                         <TableCell className="px-5 py-4 sm:px-6 text-start   truncate max-w-[200px]">
                             {job.series?.name || "—"}
