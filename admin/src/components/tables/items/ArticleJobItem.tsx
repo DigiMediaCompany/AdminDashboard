@@ -290,10 +290,10 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                                             ...selectedJob,
                                             article_file: newFile,
                                             progress: selectedJob.progress.map((item, index) =>
-                                                index === 6 ? { ...item, status: 'Success' } : item
+                                                index === 4 ? { ...item, status: 'Success' } : item
                                             )
                                         })
-                                        updateApi("progress", selectedJob.progress[6].id, {
+                                        updateApi("progress", selectedJob.progress[4].id, {
                                             status: 'Success'
                                         }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         break;
@@ -308,11 +308,11 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                                                     ...selectedJob.series,
                                                     big_context_file: newFile,
                                                     progress: selectedJob.progress.map((item, index) =>
-                                                        index === 4 ? { ...item, status: 'Success' } : item
+                                                        index === 6 ? { ...item, status: 'Success' } : item
                                                     )
                                                 },
                                             })
-                                            updateApi("progress", selectedJob.progress[4].id, {
+                                            updateApi("progress", selectedJob.progress[6].id, {
                                                 status: 'Success'
                                             }).then(()=>{console.log("yay")}).catch(()=>{console.log("error")});
                                         }
