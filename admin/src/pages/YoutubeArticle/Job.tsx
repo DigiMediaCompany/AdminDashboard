@@ -7,6 +7,7 @@ import JobModal from "../../components/modals/JobModal.tsx";
 import {postApi} from "../../services/adminArticleService.ts";
 import Toast from "../UiElements/Toast.tsx";
 import {useState} from "react";
+import {constants} from "../../utils/constants.ts";
 
 export default function Job() {
     const { isOpen, openModal, closeModal } = useModal();
@@ -47,10 +48,32 @@ export default function Job() {
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(data) => {
+                    const job = {
+                        link: ""
+                    }
+
+                    switch (data.type) {
+                        case constants.JOB_TYPES[0].value:
+                            if (data.link) {
+                                job.link = data.link
+                            } else {
+                                throw new Error("No valid link");
+                            }
+                            break;
+                        case constants.JOB_TYPES[1].value:
+                            if (data.link2) {
+                                job.link = data.link2
+                            } else {
+                                throw new Error("No valid link");
+                            }
+                            break;
+                        default:
+                            throw new Error("No valid type");
+                    }
                     postApi('jobs', {
-                        raw_youtube_link: data.name,
-                        youtube_id: data.name,
-                        series_id: data.series
+                        detail: JSON.stringify(job),
+                        series_id: data.series,
+                        type: parseInt(data.type)
                     }).then(() => {
                         setToast({
                             show: true,
@@ -58,7 +81,8 @@ export default function Job() {
                             title: "Created",
                             message: "Created successfully."
                         });
-
+                        // TODO: update the list locally, to do this, api rewrite is needed
+                        window.location.reload();
                     }).catch(() => {
                         setToast({
                             show: true,
@@ -66,8 +90,6 @@ export default function Job() {
                             title: "Error",
                             message: "Failed."
                         });
-                    }).finally(() => {
-                        window.location.reload();
                     })
                 }}
             />

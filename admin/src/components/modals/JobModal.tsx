@@ -6,6 +6,8 @@ import Input from "../form/input/InputField.tsx";
 import {getApi} from "../../services/adminArticleService.ts";
 import {Series} from "../../types/Article.ts";
 import Select from "../form/Select.tsx";
+import {isValidYouTubeUrl} from "../../utils/helper.ts";
+import {constants} from "../../utils/constants.ts";
 
 interface JobData {
     type: string | null;
@@ -21,11 +23,6 @@ interface BaseModalProps {
     onClose: () => void;
     onSave: (quiz: JobData) => void;
 }
-
-const jobTypes = [
-    {value: "1", label: "YT -> Article"},
-    {value: "2", label: "YT - > Summary"},
-]
 
 export default function JobModal({
                                      isOpen,
@@ -63,15 +60,21 @@ export default function JobModal({
         if (!jobData.type) return false;
         // if (!jobData.series) return false;
 
-        if (jobData.type === jobTypes[0].value) {
+        if (jobData.type === constants.JOB_TYPES[0].value) {
+            const link = jobData.link?.trim()
             return (
-                jobData.link?.trim() !== ""
+                link &&
+                link !== "" &&
+                isValidYouTubeUrl(link)
             );
         }
 
-        if (jobData.type === jobTypes[1].value) {
+        if (jobData.type === constants.JOB_TYPES[1].value) {
+            const link = jobData.link2?.trim()
             return (
-                jobData.link2?.trim() !== ""
+                link &&
+                link !== "" &&
+                isValidYouTubeUrl(link)
             );
         }
 
@@ -108,7 +111,7 @@ export default function JobModal({
                             <div>
                                 <Label>Type</Label>
                                 <Select
-                                    options={jobTypes.map((a) => ({
+                                    options={ constants.JOB_TYPES.map((a) => ({
                                         value: a.value,
                                         label: a.label,
                                     }))}
@@ -136,7 +139,7 @@ export default function JobModal({
                                     className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
-                            {jobData.type === jobTypes[0].value && (
+                            {jobData.type === constants.JOB_TYPES[0].value && (
                                 <div>
                                     <Label>Youtube Id</Label>
                                     <Input
@@ -151,7 +154,7 @@ export default function JobModal({
                                     />
                                 </div>
                             )}
-                            {jobData.type === jobTypes[1].value && (
+                            {jobData.type === constants.JOB_TYPES[1].value && (
                                 <div>
                                     <Label>Youtube Id</Label>
                                     <Input

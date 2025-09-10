@@ -90,7 +90,12 @@ async function customJobRoutes(request: Request, env: Env) {
 
 		 return new Response(JSON.stringify(jobWithProgress.results[0]), {
 			 status: 201,
-			 headers: { "Content-Type": "application/json" },
+			 headers: {
+				 "Content-Type": "application/json",
+				 "Access-Control-Allow-Origin": "*",
+				 "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
+				 "Access-Control-Allow-Headers": "Content-Type, Authorization"
+			 },
 		 });
  }
 

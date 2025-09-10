@@ -23,20 +23,26 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
     // TODO: CORS, rate limit, throttle, black/white list
     // TODO: injection
     // TODO: add clear cache by handling cache manually, add cache handling
-    const json = (data: unknown, status = 200, hit = false) =>
-        // new Response(JSON.stringify(data), { status, headers: { "Content-Type": "application/json" } });
+    const json = (data: unknown = null, status = 200, hit = false) => {
+        const baseHeaders: Record<string, string> = {
+            "X-Cache": hit ? "HIT" : "MISS",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        };
 
-        new Response(JSON.stringify(data), {
-            status: status,
+        if (data === null || data === undefined) {
+            return new Response(null, { status, headers: baseHeaders });
+        }
+
+        return new Response(JSON.stringify(data), {
+            status,
             headers: {
+                ...baseHeaders,
                 "Content-Type": "application/json",
-                // "Cache-Control": `public, max-age=${CACHE_TTL}`,
-                "X-Cache": hit ? "HIT" : "MISS",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PATCH, DELETE",
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",
             },
-        })
+        });
+    };
 
     async function expandChildren(db: D1Database, rows: any[], children: ChildRelation[]) {
         if (!children.length || !rows.length) return;
@@ -105,7 +111,7 @@ export function createCrudRoutes(tableName: string, schema: ModelSchema, parents
         try {
             // OPTION
             if (request.method === "OPTIONS") {
-                return json({})
+                return json()
             }
 
             // GET / or GET /:id

@@ -14,5 +14,9 @@ export const constants = {
     SITE_METADATA: {
         TITLE: "Cool Dashboard",
         DESCRIPTION: "Very cool dashboard created by Mjho",
-    }
+    },
+    JOB_TYPES: [
+        {value: "1", label: "YT -> Article"},
+        {value: "2", label: "YT - > Summary"},
+    ]
 }
