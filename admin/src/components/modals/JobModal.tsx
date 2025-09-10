@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import Button from "../ui/button/Button.tsx";
-import { Modal } from "../ui/modal";
+import {Modal} from "../ui/modal";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
 import {getApi} from "../../services/adminArticleService.ts";
@@ -8,8 +8,12 @@ import {Series} from "../../types/Article.ts";
 import Select from "../form/Select.tsx";
 
 interface JobData {
-    name: string;
-    series?: number
+    type: string | null;
+    series: number | null;
+    // Job type 1
+    link?: string;
+    // Job type 2,
+    link2?: string;
 }
 
 interface BaseModalProps {
@@ -18,22 +22,33 @@ interface BaseModalProps {
     onSave: (quiz: JobData) => void;
 }
 
+const jobTypes = [
+    {value: "1", label: "YT -> Article"},
+    {value: "2", label: "YT - > Summary"},
+]
+
 export default function JobModal({
                                      isOpen,
                                      onClose,
                                      onSave,
                                  }: BaseModalProps) {
-    const [name, setName] = useState<string>("");
     const [series, setSeries] = useState<Series[]>([]);
     const [selectedSeries, setSelectedSeries] = useState<number | null>(null);
 
+
+    const [jobData, setJobData] = useState<JobData>({
+        series: selectedSeries,
+        link: "",
+        link2: "",
+        type: null,
+    });
+
     const handleSave = () => {
-        onSave({
-            name: name,
-            series: selectedSeries
-        });
-        onClose()
+        if (!jobData.type) return;
+        onSave(jobData);
+        onClose();
     };
+
 
     useEffect(() => {
         getApi<Series>('series')
@@ -44,13 +59,33 @@ export default function JobModal({
             })
     }, [])
 
+    const isFormValid = (() => {
+        if (!jobData.type) return false;
+        // if (!jobData.series) return false;
+
+        if (jobData.type === jobTypes[0].value) {
+            return (
+                jobData.link?.trim() !== ""
+            );
+        }
+
+        if (jobData.type === jobTypes[1].value) {
+            return (
+                jobData.link2?.trim() !== ""
+            );
+        }
+
+        return false;
+    })();
+
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
             className="w-full m-4 lg:max-w-[900px]"
         >
-            <div className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+            <div
+                className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
                 <div className="px-2 pr-14">
                     <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
                         Create a new job
@@ -71,15 +106,21 @@ export default function JobModal({
                     <div className="custom-scrollbar flex-1 overflow-y-auto px-2 pb-3">
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                             <div>
-                                <Label>Youtube Id</Label>
-                                <Input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) =>
-                                        setName(e.target.value)
+                                <Label>Type</Label>
+                                <Select
+                                    options={jobTypes.map((a) => ({
+                                        value: a.value,
+                                        label: a.label,
+                                    }))}
+                                    defaultValue={jobData.type ?? ""}
+                                    placeholder="Select type"
+                                    onChange={(change) =>
+                                        setJobData((prev) => ({...prev, type: change}))
                                     }
+                                    className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
+
                             <div>
                                 <Label>Series</Label>
                                 <Select
@@ -89,10 +130,42 @@ export default function JobModal({
                                     }))}
                                     // defaultValue={""}
                                     placeholder="Select series"
-                                    onChange={(change) => {setSelectedSeries(parseInt(change))}}
+                                    onChange={(change) => {
+                                        setSelectedSeries(parseInt(change))
+                                    }}
                                     className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
+                            {jobData.type === jobTypes[0].value && (
+                                <div>
+                                    <Label>Youtube Id</Label>
+                                    <Input
+                                        type="text"
+                                        value={jobData.link}
+                                        onChange={(e) =>
+                                            setJobData((prev) => ({
+                                                ...prev,
+                                                link: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            )}
+                            {jobData.type === jobTypes[1].value && (
+                                <div>
+                                    <Label>Youtube Id</Label>
+                                    <Input
+                                        type="text"
+                                        value={jobData.link2}
+                                        onChange={(e) =>
+                                            setJobData((prev) => ({
+                                                ...prev,
+                                                link2: e.target.value,
+                                            }))
+                                        }
+                                    />
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -101,10 +174,14 @@ export default function JobModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        <Button size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                            e.preventDefault();
-                            handleSave();
-                        }}>
+                        <Button size="sm"
+                                disabled={!isFormValid}
+                            //@ts-expect-error fuck you
+                                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                                    e.preventDefault();
+                                    handleSave();
+                                }
+                                }>
                             Save Changes
                         </Button>
                     </div>

@@ -32,16 +32,12 @@ CREATE TABLE progress (
 
 CREATE TABLE jobs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    raw_youtube_link NOT NULL,
-    youtube_id TEXT NOT NULL,
-    gpt_conversation_id TEXT DEFAULT NULL,
+    detail JSON NOT NULL DEFAULT '{}',
     series_id INTEGER DEFAULT NULL,
     episode INTEGER DEFAULT NULL,
     priority INTEGER NOT NULL DEFAULT 0,
-    context_file TEXT DEFAULT NULL,
-    article_file TEXT DEFAULT NULL,
-    FOREIGN KEY (series_id) REFERENCES series(id),
-    UNIQUE (series_id, episode)
+    type INTEGER NOT NULL, -- 1: YT -> Article, 2: YT -> Summary, 3: Summary -> Article
+    FOREIGN KEY (series_id) REFERENCES series(id)
 );
 
 -- Seeding
