@@ -18,5 +18,5 @@ export const constants = {
     JOB_TYPES: [
         {value: "1", label: "YT -> Article"},
         {value: "2", label: "YT - > Summary"},
-    ]
+    ],
 }

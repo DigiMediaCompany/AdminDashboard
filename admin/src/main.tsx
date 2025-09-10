@@ -8,13 +8,16 @@ import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { Provider } from 'react-redux';
 import { store } from "./store";
+import {GlobalDataProvider} from "./context/GlobalDataContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
             <Provider store={store}>
                 <AppWrapper>
-                    <App />
+                    <GlobalDataProvider>
+                        <App />
+                    </GlobalDataProvider>
                 </AppWrapper>
             </Provider>
         </ThemeProvider>

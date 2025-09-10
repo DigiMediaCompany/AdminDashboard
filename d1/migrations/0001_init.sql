@@ -16,7 +16,7 @@ CREATE TABLE series (
 CREATE TABLE statuses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    type TEXT NOT NULL,
+    type INTEGER NOT NULL,
     position INTEGER NOT NULL
 );
 
@@ -42,12 +42,16 @@ CREATE TABLE jobs (
 
 -- Seeding
 INSERT INTO statuses (name, type, position) VALUES
-('Pending', 'article', 1),
-('Extracting Youtube', 'article', 2),
-('Context review required', 'article', 3),
-('Generating article', 'article', 4),
-('Article review required', 'article', 5),
-('Generating big context', 'article', 6),
-('Big context review required', 'article', 7),
-('Done', 'article', 8),
-('Failed', 'article', 9);
+('Extracting Youtube', 1, 1),
+('Context review required', 1, 2),
+('Generating article', 1, 3),
+('Article review required', 1, 4),
+('Done', 1, 7),
+
+('Extracting Youtube', 2, 1),
+('Reviewing summary', 2, 2 ),
+('Done', 2, 3),
+
+('Generating article', 3, 1),
+('Article review required', 3, 2),
+('Done', 3, 3);

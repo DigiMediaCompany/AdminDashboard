@@ -12,6 +12,7 @@ import {postApi, updateApi} from "../../../services/adminArticleService.ts";
 import JobContextModal from "../../modals/JobContextModal.tsx";
 import {useState} from "react";
 import {deleteFile, downloadFile, getFile, uploadR2File} from "../../../services/postFunnyService.ts";
+import {useGlobalData} from "../../../context/GlobalDataContext.tsx";
 
 interface ArticleJobItemProps {
     jobs: Job[];
@@ -39,12 +40,16 @@ function getProgressStatus(progressList: object[]) {
         );
 
         switch (highestGoing.status_id) {
-            case 3:
+            case 2:
                 return "Context";
-            case 5:
+            case 4:
                 return "Article";
             case 7:
-                return "Big context";
+                return "Summary";
+            case 8:
+                return "Done-1";
+            case 10:
+                return "Article"
         }
 
     }
@@ -73,6 +78,8 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
     const [file, setFile] = useState<string | null>(null);
     const [name, setName] = useState<string | null>(null);
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+    const { statuses, loading, error, refresh } = useGlobalData();
+
     return (
         <>
         <Table>
@@ -120,11 +127,13 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                     const statusColorMap: Record<string, BadgeColor> = {
                         Failed: "error",
                         Done: "success",
+                        "Done-1": "success",
                         Pending: "light",
                         Context: "info",
                         Article: "info",
                         "Big context": "info",
                         Generating: "warning",
+                        "No progress": "dark"
                     };
                     const status = getProgressStatus(job.progress)
                     return(
@@ -173,10 +182,10 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
 
 
                         <TableCell
-                            className="px-5 py-4 sm:px-6 text-start">
+                            className="px-3 py-3  text-start text-theme-sm">
                             <div
-                                className={(['Done', 'Context', 'Article', 'Big context'].includes(status ) ) ? "cursor-pointer" : ""}
-                                onClick={(['Done', 'Context', 'Article', 'Big context'].includes(status) ) ? () => {
+                                className={(['Done', 'Context', 'Article', 'Big context', 'Summary', 'Done-1'].includes(status ) ) ? "cursor-pointer" : ""}
+                                onClick={(['Done', 'Context', 'Article', 'Big context', 'Summary', 'Done-1'].includes(status) ) ? () => {
 
 
                                     setSelectedJob(job)
@@ -221,7 +230,7 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
 
                         </TableCell>
 
-                        <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                        <TableCell className="px-4 py-3  text-start text-theme-sm ">
                             <Badge
                                 size="sm"
                                 color={
@@ -253,10 +262,6 @@ export default function ArticleJobItem({ jobs, onUpdateJob }: ArticleJobItemProp
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(data) => {
-                    console.log(data)
-                    console.log(name)
-                    console.log(selectedJob)
-                    console.log(file)
                     if (data.fixed && name && selectedJob && file) {
                         const f = new File([data.fixed], "example.txt", {
                             type: "text/plain",
