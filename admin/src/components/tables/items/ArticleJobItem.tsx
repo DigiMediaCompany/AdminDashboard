@@ -424,6 +424,54 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                     }
 
                 }}
+                onFix={(instruction) => {
+                    if (selectedJob) {
+                        const currentDetail = JSON.parse(selectedJob.detail);
+                        const newDetail = {
+                            ...currentDetail,
+                            instruction: instruction
+                        };
+                        const detailString = JSON.stringify(newDetail);
+                        updateApi("jobs", selectedJob.id,{
+                            detail: detailString
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
+                        let workingProgressPosition = 0;
+                        if (selectedJob.type === 1) {
+                            workingProgressPosition = 3
+                        } else {
+                            workingProgressPosition = 1
+                        }
+                        onUpdateJob(selectedJob.id, {
+                            ...selectedJob,
+                            progress: selectedJob.progress.map((item, index) =>
+                                index === workingProgressPosition
+                                    ? { ...item, status: "Standby" }
+                                    : index === workingProgressPosition - 1
+                                        ? { ...item, status: "Going" }
+                                        : item
+                            ),
+                            detail: detailString
+                        })
+                        updateApi("progress", selectedJob.progress[workingProgressPosition].id, {
+                            status: 'Standby'
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
+                        updateApi("progress", selectedJob.progress[workingProgressPosition-1].id, {
+                            status: 'Going'
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
+                    }
+                }}
             />
             <JobSummaryModal
                 text={status}
@@ -432,14 +480,7 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                 onClose={closeModal2}
                 onSave={(data) => {
                     if (status && status === "Summary" && selectedJob) {
-                        let currentDetail = {};
-                        try {
-                            currentDetail = selectedJob.detail
-                                ? JSON.parse(selectedJob.detail as string)
-                                : {};
-                        } catch {
-                            currentDetail = {};
-                        }
+                        const currentDetail = JSON.parse(selectedJob.detail);
                         const newDetail = {
                             ...currentDetail,
                             summaries: data.summaries,

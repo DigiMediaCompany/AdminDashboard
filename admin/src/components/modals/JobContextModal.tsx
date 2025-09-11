@@ -14,6 +14,7 @@ interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (quiz: JobData) => void;
+    onFix: ( fix: string) => void;
     text: string;
     data: Job;
 }
@@ -23,15 +24,22 @@ export default function JobContextModal({
                                      onClose,
                                      onSave,
     text,
-                                            data
+                                            data,
+                                            onFix
                                  }: BaseModalProps) {
     const [fixed, setFixed] = useState<string>("");
     const [original, setOriginal] = useState<string>("");
+    const [fix, setFix] = useState<string>("");
 
     const handleSave = () => {
         onSave({
             fixed: fixed,
         });
+        onClose()
+    };
+
+    const handleFix = () => {
+        onFix(fix);
         onClose()
     };
 
@@ -61,6 +69,12 @@ export default function JobContextModal({
         }
     }, [isOpen]);
 
+
+    const isFormValid = (() => {
+        return !(!fix || fix.trim() === "");
+
+
+    })();
 
     return (
         <Modal
@@ -95,7 +109,6 @@ export default function JobContextModal({
                                     rows={40}
                                     disabled={true}
                                 />
-
                             </div>
                             <div>
                                 <Label>Review</Label>
@@ -106,6 +119,12 @@ export default function JobContextModal({
                                 />
                             </div>
                         </div>
+                        <Label>Fix</Label>
+                        <TextArea
+                            value={fix}
+                            rows={3}
+                            onChange={(e: string) => setFix(e)}
+                        />
                     </div>
 
                     {/* ===== ACTIONS ===== */}
@@ -118,6 +137,14 @@ export default function JobContextModal({
                             handleSave();
                         }}>
                             Save Changes
+                        </Button>
+                        <Button
+                            disabled={!isFormValid}
+                            size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                            e.preventDefault();
+                            handleFix();
+                        }}>
+                            Fix Article
                         </Button>
                     </div>
                 </form>
