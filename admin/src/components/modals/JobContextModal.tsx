@@ -4,6 +4,7 @@ import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
 import TextArea from "../form/input/TextArea.tsx";
 import { getFile } from "../../services/postFunnyService.ts";
+import {Job} from "../../types/Article.ts";
 
 interface JobData {
     fixed: string | null;
@@ -14,7 +15,7 @@ interface BaseModalProps {
     onClose: () => void;
     onSave: (quiz: JobData) => void;
     text: string;
-    file: string;
+    data: Job;
 }
 
 export default function JobContextModal({
@@ -22,7 +23,7 @@ export default function JobContextModal({
                                      onClose,
                                      onSave,
     text,
-    file
+                                            data
                                  }: BaseModalProps) {
     const [fixed, setFixed] = useState<string>("");
     const [original, setOriginal] = useState<string>("");
@@ -35,7 +36,14 @@ export default function JobContextModal({
     };
 
     useEffect(() => {
-        if (isOpen && file) {
+        if (isOpen && data) {
+            const detail = JSON.parse(data.detail)
+            let file
+            if (text === 'Article') {
+                file = detail.article_file
+            } else {
+                file = detail.context_file
+            }
             getFile(file)
                 .then((result) => result.text())
                 .then((text) => {
@@ -44,7 +52,7 @@ export default function JobContextModal({
                 })
                 .catch((err) => console.error(err));
         }
-    }, [isOpen, file]);
+    }, [isOpen, data]);
 
     useEffect(() => {
         if (!isOpen) {

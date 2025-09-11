@@ -1,15 +1,19 @@
 export interface Job {
     id: number;
-    raw_youtube_link: string;
-    youtube_id: string;
-    gpt_conversation_id?: string | null;
-    series_id?: number | null;
-    episode?: number | null;
+    series_id: number | null;
+    series: Series;
+    episode: number | null;
     priority: number;
-    status_id?: number | null;
+    progress: Progress[];
+    detail: string;
+    type: number;
+}
+
+export interface JobDetail {
+    link?: string;
     context_file?: string | null;
     article_file?: string | null;
-    progress: object[]
+    summary_files?: string[];
 }
 
 export interface Category {
@@ -29,4 +33,12 @@ export interface Status {
     name: string;
     type: string;
     position: number;
+}
+
+export interface Progress {
+    id: number;
+    status: string;
+    status_id: number;
+    job_id: number;
+    _parent_id: number;
 }

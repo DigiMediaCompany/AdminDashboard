@@ -33,26 +33,29 @@ export const GlobalDataProvider: React.FC<{ children: React.ReactNode }> = ({
     const fetchPromiseRef = useRef<Promise<Status[] | null> | null>(null);
 
     const fetchStatuses = async (): Promise<Status[] | null> => {
-        if (fetchPromiseRef.current) return fetchPromiseRef.current;
-
-        setLoading(true);
-        const promise = getApi<Status[]>("statuses")
-            .then((result) => {
-                setStatuses(result.data);
-                setError(null);
-                // return result.data;
-            })
-            .catch((e: any) => {
-                setError(e);
-                // return null;
-            })
-            .finally(() => {
-                setLoading(false);
-                fetchPromiseRef.current = null;
-            });
-
-        fetchPromiseRef.current = promise;
-        return promise;
+        // if (fetchPromiseRef.current) return fetchPromiseRef.current;
+        //
+        // setLoading(true);
+        // const promise = getApi<Status[]>("statuses")
+        //     .then((result) => {
+        //         setStatuses(result.data);
+        //         setError(null);
+        //         // return result.data;
+        //     })
+        //     .catch((e: any) => {
+        //         setError(e);
+        //         // return null;
+        //     })
+        //     .finally(() => {
+        //         setLoading(false);
+        //         fetchPromiseRef.current = null;
+        //     });
+        //
+        // fetchPromiseRef.current = promise;
+        // return promise;
+        return new Promise<null>(() => {
+            return null
+        });
     };
 
     // Fetch once on mount if not already loaded
