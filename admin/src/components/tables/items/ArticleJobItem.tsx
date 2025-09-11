@@ -117,6 +117,12 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
+                            Type
+                        </TableCell>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                        >
                             Progress
                         </TableCell>
 
@@ -154,9 +160,9 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         };
                         const status = getProgressStatus(job)
                         const jobTypeMap = {
-                            1: "Youtube -> Article",
-                            2: "Youtube -> Summaries",
-                            3: "Summary -> Article"
+                            1: "1. Youtube -> Article",
+                            2: "2. Youtube -> Summaries",
+                            3: "3. Summary -> Article"
                         }
                         return (
                             <TableRow key={job.id}>
@@ -164,16 +170,15 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobDetail.link ? getYouTubeId(jobDetail.link) || "—" : "—"}
                                 </TableCell>
-                                <TableCell className="px-5 py-4 sm:px-6 text-start   truncate max-w-[200px]">
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {job.series?.name || "—"}
                                 </TableCell>
-                                <TableCell className="px-5 py-4 sm:px-6 text-start   truncate max-w-[200px]">
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobTypeMap[job.type] || "—"}
                                 </TableCell>
 
 
-                                <TableCell
-                                    className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
+                                <TableCell className="px-4 py-4 sm:px-5">
                                     <div className="flex space-x-2">
                                         {job.progress?.map((p, index) => {
                                                 let bgColor;
@@ -206,8 +211,7 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                                 </TableCell>
 
 
-                                <TableCell
-                                    className="px-3 py-3  text-start text-theme-sm">
+                                <TableCell className="px-3 py-4 sm:px-4 text-start text-theme-sm">
                                     <div
                                         className={(['Done', 'Context', 'Article', 'Big context', 'Summary', 'Select'].includes(status)) ? "cursor-pointer" : ""}
                                         onClick={(['Done', 'Context', 'Article', 'Big context', 'Summary', 'Select'].includes(status)) ? () => {
@@ -260,7 +264,7 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
 
                                 </TableCell>
 
-                                <TableCell className="px-4 py-3  text-start text-theme-sm ">
+                                <TableCell className="px-3 py-4 sm:px-4 text-start text-theme-sm ">
                                     <Badge
                                         size="sm"
                                         color={
