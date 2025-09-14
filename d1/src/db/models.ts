@@ -1,28 +1,46 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import {
+    sqliteTable,
+    integer,
+    text,
+    AnySQLiteTable,
+    SQLiteInteger,
+    SQLiteText,
+    SQLiteReal,
+} from "drizzle-orm/sqlite-core";
 import {getTableColumns, relations} from "drizzle-orm";
 import {FieldSchema, ModelSchema} from "../types";
 
-function makeSchema(table: any, tableName: string): ModelSchema {
-    const cols = getTableColumns(table);
+function colToFieldType(col: any): "number" | "string" {
+    if (col instanceof SQLiteInteger || col instanceof SQLiteReal) return "number";
+    if (col instanceof SQLiteText) return "string";
+
+    // Fallbacks (helpful across builds)
+    const ctor = col?.constructor?.name;
+    if (ctor === "SQLiteInteger" || ctor === "SQLiteReal") return "number";
+    if (ctor === "SQLiteText" || ctor === "SQLiteBlob") return "string";
+
+    // Some builds expose a dataType
+    if (col?.dataType === "number" || col?.dataType === "bigint") return "number";
+    if (col?.dataType === "string" || col?.dataType === "json") return "string";
+
+    return "string";
+}
+
+export function makeSchema(table: AnySQLiteTable, tableName: string): ModelSchema {
+    const columns = getTableColumns(table);
     const fields: Record<string, FieldSchema> = {};
 
-    for (const [colName, col] of Object.entries(cols)) {
-        // Drizzle column type detection
-        const colType = (col as any).columnType as string;
+    for (const [colName, col] of Object.entries(columns)) {
+        const type: "number" | "string" = colToFieldType(col as any);
 
-        let field: FieldSchema = { type: "string" };
+        const isNotNull = Boolean((col as any).notNull);
+        const hasDefault = Boolean((col as any).hasDefault);
+        const isAutoInc = Boolean((col as any).autoIncrement ?? (col as any).autoincrement);
 
-        if (colType.includes("integer")) {
-            field = { type: "number" };
-        } else if (colType.includes("text")) {
-            field = { type: "string" };
-        }
-
-        // required if .notNull() was applied
-        if ((col as any).notNull) {
+        const field: FieldSchema = { type };
+        if (isNotNull && !isAutoInc && !hasDefault) {
             field.required = true;
         }
-
         fields[colName] = field;
     }
 
@@ -70,3 +88,4 @@ export const jobsRelations = relations(jobs, ({ one }) => ({
     series: one(series, { fields: [jobs.series_id], references: [series.id] }),
 }));
 export const JobSchema = makeSchema(jobs, "jobs");
+console.log(JobSchema)

@@ -152,19 +152,18 @@
 
 
 import { Hono } from "hono";
-import { categories, series, jobs } from "./db/models";
+import {categories, series, jobs, CategorySchema, SeriesSchema, JobSchema} from "./db/models";
 import { createCrudRoutes } from "./utils/crud";
 
-const app = new Hono();
+import { Env } from "./types";
 
-// categories
+// Build route handlers
 const categoriesHandler = createCrudRoutes({
     table: categories,
     columns: { id: categories.id, name: categories.name },
+    schema: CategorySchema,
 });
-app.all("/categories/*", (c) => categoriesHandler(c.req.raw, c.env));
 
-// series
 const seriesHandler = createCrudRoutes({
     table: series,
     columns: {
@@ -173,17 +172,9 @@ const seriesHandler = createCrudRoutes({
         category_id: series.category_id,
         big_context_file: series.big_context_file,
     },
-    buildIncludes: (paths) => {
-        const withObj: any = {};
-        for (const p of paths) {
-            if (p[0] === "category") withObj.category = true;
-        }
-        return withObj;
-    },
+    schema: SeriesSchema,
 });
-app.all("/series/*", (c) => seriesHandler(c.req.raw, c.env));
 
-// jobs
 const jobsHandler = createCrudRoutes({
     table: jobs,
     columns: {
@@ -194,14 +185,24 @@ const jobsHandler = createCrudRoutes({
         priority: jobs.priority,
         type: jobs.type,
     },
-    buildIncludes: (paths) => {
-        const withObj: any = {};
-        for (const p of paths) {
-            if (p[0] === "series") withObj.series = true;
-        }
-        return withObj;
-    },
+    schema: JobSchema,
 });
-app.all("/jobs/*", (c) => jobsHandler(c.req.raw, c.env));
 
-export default app;
+export default {
+    async fetch(req: Request, env: Env): Promise<Response> {
+        const url = new URL(req.url);
+
+        // Basic router by path
+        if (url.pathname.startsWith("/categories")) {
+            return categoriesHandler(req, env);
+        }
+        if (url.pathname.startsWith("/series")) {
+            return seriesHandler(req, env);
+        }
+        if (url.pathname.startsWith("/jobs")) {
+            return jobsHandler(req, env);
+        }
+
+        return new Response("Not Found", { status: 404 });
+    },
+};
