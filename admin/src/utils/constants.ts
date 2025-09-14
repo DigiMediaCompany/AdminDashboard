@@ -3,6 +3,7 @@ export const constants = {
     ROLES: {
         SUPER_ADMIN: "super-admin",
         ADMIN: "admin",
+        CREATOR: "creator",
     },
     SITES: {
         POSTFUNNY: "PostFunny",
