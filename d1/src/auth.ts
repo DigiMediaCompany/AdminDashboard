@@ -1,4 +1,4 @@
-import { Env } from "./types";
+import {Env} from "./types";
 
 export function requireAuth(request: Request, env: Env) {
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");

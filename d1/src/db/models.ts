@@ -88,4 +88,3 @@ export const jobsRelations = relations(jobs, ({ one }) => ({
     series: one(series, { fields: [jobs.series_id], references: [series.id] }),
 }));
 export const JobSchema = makeSchema(jobs, "jobs");
-console.log(JobSchema)

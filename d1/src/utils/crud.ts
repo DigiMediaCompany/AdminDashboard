@@ -4,13 +4,11 @@ import type { AnySQLiteTable } from "drizzle-orm/sqlite-core";
 import {
     ColumnMap,
     parseFilters,
-    parseInclude,
-    parsePagination,
+    parseInclude, parsePagination,
     parseSort,
     validateData,
 } from "./helper";
-import {ModelSchema} from "../types";
-
+import { Env, ModelSchema } from "../types";
 
 type CrudOptions<T extends AnySQLiteTable> = {
     table: T;
@@ -35,14 +33,14 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                                                                schema,
                                                                buildIncludes,
                                                            }: CrudOptions<T>) {
-    return async (req: Request, env: any) => {
+    return async (req: Request, env: Env) => {
         const db = drizzle(env.D1_DATABASE);
         const url = new URL(req.url);
         const id = url.pathname.split("/").pop();
 
         const filters = parseFilters(url, columns);
         const orderBy = parseSort(url, columns);
-        const { limit, offset } = parsePagination(url);
+        const { limit, page, offset } = parsePagination(url);
         const includes = buildIncludes ? buildIncludes(parseInclude(url)) : undefined;
 
         try {
@@ -78,7 +76,10 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                             limit,
                             offset,
                         });
-                        return Response.json({ data: rows });
+                        return Response.json({
+                            data: rows,
+                            pagination: { page, limit, count: rows.length },
+                        });
                     }
                 }
 
@@ -99,7 +100,10 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                         .limit(limit)
                         .offset(offset)
                         .all();
-                    return Response.json({ data: rows });
+                    return Response.json({
+                        data: rows,
+                        pagination: { page, limit, count: rows.length },
+                    });
                 }
             }
 
@@ -117,7 +121,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                 if (!id) return Response.json({ error: "ID required" }, { status: 400 });
 
                 const body = await req.json();
-                validateData(schema, body);
+                validateData(schema, body, true);
 
                 const [row] = await db
                     .update(table)

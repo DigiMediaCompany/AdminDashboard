@@ -40,17 +40,23 @@ export function parseSort(url: URL, columns: ColumnMap) {
 }
 
 export function parsePagination(url: URL) {
-    const limit = Math.max(1, Math.min(100, Number(url.searchParams.get("limit")) || 20));
-    const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
-    return { limit, offset };
+    const limit = Math.max(1, Number(url.searchParams.get("limit")) || 20);
+    const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
+    const offset = (page - 1) * limit;
+
+    return { limit, page, offset };
 }
 
-export function validateData(schema: ModelSchema, data: any) {
+export function validateData(schema: ModelSchema, data: any, is_patch: boolean = false) {
     for (const [field, rules] of Object.entries(schema.fields)) {
         const value = data[field];
 
-        if (rules.required && (value === undefined || value === null)) {
+        if (!is_patch && rules.required && (value === undefined || value === null)) {
             throw new Error(`Field '${field}' is required`);
+        }
+
+        if (is_patch && value === undefined) {
+            continue;
         }
 
         if (rules.type === "string" && value !== undefined) {
