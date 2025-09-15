@@ -40,7 +40,7 @@ export function parseSort(url: URL, columns: ColumnMap) {
 }
 
 export function parsePagination(url: URL) {
-    const limit = Math.max(1, Number(url.searchParams.get("limit")) || 20);
+    const limit = Math.max(1, Number(url.searchParams.get("limit")) || 10);
     const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
     const offset = (page - 1) * limit;
 

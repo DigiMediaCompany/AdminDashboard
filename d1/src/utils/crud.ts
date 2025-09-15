@@ -17,6 +17,22 @@ type CrudOptions<T extends AnySQLiteTable> = {
     buildIncludes?: (paths: string[][]) => any;
 };
 
+
+/**
+ * Always return CORS headers
+ */
+function withCors(res: Response, status?: number) {
+    const headers = new Headers(res.headers);
+    headers.set("Access-Control-Allow-Origin", "*");
+    headers.set("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+    headers.set("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    headers.set("Access-Control-Allow-Credentials", "true");
+    return new Response(res.body, {
+        status: status ?? res.status,
+        headers,
+    });
+}
+
 /**
  * We need this because db.query.<table>.findMany()
  * is only generated for *known tables*, not dynamic ones.
@@ -46,14 +62,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
         try {
             // OPTIONS
             if (req.method === "OPTIONS") {
-                return new Response(null, {
-                    status: 204,
-                    headers: {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
-                        "Access-Control-Allow-Headers": "Content-Type,Authorization",
-                    },
-                });
+                return withCors(new Response(null, { status: 204 }));
             }
 
             // GET
@@ -67,7 +76,9 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                             with: includes,
                             limit: 1,
                         });
-                        return Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 });
+                        return withCors(
+                            Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 })
+                        );
                     } else {
                         const rows = await queryMap[tableName](db, {
                             where: filters,
@@ -76,10 +87,12 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                             limit,
                             offset,
                         });
-                        return Response.json({
-                            data: rows,
-                            pagination: { page, limit, count: rows.length },
-                        });
+                        return withCors(
+                            Response.json({
+                                data: rows,
+                                pagination: { page, limit, count: rows.length },
+                            })
+                        );
                     }
                 }
 
@@ -90,7 +103,9 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                         .where(eq(columns.id, Number(id)))
                         .limit(1)
                         .all();
-                    return Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 });
+                    return withCors(
+                        Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 })
+                    );
                 } else {
                     const rows = await db
                         .select()
@@ -100,25 +115,31 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                         .limit(limit)
                         .offset(offset)
                         .all();
-                    return Response.json({
-                        data: rows,
-                        pagination: { page, limit, count: rows.length },
-                    });
+                    return withCors(
+                        Response.json({
+                            data: rows,
+                            pagination: { page, limit, count: rows.length },
+                        })
+                    );
                 }
             }
 
             // POST (Create)
             if (req.method === "POST") {
                 const body = await req.json();
-                validateData(schema, body); // <-- validate input
+                validateData(schema, body);
 
                 const [row] = await db.insert(table).values(body).returning();
-                return Response.json(row, { status: 201 });
+                return withCors(Response.json(row, { status: 201 }));
             }
 
             // PATCH (Update)
             if (req.method === "PATCH") {
-                if (!id) return Response.json({ error: "ID required" }, { status: 400 });
+                if (!id) {
+                    return withCors(
+                        Response.json({ error: "ID required" }, { status: 400 })
+                    );
+                }
 
                 const body = await req.json();
                 validateData(schema, body, true);
@@ -129,25 +150,34 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                     .where(eq(columns.id, Number(id)))
                     .returning();
 
-                return row
-                    ? Response.json(row)
-                    : Response.json({ error: "Not found" }, { status: 404 });
+                return withCors(
+                    row
+                        ? Response.json(row)
+                        : Response.json({ error: "Not found" }, { status: 404 })
+                );
             }
 
             // DELETE
             if (req.method === "DELETE") {
-                if (!id) return Response.json({ error: "ID required" }, { status: 400 });
+                if (!id) {
+                    return withCors(
+                        Response.json({ error: "ID required" }, { status: 400 })
+                    );
+                }
 
                 await db.delete(table).where(eq(columns.id, Number(id)));
-                return new Response(null, { status: 204 });
+                return withCors(new Response(null, { status: 204 }));
             }
 
-            return Response.json({ error: "Method not allowed" }, { status: 405 });
+            return withCors(
+                Response.json({ error: "Method not allowed" }, { status: 405 })
+            );
         } catch (err: any) {
-            // Catch both validation and DB errors
-            return Response.json(
-                { success: false, error: err.message || "Unknown error" },
-                { status: 400 }
+            return withCors(
+                Response.json(
+                    { success: false, error: err.message || "Unknown error" },
+                    { status: 400 }
+                )
             );
         }
     };

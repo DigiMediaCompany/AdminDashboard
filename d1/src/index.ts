@@ -193,13 +193,14 @@ export default {
         const url = new URL(req.url);
 
         // Basic router by path
-        if (url.pathname.startsWith("/categories")) {
+        const articleGroup = "/article"
+        if (url.pathname.startsWith(`${articleGroup}/categories`)) {
             return categoriesHandler(req, env);
         }
-        if (url.pathname.startsWith("/series")) {
+        if (url.pathname.startsWith(`${articleGroup}/series`)) {
             return seriesHandler(req, env);
         }
-        if (url.pathname.startsWith("/jobs")) {
+        if (url.pathname.startsWith(`${articleGroup}/jobs`)) {
             return jobsHandler(req, env);
         }
 
