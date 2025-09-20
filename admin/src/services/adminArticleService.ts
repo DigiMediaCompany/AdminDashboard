@@ -17,7 +17,7 @@ export const getApi = async <T>(
 
     return {
         ...response.data,
-        data: response.data as T[], // ensure correct type
+        data: response.data.data as T[],
     };
 };
 

@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/d1";
-import { eq } from "drizzle-orm";
+import {eq, sql} from "drizzle-orm";
 import type { AnySQLiteTable } from "drizzle-orm/sqlite-core";
 import {
     ColumnMap,
@@ -50,7 +50,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                                                                buildIncludes,
                                                            }: CrudOptions<T>) {
     return async (req: Request, env: Env) => {
-        const db = drizzle(env.D1_DATABASE);
+        const db = drizzle(env.D1_DATABASE, { schema });
         const url = new URL(req.url);
         const id = url.pathname.split("/").pop();
 
@@ -69,6 +69,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
             if (req.method === "GET") {
                 const tableName = (table as any)[Symbol.for("drizzle:Name")];
 
+                console.log(includes)
                 if (includes && Object.keys(includes).length && queryMap[tableName]) {
                     if (id && id !== tableName) {
                         const rows = await queryMap[tableName](db, {
@@ -96,6 +97,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                     }
                 }
 
+
                 if (id && id !== tableName) {
                     const rows = await db
                         .select()
@@ -115,10 +117,21 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                         .limit(limit)
                         .offset(offset)
                         .all();
+                    const [{ count }] = await db
+                        .select({ count: sql<number>`count(*)`.as("count") })
+                        .from(table)
+                        .where(filters)
+                        .all();
+
+                    const totalItems = count ?? 0;
+                    const totalPages = Math.ceil(totalItems / limit);
                     return withCors(
                         Response.json({
                             data: rows,
-                            pagination: { page, limit, count: rows.length },
+                            current_page: page,
+                            total_pages: totalPages,
+                            total_items: totalItems,
+                            per_page: limit,
                         })
                     );
                 }
