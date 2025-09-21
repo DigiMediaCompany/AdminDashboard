@@ -1,5 +1,6 @@
 import { and, asc, desc, eq, inArray, type SQL } from "drizzle-orm";
 import {ModelSchema} from "../types";
+import {relationMap, tableRegistry} from "../db/models";
 
 
 export function parseInclude(url: URL): string[][] {
@@ -13,61 +14,61 @@ export function parseInclude(url: URL): string[][] {
 }
 
 
-// export async function loadRelations(
-//     db: any,
-//     rootTableName: string,
-//     rows: any[],
-//     includes: string[][]
-// ) {
-//     if (!rows.length || !includes.length) return rows;
-//
-//
-//     for (const path of includes) {
-//
-//         let currentTable = rootTableName;
-//         let currentRows = rows;
-//
-//         for (const segment of path) {
-//             const rel = relationMap[currentTable]?.[segment];
-//
-//             if (!rel) break;
-//
-//             const ids = [
-//                 ...new Set(
-//                     currentRows.map((r) => r?.[rel.foreignKey]).filter((v: any) => v != null)
-//                 ),
-//             ];
-//             if (!ids.length) {
-//                 currentTable = rel.target;
-//                 currentRows = [];
-//                 continue;
-//             }
-//
-//             const targetTable = tableRegistry[rel.target];
-//             if (!targetTable) break;
-//
-//             const targetRows = await db
-//                 .select()
-//                 .from(targetTable)
-//                 .where(inArray(targetTable[rel.targetKey], ids))
-//                 .all();
-//             const targetMap = new Map<any, any>(
-//                 targetRows.map((t: any) => [t[rel.targetKey], t])
-//             );
-//
-//             for (const r of currentRows) {
-//                 const fk = r?.[rel.foreignKey];
-//                 r[segment] = fk != null ? targetMap.get(fk) ?? null : null;
-//             }
-//
-//             currentTable = rel.target;
-//             currentRows = currentRows.map((r) => r[segment]).filter(Boolean);
-//             if (!currentRows.length) break;
-//         }
-//     }
-//
-//     return rows;
-// }
+export async function loadRelations(
+    db: any,
+    rootTableName: string,
+    rows: any[],
+    includes: string[][]
+) {
+    if (!rows.length || !includes.length) return rows;
+
+
+    for (const path of includes) {
+
+        let currentTable = rootTableName;
+        let currentRows = rows;
+
+        for (const segment of path) {
+            const rel = relationMap[currentTable]?.[segment];
+
+            if (!rel) break;
+
+            const ids = [
+                ...new Set(
+                    currentRows.map((r) => r?.[rel.foreignKey]).filter((v: any) => v != null)
+                ),
+            ];
+            if (!ids.length) {
+                currentTable = rel.target;
+                currentRows = [];
+                continue;
+            }
+
+            const targetTable = tableRegistry[rel.target];
+            if (!targetTable) break;
+
+            const targetRows = await db
+                .select()
+                .from(targetTable)
+                .where(inArray(targetTable[rel.targetKey], ids))
+                .all();
+            const targetMap = new Map<any, any>(
+                targetRows.map((t: any) => [t[rel.targetKey], t])
+            );
+
+            for (const r of currentRows) {
+                const fk = r?.[rel.foreignKey];
+                r[segment] = fk != null ? targetMap.get(fk) ?? null : null;
+            }
+
+            currentTable = rel.target;
+            currentRows = currentRows.map((r) => r[segment]).filter(Boolean);
+            if (!currentRows.length) break;
+        }
+    }
+
+    return rows;
+}
 
 export type ColumnMap = Record<string, any>;
 

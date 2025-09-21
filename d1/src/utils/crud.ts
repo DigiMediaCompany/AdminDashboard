@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/d1";
 import {eq, sql} from "drizzle-orm";
 import type { AnySQLiteTable } from "drizzle-orm/sqlite-core";
 import {
-    ColumnMap,
+    ColumnMap, loadRelations,
     parseFilters,
     parseInclude, parsePagination,
     parseSort,
@@ -20,10 +20,8 @@ type CrudOptions<T extends AnySQLiteTable> = {
 };
 
 
-/**
- * Always return CORS headers
- */
 function withCors(res: Response, status?: number) {
+    // TODO: whitelist here
     const headers = new Headers(res.headers);
     headers.set("Access-Control-Allow-Origin", "*");
     headers.set("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
@@ -79,6 +77,9 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
                         .where(eq(columns.id, Number(id)))
                         .limit(1)
                         .all();
+                    if (includes.length) {
+                        rows = await loadRelations(db, tableName, rows, includes);
+                    }
                     return withCors(
                         Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 })
                     );
@@ -91,6 +92,9 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
                         .limit(limit)
                         .offset(offset)
                         .all();
+                    if (includes.length) {
+                        rows = await loadRelations(db, tableName, rows, includes);
+                    }
                     const [{ count }] = await db
                         .select({ count: sql<number>`count(*)`.as("count") })
                         .from(table)

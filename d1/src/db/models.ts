@@ -65,12 +65,6 @@ export const series = sqliteTable("series", {
     category_id: integer("category_id"),
     big_context_file: text("big_context_file"),
 });
-// export const seriesRelations = relations(series, ({ one }) => ({
-//     category: one(categories, {
-//         fields: [series.category_id],
-//         references: [categories.id],
-//     }),
-// }));
 // export const seriesRelations = relations(series, ({ many }) => ({
 //     jobs: many(jobs),
 // }));
@@ -101,8 +95,8 @@ export const tableRegistry: Record<string, any> = {
     categories,
 };
 
-// Note: use custom relationship here since Drizzle relationships does not work well with D1
-// TODO: switch back to standard Drizzle relationship when relationships work
+// Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
+// TODO: switch back to standard ORM relationship
 export const relationMap: Record<string, any> = {
     jobs: {
         series: {
