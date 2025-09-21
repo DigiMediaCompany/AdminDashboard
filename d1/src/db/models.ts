@@ -65,9 +65,6 @@ export const series = sqliteTable("series", {
     category_id: integer("category_id"),
     big_context_file: text("big_context_file"),
 });
-// export const seriesRelations = relations(series, ({ many }) => ({
-//     jobs: many(jobs),
-// }));
 export const SeriesSchema = makeSchema(series, "series");
 
 /**
@@ -81,35 +78,111 @@ export const jobs = sqliteTable("jobs", {
     priority: integer("priority").notNull().default(0),
     type: integer("type").notNull(),
 });
-// export const jobsRelations = relations(jobs, ({ one }) => ({
-//     series: one(series, {
-//         fields: [jobs.series_id],
-//         references: [series.id],
-//     }),
-// }));
 export const JobSchema = makeSchema(jobs, "jobs");
+
+/**
+ * Statuses
+ */
+export const statuses = sqliteTable("statuses", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    type: integer("type").notNull(),
+    position: integer("position").notNull(),
+});
+
+export const StatusSchema = makeSchema(statuses, "statuses");
+
+/**
+ * Progress
+ */
+export const progress = sqliteTable("progress", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    status: text("status", {
+        enum: ["Going", "Success", "Failed", "Standby"],
+    })
+        .notNull()
+        .default("Standby"),
+    status_id: integer("status_id")
+        .notNull()
+        .references(() => statuses.id),
+    job_id: integer("job_id")
+        .notNull()
+        .references(() => jobs.id),
+});
+
+export const ProgressSchema = makeSchema(progress, "progress");
+
 
 export const tableRegistry: Record<string, any> = {
     jobs,
     series,
     categories,
+    progress,
+    statuses
 };
 
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
 // TODO: switch back to standard ORM relationship
-export const relationMap: Record<string, any> = {
+export const relationMap: Record<
+    string,
+    Record<string, { foreignKey: string; target: string; targetKey: string; many?: boolean }>
+> = {
     jobs: {
         series: {
-            foreignKey: "series_id",
+            foreignKey: "series_id", // jobs.series_id → series.id
             target: "series",
             targetKey: "id",
         },
+        progress: {
+            foreignKey: "id",       // jobs.id
+            target: "progress",     // progress.job_id
+            targetKey: "job_id",
+            many: true,             // 1 job → many progress
+        },
     },
+
     series: {
         category: {
-            foreignKey: "category_id",
+            foreignKey: "category_id", // series.category_id → categories.id
             target: "categories",
             targetKey: "id",
+        },
+        jobs: {
+            foreignKey: "id",       // series.id
+            target: "jobs",         // jobs.series_id
+            targetKey: "series_id",
+            many: true,             // 1 series → many jobs
+        },
+    },
+
+    categories: {
+        series: {
+            foreignKey: "id",       // categories.id
+            target: "series",       // series.category_id
+            targetKey: "category_id",
+            many: true,             // 1 category → many series
+        },
+    },
+
+    progress: {
+        job: {
+            foreignKey: "job_id",   // progress.job_id → jobs.id
+            target: "jobs",
+            targetKey: "id",
+        },
+        status: {
+            foreignKey: "status_id", // progress.status_id → statuses.id
+            target: "statuses",
+            targetKey: "id",
+        },
+    },
+
+    statuses: {
+        progress: {
+            foreignKey: "id",       // statuses.id
+            target: "progress",     // progress.status_id
+            targetKey: "status_id",
+            many: true,             // 1 status → many progress
         },
     },
 };

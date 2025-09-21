@@ -16,59 +16,87 @@ export function parseInclude(url: URL): string[][] {
 
 export async function loadRelations(
     db: any,
-    rootTableName: string,
+    rootTable: string,
     rows: any[],
     includes: string[][]
 ) {
     if (!rows.length || !includes.length) return rows;
 
-
+    // Group include paths by their first hop
+    const bySegment: Record<string, string[][]> = {};
     for (const path of includes) {
+        const [head, ...tail] = path;
+        if (!head) continue;
+        if (!bySegment[head]) bySegment[head] = [];
+        if (tail.length) bySegment[head].push(tail);
+    }
 
-        let currentTable = rootTableName;
-        let currentRows = rows;
+    // Process each relation in batch
+    for (const segment of Object.keys(bySegment)) {
+        const rel = relationMap[rootTable]?.[segment];
+        if (!rel) continue;
 
-        for (const segment of path) {
-            const rel = relationMap[currentTable]?.[segment];
+        const parentRows = rows.filter((r) => r != null);
+        if (!parentRows.length) continue;
 
-            if (!rel) break;
+        const ids = [
+            ...new Set(
+                parentRows.map((r) => r?.[rel.foreignKey]).filter((v: any) => v != null)
+            ),
+        ];
+        if (!ids.length) continue;
 
-            const ids = [
-                ...new Set(
-                    currentRows.map((r) => r?.[rel.foreignKey]).filter((v: any) => v != null)
-                ),
-            ];
-            if (!ids.length) {
-                currentTable = rel.target;
-                currentRows = [];
-                continue;
+        const targetTable = tableRegistry[rel.target];
+        if (!targetTable) continue;
+
+        const related = await db
+            .select()
+            .from(targetTable)
+            .where(inArray(targetTable[rel.targetKey], ids))
+            .all();
+
+        const targetMap = new Map<any, any[]>();
+
+        if (rel.many) {
+            // one-to-many → collect into arrays
+            for (const r of related) {
+                const key = r[rel.targetKey];
+                if (!targetMap.has(key)) targetMap.set(key, []);
+                targetMap.get(key)!.push(r);
             }
-
-            const targetTable = tableRegistry[rel.target];
-            if (!targetTable) break;
-
-            const targetRows = await db
-                .select()
-                .from(targetTable)
-                .where(inArray(targetTable[rel.targetKey], ids))
-                .all();
-            const targetMap = new Map<any, any>(
-                targetRows.map((t: any) => [t[rel.targetKey], t])
-            );
-
-            for (const r of currentRows) {
-                const fk = r?.[rel.foreignKey];
-                r[segment] = fk != null ? targetMap.get(fk) ?? null : null;
+        } else {
+            // one-to-one → simple map
+            for (const r of related) {
+                targetMap.set(r[rel.targetKey], r);
             }
+        }
 
-            currentTable = rel.target;
-            currentRows = currentRows.map((r) => r[segment]).filter(Boolean);
-            if (!currentRows.length) break;
+        // Attach back to parent rows
+        for (const parent of parentRows) {
+            const fk = parent[rel.foreignKey];
+            if (rel.many) {
+                parent[segment] = fk != null ? targetMap.get(fk) ?? [] : [];
+            } else {
+                parent[segment] = fk != null ? targetMap.get(fk) ?? null : null;
+            }
+        }
+
+        // Recursively hydrate nested includes
+        const childIncludes = bySegment[segment];
+        if (childIncludes.length) {
+            const children = rel.many
+                ? parentRows.flatMap((r) => r[segment] ?? [])
+                : parentRows.map((r) => r[segment]).filter(Boolean);
+
+            if (children.length) {
+                await loadRelations(db, rel.target, children, childIncludes);
+            }
         }
     }
 
     return rows;
 }
+
 
 export type ColumnMap = Record<string, any>;
 
