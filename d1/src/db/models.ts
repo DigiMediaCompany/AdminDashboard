@@ -65,12 +65,15 @@ export const series = sqliteTable("series", {
     category_id: integer("category_id"),
     big_context_file: text("big_context_file"),
 });
-export const seriesRelations = relations(series, ({ one }) => ({
-    category: one(categories, {
-        fields: [series.category_id],
-        references: [categories.id],
-    }),
-}));
+// export const seriesRelations = relations(series, ({ one }) => ({
+//     category: one(categories, {
+//         fields: [series.category_id],
+//         references: [categories.id],
+//     }),
+// }));
+// export const seriesRelations = relations(series, ({ many }) => ({
+//     jobs: many(jobs),
+// }));
 export const SeriesSchema = makeSchema(series, "series");
 
 /**
@@ -79,12 +82,40 @@ export const SeriesSchema = makeSchema(series, "series");
 export const jobs = sqliteTable("jobs", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     detail: text("detail").notNull().default("{}"),
-    series_id: integer("series_id"),
+    series_id: integer("series_id").references(() => series.id),
     episode: integer("episode"),
     priority: integer("priority").notNull().default(0),
     type: integer("type").notNull(),
 });
-export const jobsRelations = relations(jobs, ({ one }) => ({
-    series: one(series, { fields: [jobs.series_id], references: [series.id] }),
-}));
+// export const jobsRelations = relations(jobs, ({ one }) => ({
+//     series: one(series, {
+//         fields: [jobs.series_id],
+//         references: [series.id],
+//     }),
+// }));
 export const JobSchema = makeSchema(jobs, "jobs");
+
+export const tableRegistry: Record<string, any> = {
+    jobs,
+    series,
+    categories,
+};
+
+// Note: use custom relationship here since Drizzle relationships does not work well with D1
+// TODO: switch back to standard Drizzle relationship when relationships work
+export const relationMap: Record<string, any> = {
+    jobs: {
+        series: {
+            foreignKey: "series_id",
+            target: "series",
+            targetKey: "id",
+        },
+    },
+    series: {
+        category: {
+            foreignKey: "category_id",
+            target: "categories",
+            targetKey: "id",
+        },
+    },
+};

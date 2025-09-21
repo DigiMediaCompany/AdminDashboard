@@ -9,12 +9,14 @@ import {
     validateData,
 } from "./helper";
 import { Env, ModelSchema } from "../types";
+import {Hono} from "hono";
 
 type CrudOptions<T extends AnySQLiteTable> = {
     table: T;
     columns: ColumnMap;
     schema: ModelSchema;
     buildIncludes?: (paths: string[][]) => any;
+    custom?: (app: Hono, db: any) => void;
 };
 
 
@@ -33,23 +35,14 @@ function withCors(res: Response, status?: number) {
     });
 }
 
-/**
- * We need this because db.query.<table>.findMany()
- * is only generated for *known tables*, not dynamic ones.
- */
-const queryMap: Record<string, Function> = {
-    jobs: (db: any, opts: any) => db.query.jobs.findMany(opts),
-    series: (db: any, opts: any) => db.query.series.findMany(opts),
-    categories: (db: any, opts: any) => db.query.categories.findMany(opts),
-};
-
-export function createCrudRoutes<T extends AnySQLiteTable>({
-                                                               table,
-                                                               columns,
-                                                               schema,
-                                                               buildIncludes,
-                                                           }: CrudOptions<T>) {
-    return async (req: Request, env: Env) => {
+export function createCrudRoutes<T extends AnySQLiteTable>(
+    {
+        table,
+        columns,
+        schema,
+        custom,
+    }: CrudOptions<T>) {
+    return async (req: Request, env: Env, ctx?: any) => {
         const db = drizzle(env.D1_DATABASE, { schema });
         const url = new URL(req.url);
         const id = url.pathname.split("/").pop();
@@ -57,9 +50,19 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
         const filters = parseFilters(url, columns);
         const orderBy = parseSort(url, columns);
         const { limit, page, offset } = parsePagination(url);
-        const includes = buildIncludes ? buildIncludes(parseInclude(url)) : undefined;
+        const includes = parseInclude(url);
+        const app = new Hono();
 
         try {
+            // Custom
+            if (custom) {
+                custom(app, db);
+                const res = await app.fetch(req, env, ctx);
+                if (res.status !== 404) {
+                    return withCors(res);
+                }
+            }
+
             // OPTIONS
             if (req.method === "OPTIONS") {
                 return withCors(new Response(null, { status: 204 }));
@@ -67,39 +70,10 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
 
             // GET
             if (req.method === "GET") {
-                const tableName = (table as any)[Symbol.for("drizzle:Name")];
-
-                console.log(includes)
-                if (includes && Object.keys(includes).length && queryMap[tableName]) {
-                    if (id && id !== tableName) {
-                        const rows = await queryMap[tableName](db, {
-                            where: eq(columns.id, Number(id)),
-                            with: includes,
-                            limit: 1,
-                        });
-                        return withCors(
-                            Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 })
-                        );
-                    } else {
-                        const rows = await queryMap[tableName](db, {
-                            where: filters,
-                            with: includes,
-                            orderBy,
-                            limit,
-                            offset,
-                        });
-                        return withCors(
-                            Response.json({
-                                data: rows,
-                                pagination: { page, limit, count: rows.length },
-                            })
-                        );
-                    }
-                }
-
+                const tableName = (table as any)[Symbol.for("drizzle:Name")]; // unchanged
 
                 if (id && id !== tableName) {
-                    const rows = await db
+                    let rows = await db
                         .select()
                         .from(table)
                         .where(eq(columns.id, Number(id)))
@@ -109,7 +83,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                         Response.json(rows[0] || {}, { status: rows.length ? 200 : 404 })
                     );
                 } else {
-                    const rows = await db
+                    let rows = await db
                         .select()
                         .from(table)
                         .where(filters)
@@ -139,9 +113,10 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
 
             // POST (Create)
             if (req.method === "POST") {
-                const body = await req.json();
+                const body: any = await req.json();
                 validateData(schema, body);
 
+                // @ts-ignore
                 const [row] = await db.insert(table).values(body).returning();
                 return withCors(Response.json(row, { status: 201 }));
             }
@@ -154,9 +129,11 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
                     );
                 }
 
-                const body = await req.json();
+                const body: any = await req.json();
                 validateData(schema, body, true);
 
+
+                // @ts-ignore
                 const [row] = await db
                     .update(table)
                     .set(body)
