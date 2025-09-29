@@ -29,7 +29,7 @@ export default function ArticleJobTable() {
     });
     useEffect(() => {
         setLoading(true)
-        getApi<Job>('jobs', 1)
+        getApi<Job>('jobs', 1, 'progress, series', '-id')
             .then(result => {
                 setJobs(result.data);
                 setTotalPages(result.total_pages)

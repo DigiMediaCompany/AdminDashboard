@@ -6,12 +6,18 @@ const api = getAdminApiInstance('article')
 
 export const getApi = async <T>(
     model: string,
-    page: number = 1
+    page: number = 1,
+    relation: string = '',
+    sort: string = '',
+    filter: Record<string, any> = {}
 ): Promise<Pagination<T>> => {
     const response = await api.get(`/` + model, {
         params: {
             page,
             limit: constants.STANDARD_LIMIT,
+            ...(relation ? { include: relation } : {}),
+            ...(sort ? { sort } : {}),
+            ...filter
         },
     });
 

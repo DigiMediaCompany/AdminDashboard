@@ -33,9 +33,9 @@ function getProgressStatus(job: Job) {
     if (progressList.every(p => p.status === "Success")) {
 
         if (job.type === 2) {
-            return "Select";
-        } else {
-            return "Done";
+            return "Summary";
+        } else if (job.type === 3) {
+            return "Article"
         }
     }
 
@@ -51,12 +51,6 @@ function getProgressStatus(job: Job) {
                 return "Context";
             case 4:
                 return "Article";
-            case 7:
-                return "Summary";
-            case 8:
-                return "Done-1";
-            case 10:
-                return "Article"
         }
 
     }
@@ -495,18 +489,8 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         });
                         onUpdateJob(selectedJob.id, {
                             ...selectedJob,
-                            progress: selectedJob.progress.map((item, index) =>
-                                index === 1 ? {...item, status: 'Success'} : item
-                            ),
                             detail: detailString
                         })
-                        updateApi("progress", selectedJob.progress[1].id, {
-                            status: 'Success'
-                        }).then(() => {
-                            console.log("yay")
-                        }).catch(() => {
-                            console.log("error")
-                        });
                     }
                 }}
             />
