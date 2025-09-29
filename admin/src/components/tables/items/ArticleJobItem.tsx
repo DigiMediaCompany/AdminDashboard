@@ -164,8 +164,8 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobDetail.link ? getYouTubeId(jobDetail.link) || "—" : "—"}
                                 </TableCell>
-                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
-                                    {job.series?.name || "—"}
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[400px]">
+                                    {job.series?.name + " - " + jobDetail?.episode || "—"}
                                 </TableCell>
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobTypeMap[job.type] || "—"}

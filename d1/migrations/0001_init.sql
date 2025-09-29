@@ -53,4 +53,3 @@ INSERT INTO statuses (name, type, position) VALUES
 
 ('Generating article', 3, 1),
 ('Article review required', 3, 2),
-('Done', 3, 3);
