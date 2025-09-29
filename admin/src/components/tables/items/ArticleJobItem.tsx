@@ -99,6 +99,12 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 "
                         >
+                            ID
+                        </TableCell>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 "
+                        >
                             Youtube ID
                         </TableCell>
                         <TableCell
@@ -160,7 +166,9 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         }
                         return (
                             <TableRow key={job.id}>
-                                {/* Project Name */}
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
+                                    {job.id}
+                                </TableCell>
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobDetail.link ? getYouTubeId(jobDetail.link) || "—" : "—"}
                                 </TableCell>

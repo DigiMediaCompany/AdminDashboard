@@ -8,6 +8,7 @@ import {Job, Series} from "../../types/Article.ts";
 import Select from "../form/Select.tsx";
 import {isValidYouTubeUrl} from "../../utils/helper.ts";
 import {constants} from "../../utils/constants.ts";
+import {useAppSelector} from "../../store";
 
 interface JobData {
     type: string;
@@ -78,6 +79,9 @@ export default function JobModal({
             .catch(() => {
             })
     }, [])
+
+    const authState = useAppSelector((state) => state.auth)
+    const userRole = authState.user?.user_metadata?.role
 
     useEffect(() => {
         if (!jobData.series) return;
@@ -198,7 +202,8 @@ export default function JobModal({
                             <div>
                                 <Label>Type</Label>
                                 <Select
-                                    options={ constants.JOB_TYPES.map((a) => ({
+                                    options={ constants.JOB_TYPES.filter(jobType => userRole === constants.ROLES.ADMIN ? jobType.value === constants.JOB_TYPES[1].value: true  )
+                                        .map((a) => ({
                                         value: a.value,
                                         label: `${a.value}. ${a.label}`,
                                     }))}
