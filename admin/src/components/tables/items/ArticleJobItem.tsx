@@ -441,6 +441,13 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         }).catch(() => {
                             console.log("error")
                         });
+                        updateApi("signals", 1, {
+                            status: 1
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
                         let workingProgressPosition = 0;
                         if (selectedJob.type === 1) {
                             workingProgressPosition = 3
@@ -510,6 +517,13 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                 onSave={(data) => {
                     if (selectedJob) {
                         const detail = JSON.parse(selectedJob.detail)
+                        updateApi("signals", 1, {
+                            status: 1
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
                         postApi('jobs', {
                             detail: JSON.stringify({
                                 link: detail.link,

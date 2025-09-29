@@ -4,7 +4,7 @@ import PageMeta from "../../components/common/PageMeta";
 import ArticleJobTable from "../../components/tables/ArticleJobTable.tsx";
 import {useModal} from "../../hooks/useModal.ts";
 import JobModal from "../../components/modals/JobModal.tsx";
-import {postApi} from "../../services/adminArticleService.ts";
+import {postApi, updateApi} from "../../services/adminArticleService.ts";
 import Toast from "../UiElements/Toast.tsx";
 import {useState} from "react";
 import {constants} from "../../utils/constants.ts";
@@ -71,6 +71,13 @@ export default function Job() {
                         default:
                             throw new Error("No valid type");
                     }
+                    updateApi("signals", 1, {
+                        status: 1
+                    }).then(() => {
+                        console.log("yay")
+                    }).catch(() => {
+                        console.log("error")
+                    });
                     postApi('jobs', {
                         detail: JSON.stringify(job),
                         ...(data.series ? { series_id: parseInt(data.series) } : {}),

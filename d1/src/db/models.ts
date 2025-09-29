@@ -112,13 +112,23 @@ export const progress = sqliteTable("progress", {
 
 export const ProgressSchema = makeSchema(progress, "progress");
 
+/**
+ * Signals
+ */
+export const signals = sqliteTable("signals", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    status: integer("status").notNull(),
+});
+
+export const SignalSchema = makeSchema(signals, "signals");
 
 export const tableRegistry: Record<string, any> = {
     jobs,
     series,
     categories,
     progress,
-    statuses
+    statuses,
+    signals
 };
 
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup

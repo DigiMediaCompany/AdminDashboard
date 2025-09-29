@@ -40,6 +40,11 @@ CREATE TABLE jobs (
     FOREIGN KEY (series_id) REFERENCES series(id)
 );
 
+CREATE TABLE signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status INTEGER NOT NULL DEFAULT 0
+);
+
 -- Seeding
 -- TODO: use matching vars with logic, also lookup on how D1 handle seeding officially
 INSERT INTO statuses (name, type, position) VALUES
@@ -52,4 +57,7 @@ INSERT INTO statuses (name, type, position) VALUES
 ('Reviewing summary', 2, 2 ),
 
 ('Generating article', 3, 1),
-('Article review required', 3, 2),
+('Article review required', 3, 2);
+
+INSERT INTO signals (status) VALUES
+(1);
