@@ -27,27 +27,8 @@ const categoriesHandler = createCrudRoutes({
 });
 const UsagagVideosHandler = createCrudRoutes({
     table: UsagagVideos,
-    columns: {   title: UsagagVideos.title, slug: UsagagVideos.slug, thumbnail: UsagagVideos.thumbnail, video: UsagagVideos.video },
-    schema: UsagagSchema,
-    custom: (app, db) => {
-        app.post(`/usagag-videos`, async (c) => {
-            const body = await c.req.json();
-
-            const [newVideo] = await db
-                .insert(UsagagVideos)
-                .values({
-                    title: body.title ?? "",
-                    slug: body.slug ?? "",
-                    thumbnail: body.thumbnail ?? "",
-                    video: body.video ?? "",
-                })
-                .returning();
-
-            return c.json({
-                newVideo,
-            });
-        });
-    },
+    columns: {id: UsagagVideos.id, title: UsagagVideos.title, slug: UsagagVideos.slug, thumbnail: UsagagVideos.thumbnail, video: UsagagVideos.video },
+    schema: UsagagSchema
 });
 const seriesHandler = createCrudRoutes({
     table: series,
