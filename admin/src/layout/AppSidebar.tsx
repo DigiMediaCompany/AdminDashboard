@@ -13,7 +13,8 @@ import {
   // BoxCubeIcon,
   // CalenderIcon,
   GridIcon, PieChartIcon, BoxCubeIcon,
-  CalenderIcon, ListIcon, PageIcon, TableIcon
+  CalenderIcon, ListIcon, PageIcon, TableIcon,
+  VideoIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import {
@@ -99,6 +100,13 @@ const othersItems: NavItem[] = [
 
 
 const showcase: NavItem[] = [
+  {
+    name:"Usagag Video",
+    icon: <VideoIcon />,
+    subItems: [
+      { name: "Videos", path: "/usagag-videos", pro: false },
+    ],
+  },
   {
     name: "Youtube Article",
     icon: <PlayCircleIcon />,

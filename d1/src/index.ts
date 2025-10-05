@@ -8,7 +8,9 @@ import {
     progress,
     StatusSchema,
     ProgressSchema,
-    statuses
+    statuses,
+    UsagagVideos,
+    UsagagSchema,
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
 
@@ -23,7 +25,30 @@ const categoriesHandler = createCrudRoutes({
     columns: { id: categories.id, name: categories.name },
     schema: CategorySchema,
 });
+const UsagagVideosHandler = createCrudRoutes({
+    table: UsagagVideos,
+    columns: {   title: UsagagVideos.title, slug: UsagagVideos.slug, thumbnail: UsagagVideos.thumbnail, video: UsagagVideos.video },
+    schema: UsagagSchema,
+    custom: (app, db) => {
+        app.post(`/usagag-videos`, async (c) => {
+            const body = await c.req.json();
 
+            const [newVideo] = await db
+                .insert(UsagagVideos)
+                .values({
+                    title: body.title ?? "",
+                    slug: body.slug ?? "",
+                    thumbnail: body.thumbnail ?? "",
+                    video: body.video ?? "",
+                })
+                .returning();
+
+            return c.json({
+                newVideo,
+            });
+        });
+    },
+});
 const seriesHandler = createCrudRoutes({
     table: series,
     columns: {
@@ -125,7 +150,9 @@ export default {
         if (url.pathname.startsWith(`${articleGroup}/progress`)) {
             return progressHandler(req, env);
         }
-
+        if (url.pathname.startsWith(`/usagag-videos`)) {
+            return UsagagVideosHandler(req, env);
+        }
         return new Response("Not Found", { status: 404 });
     },
 };
