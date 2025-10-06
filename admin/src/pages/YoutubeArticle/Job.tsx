@@ -4,7 +4,7 @@ import PageMeta from "../../components/common/PageMeta";
 import ArticleJobTable from "../../components/tables/ArticleJobTable.tsx";
 import {useModal} from "../../hooks/useModal.ts";
 import JobModal from "../../components/modals/JobModal.tsx";
-import {postApi} from "../../services/adminArticleService.ts";
+import {postApi, updateApi} from "../../services/adminArticleService.ts";
 import Toast from "../UiElements/Toast.tsx";
 import {useState} from "react";
 import {constants} from "../../utils/constants.ts";
@@ -48,31 +48,39 @@ export default function Job() {
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(data) => {
-                    const job = {
-                        link: ""
+                    const job: { link: string; episode?: string, title?: string, summary?: string } = {
+                        link: "",
+                        title: "",
+                        summary: "",
                     }
 
                     switch (data.type) {
                         case constants.JOB_TYPES[0].value:
-                            if (data.link) {
-                                job.link = data.link
-                            } else {
-                                throw new Error("No valid link");
-                            }
+                            job.link = data.link ?? ""
                             break;
                         case constants.JOB_TYPES[1].value:
-                            if (data.link2) {
-                                job.link = data.link2
-                            } else {
-                                throw new Error("No valid link");
-                            }
+                            job.link = data.link2 ?? ""
+                            job.episode = data.episode ?? ""
+                            break;
+                        case constants.JOB_TYPES[2].value:
+                            job.link = data.link3 ?? ""
+                            job.episode = data.episode2 ?? ""
+                            job.summary = data.summary ?? ""
+                            job.title = data.title ?? ""
                             break;
                         default:
                             throw new Error("No valid type");
                     }
+                    updateApi("signals", 1, {
+                        status: 1
+                    }).then(() => {
+                        console.log("yay")
+                    }).catch(() => {
+                        console.log("error")
+                    });
                     postApi('jobs', {
                         detail: JSON.stringify(job),
-                        series_id: data.series,
+                        ...(data.series ? { series_id: parseInt(data.series) } : {}),
                         type: parseInt(data.type)
                     }).then(() => {
                         setToast({

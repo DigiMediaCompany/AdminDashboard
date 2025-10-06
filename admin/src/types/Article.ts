@@ -14,6 +14,7 @@ export interface JobDetail {
     context_file?: string | null;
     article_file?: string | null;
     summary_files?: string[];
+    episode?: string | null;
 }
 
 export interface Category {

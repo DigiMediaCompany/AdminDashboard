@@ -3,11 +3,17 @@ import Button from "../ui/button/Button.tsx";
 import {Modal} from "../ui/modal";
 import Label from "../form/Label.tsx";
 import TextArea from "../form/input/TextArea.tsx";
-import {PlusCircleIcon} from "@heroicons/react/24/outline";
+import {PlusCircleIcon, TrashIcon} from "@heroicons/react/24/outline";
 import {Job} from "../../types/Article.ts";
+import Input from "../form/input/InputField.tsx";
+
+interface SummaryData {
+    title: string;
+    text: string;
+}
 
 interface JobData {
-    summaries: string[];
+    summaries: SummaryData[];
 }
 
 interface BaseModalProps {
@@ -45,16 +51,19 @@ export default function JobSummaryModal({
     };
 
     const handleAdd = () => {
-        setSummaries((prev) => [...prev, ""]);
+        setSummaries((prev) => [...prev, { title: "", text: "" }]);
     };
 
-    const [summaries, setSummaries] = useState<string[]>([]);
-    const handleChange = (index: number, value: string) => {
+    const [summaries, setSummaries] = useState<SummaryData[]>([]);
+    const handleChange = (index: number, field: keyof SummaryData, value: string) => {
         const updated = [...summaries];
-        updated[index] = value;
+        updated[index] = { ...updated[index], [field]: value };
         setSummaries(updated);
     };
 
+    const handleDelete = (index: number) => {
+        setSummaries((prev) => prev.filter((_, i) => i !== index));
+    };
 
     return (
         <Modal
@@ -80,12 +89,24 @@ export default function JobSummaryModal({
                     <div className="custom-scrollbar flex-1 overflow-y-auto px-2 pb-3">
 
                         {summaries.map((sum, index) => (
-                            <div key={index}>
-                                <Label>Context {index + 1}</Label>
+                            <div key={index} className="mb-6 border-b pb-4 flex flex-col gap-y-3">
+                                <div className="flex items-center gap-2">
+                                    <Label className="items-center">Context {index + 1}</Label>
+                                    <TrashIcon
+                                        className="w-5 h-5 mb-1.5 text-red-500 cursor-pointer hover:text-red-700"
+                                        onClick={() => handleDelete(index)}
+                                    />
+                                </div>
+                                <Input
+                                    type="text"
+                                    value={sum.title}
+                                    onChange={(e) => handleChange(index, "title", e.target.value)}
+                                />
+
                                 <TextArea
                                     rows={5}
-                                    value={sum}
-                                    onChange={(e) => handleChange(index, e)}
+                                    value={sum.text}
+                                    onChange={(e) => handleChange(index, "text", e)}
                                 />
                             </div>
                         ))}

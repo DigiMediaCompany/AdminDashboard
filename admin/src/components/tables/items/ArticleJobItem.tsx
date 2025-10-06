@@ -33,9 +33,9 @@ function getProgressStatus(job: Job) {
     if (progressList.every(p => p.status === "Success")) {
 
         if (job.type === 2) {
-            return "Select";
-        } else {
-            return "Done";
+            return "Summary";
+        } else if (job.type === 3) {
+            return "Article"
         }
     }
 
@@ -51,12 +51,6 @@ function getProgressStatus(job: Job) {
                 return "Context";
             case 4:
                 return "Article";
-            case 7:
-                return "Summary";
-            case 8:
-                return "Done-1";
-            case 10:
-                return "Article"
         }
 
     }
@@ -101,6 +95,12 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                 {/* Table Header */}
                 <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 "
+                        >
+                            ID
+                        </TableCell>
                         <TableCell
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 "
@@ -166,12 +166,14 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         }
                         return (
                             <TableRow key={job.id}>
-                                {/* Project Name */}
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
+                                    {job.id}
+                                </TableCell>
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobDetail.link ? getYouTubeId(jobDetail.link) || "—" : "—"}
                                 </TableCell>
-                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
-                                    {job.series?.name || "—"}
+                                <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[400px]">
+                                    {job.series?.name + " - " + jobDetail?.episode || "—"}
                                 </TableCell>
                                 <TableCell className="px-5 py-4 sm:px-6 text-start truncate max-w-[200px]">
                                     {jobTypeMap[job.type] || "—"}
@@ -439,6 +441,13 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         }).catch(() => {
                             console.log("error")
                         });
+                        updateApi("signals", 1, {
+                            status: 1
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
                         let workingProgressPosition = 0;
                         if (selectedJob.type === 1) {
                             workingProgressPosition = 3
@@ -495,18 +504,8 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         });
                         onUpdateJob(selectedJob.id, {
                             ...selectedJob,
-                            progress: selectedJob.progress.map((item, index) =>
-                                index === 1 ? {...item, status: 'Success'} : item
-                            ),
                             detail: detailString
                         })
-                        updateApi("progress", selectedJob.progress[1].id, {
-                            status: 'Success'
-                        }).then(() => {
-                            console.log("yay")
-                        }).catch(() => {
-                            console.log("error")
-                        });
                     }
                 }}
             />
@@ -518,6 +517,13 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                 onSave={(data) => {
                     if (selectedJob) {
                         const detail = JSON.parse(selectedJob.detail)
+                        updateApi("signals", 1, {
+                            status: 1
+                        }).then(() => {
+                            console.log("yay")
+                        }).catch(() => {
+                            console.log("error")
+                        });
                         postApi('jobs', {
                             detail: JSON.stringify({
                                 link: detail.link,

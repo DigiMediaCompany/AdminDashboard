@@ -5,6 +5,8 @@ import ArticleJobItem from "./items/ArticleJobItem.tsx";
 import Toast from "../../pages/UiElements/Toast.tsx";
 import {QuizPagination} from "../ui/pagination/QuizPagination.tsx";
 import {useSearchParams} from "react-router";
+import {useAppSelector} from "../../store";
+import {constants} from "../../utils/constants.ts";
 
 
 export default function ArticleJobTable() {
@@ -27,9 +29,16 @@ export default function ArticleJobTable() {
         title: "",
         message: ""
     });
+    const authState = useAppSelector((state) => state.auth)
+    const userRole = authState.user?.user_metadata?.role
     useEffect(() => {
+
         setLoading(true)
-        getApi<Job>('jobs', 1)
+        getApi<Job>('jobs', 1, 'progress, series', '-id',
+            userRole === constants.ROLES.ADMIN ? {
+                type: constants.JOB_TYPES[2].value
+            } : {}
+        )
             .then(result => {
                 setJobs(result.data);
                 setTotalPages(result.total_pages)

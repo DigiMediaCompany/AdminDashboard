@@ -26,7 +26,7 @@ CREATE TABLE progress (
     status_id INTEGER NOT NULL,
     job_id INTEGER NOT NULL,
     FOREIGN KEY (status_id) REFERENCES statuses(id),
-    FOREIGN KEY (job_id) REFERENCES jobs(id),
+    FOREIGN KEY (job_id) REFERENCES jobs(id) ON DELETE CASCADE,
     UNIQUE (status_id, job_id)
 );
 
@@ -40,18 +40,24 @@ CREATE TABLE jobs (
     FOREIGN KEY (series_id) REFERENCES series(id)
 );
 
+CREATE TABLE signals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    status INTEGER NOT NULL DEFAULT 0
+);
+
 -- Seeding
+-- TODO: use matching vars with logic, also lookup on how D1 handle seeding officially
 INSERT INTO statuses (name, type, position) VALUES
 ('Extracting Youtube', 1, 1),
 ('Context review required', 1, 2),
 ('Generating article', 1, 3),
 ('Article review required', 1, 4),
-('Done', 1, 7),
 
 ('Extracting Youtube', 2, 1),
 ('Reviewing summary', 2, 2 ),
-('Done', 2, 3),
 
 ('Generating article', 3, 1),
-('Article review required', 3, 2),
-('Done', 3, 3);
+('Article review required', 3, 2);
+
+INSERT INTO signals (status) VALUES
+(1);

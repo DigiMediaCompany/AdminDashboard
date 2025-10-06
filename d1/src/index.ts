@@ -11,6 +11,7 @@ import {
     statuses,
     UsagagVideos,
     UsagagSchema,
+    signals, SignalSchema
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
 
@@ -111,6 +112,15 @@ const progressHandler = createCrudRoutes({
     schema: ProgressSchema,
 });
 
+const signalHandler = createCrudRoutes({
+    table: signals,
+    columns: {
+        id: signals.id,
+        status: signals.status,
+    },
+    schema: SignalSchema,
+});
+
 
 export default {
     async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -134,6 +144,10 @@ export default {
         if (url.pathname.startsWith(`/usagag-videos`)) {
             return UsagagVideosHandler(req, env);
         }
+        if (url.pathname.startsWith(`${articleGroup}/signals`)) {
+            return signalHandler(req, env);
+        }
+
         return new Response("Not Found", { status: 404 });
     },
 };
