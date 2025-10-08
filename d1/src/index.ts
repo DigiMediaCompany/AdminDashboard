@@ -19,6 +19,7 @@ import { sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { useDb } from "./middleware/useDB";
 import { gamesRoutes } from "./routes/games";
+import { h5Routes } from "./routes/h5_games";
 
 const articleGroup = "/article";
 
@@ -108,7 +109,7 @@ const progressHandler = createCrudRoutes({
 const app = new Hono();
 app.use("*", useDb());
 app.route("/api/games", gamesRoutes);
-
+app.route("/api/h5", h5Routes);
 export default {
   async fetch(
     req: Request,
@@ -117,6 +118,9 @@ export default {
   ): Promise<Response> {
     const url = new URL(req.url);
     if (url.pathname.startsWith("/api/games")) {
+      return app.fetch(req, env, ctx);
+    }
+    if (url.pathname.startsWith("/api/h5")) {
       return app.fetch(req, env, ctx);
     }
     if (url.pathname.startsWith(`${articleGroup}/categories`)) {
