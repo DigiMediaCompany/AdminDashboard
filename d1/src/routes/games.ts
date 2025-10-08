@@ -33,6 +33,22 @@ gamesRoutes.get("/details", async (c) => {
   return c.json(details);
 });
 
+// * GET /api/games/detail-pros/:detailId
+gamesRoutes.get("/detail-pros/:detailId", async (c) => {
+  const service = new GameService(c.get("db"));
+  const detailId = Number(c.req.param("detailId"));
+  const detailPros = await service.getDetailPros(detailId);
+  return c.json(detailPros);
+});
+
+// * GET /api/games/detail-cons/:detailId
+gamesRoutes.get("/detail-cons/:detailId", async (c) => {
+  const service = new GameService(c.get("db"));
+  const detailId = Number(c.req.param("detailId"));
+  const detailCons = await service.getDetailCons(detailId);
+  return c.json(detailCons);
+});
+
 // * GET /api/games/page/:pageId/thumbnail -> get thumbnails from page id
 gamesRoutes.get("/page/:pageId/thumbnails", async (c) => {
   const service = new GameService(c.get("db"));

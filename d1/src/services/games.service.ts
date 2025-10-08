@@ -1,6 +1,8 @@
 import type { DrizzleD1Database } from "drizzle-orm/d1";
 import {
   gameDetail,
+  gameDetailCons,
+  gameDetailPros,
   gameIntroduction,
   gamesPage,
   gameThumbnail,
@@ -11,11 +13,15 @@ export class GameService {
   private thumbnailRepo: CrudRepository<typeof gameThumbnail, "id">;
   private introductionRepo: CrudRepository<typeof gameIntroduction, "id">;
   private detailRepo: CrudRepository<typeof gameDetail, "id">;
+  private detailProsRepo: CrudRepository<typeof gameDetailPros, "id">;
+  private detailConsRepo: CrudRepository<typeof gameDetailCons, "id">;
   constructor(private readonly db: DrizzleD1Database) {
     this.gamePageRepo = new CrudRepository(db, gamesPage, "id");
     this.thumbnailRepo = new CrudRepository(db, gameThumbnail, "id");
     this.introductionRepo = new CrudRepository(db, gameIntroduction, "id");
     this.detailRepo = new CrudRepository(db, gameDetail, "id");
+    this.detailProsRepo = new CrudRepository(db, gameDetailPros, "id");
+    this.detailConsRepo = new CrudRepository(db, gameDetailCons, "id");
   }
   //* GET all
   async getGamePages() {
@@ -32,9 +38,19 @@ export class GameService {
   async getDetails() {
     return await this.detailRepo.findAll();
   }
+  async getDetailPros(detailId: number) {
+    return await this.detailProsRepo.findByField("gameDetailId", detailId);
+  }
+  async getDetailCons(detailId: number) {
+    return await this.detailConsRepo.findByField("gameDetailId", detailId);
+  }
   //* GET by id
   async getGamePageById(pageId: number) {
     return await this.gamePageRepo.findById(pageId);
+  }
+
+  async getDetailProsByDetailId(detailId: number) {
+    return await this.detailRepo;
   }
   async getDetailById(detailId: number) {
     return await this.detailRepo.findById(detailId);
