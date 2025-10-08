@@ -9,7 +9,6 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { getTableColumns, relations } from "drizzle-orm";
 import { FieldSchema, ModelSchema } from "../types";
-import { id } from "zod/v4/locales";
 
 function colToFieldType(col: any): "number" | "string" {
   if (col instanceof SQLiteInteger || col instanceof SQLiteReal)
@@ -127,78 +126,6 @@ export const tableRegistry: Record<string, any> = {
   statuses,
 };
 
-//* ------------------------ GAMES ---------------------------
-
-// * GamePage
-export const gamesPage = sqliteTable("games_page", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  pageIndex: integer("page_index"),
-  pageUrl: text("page_url").notNull(),
-});
-
-// * GameThumbnail
-export const gameThumbnail = sqliteTable("game_thumbnail", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  pageId: integer("page_id")
-    .notNull()
-    .references(() => gamesPage.id),
-  title: text("title").notNull(),
-  img: text("img").notNull(),
-  excerpt: text("excerpt"),
-});
-
-// * GameIntroduction
-export const gameIntroduction = sqliteTable("game_introduction", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  thumbnailId: integer("thumbnail_id")
-    .notNull()
-    .references(() => gameThumbnail.id),
-  url: text("url"),
-  postContent: text("post_content"),
-});
-
-// * GameDetail
-export const gameDetail = sqliteTable("game_detail", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  introductionId: integer("introduction_id")
-    .notNull()
-    .references(() => gameIntroduction.id),
-  url: text("url"),
-  gameplayDescription: text("gameplay_description"),
-  circleProgress: integer("circle_progress").default(0), // value / 50
-  graphicAndSound: integer("graphic_and_sound").default(0), // value / 5
-  controls: integer("controls").default(0), // value / 5
-  gameplay: integer("gameplay").default(0), // value / 5
-  lastingAppeal: integer("lasting_appeal").default(0), // value / 5
-});
-
-// * GameDetailScreenshots
-export const gameDetailScreenshots = sqliteTable("game_detail_screenshots", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  gameDetailId: integer("game_detail_id")
-    .notNull()
-    .references(() => gameDetail.id),
-  imageUrl: text("image_url").notNull(),
-});
-
-// * GameDetailPros
-export const gameDetailPros = sqliteTable("game_detail_pros", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  gameDetailId: integer("game_detail_id")
-    .notNull()
-    .references(() => gameDetail.id),
-  text: text("text").notNull(),
-});
-
-// * GameDetailCons
-export const gameDetailCons = sqliteTable("game_detail_cons", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  gameDetailId: integer("game_detail_id")
-    .notNull()
-    .references(() => gameDetail.id),
-  text: text("text").notNull(),
-});
-//* -------------------------- END Games ------------------------------
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
 // TODO: switch back to standard ORM relationship
 export const relationMap: Record<

@@ -1,0 +1,15 @@
+BEGIN TRANSACTION;
+INSERT INTO games_page (page_index, page_url) VALUES (1, 'https://pingh5.com/appreviews?page=1');
+INSERT INTO games_page (page_index, page_url) VALUES (10, 'https://pingh5.com/appreviews?page=10');
+INSERT INTO games_page (page_index, page_url) VALUES (11, 'https://pingh5.com/appreviews?page=11');
+INSERT INTO games_page (page_index, page_url) VALUES (12, 'https://pingh5.com/appreviews?page=12');
+INSERT INTO games_page (page_index, page_url) VALUES (13, 'https://pingh5.com/appreviews?page=13');
+INSERT INTO games_page (page_index, page_url) VALUES (2, 'https://pingh5.com/appreviews?page=2');
+INSERT INTO games_page (page_index, page_url) VALUES (3, 'https://pingh5.com/appreviews?page=3');
+INSERT INTO games_page (page_index, page_url) VALUES (4, 'https://pingh5.com/appreviews?page=4');
+INSERT INTO games_page (page_index, page_url) VALUES (5, 'https://pingh5.com/appreviews?page=5');
+INSERT INTO games_page (page_index, page_url) VALUES (6, 'https://pingh5.com/appreviews?page=6');
+INSERT INTO games_page (page_index, page_url) VALUES (7, 'https://pingh5.com/appreviews?page=7');
+INSERT INTO games_page (page_index, page_url) VALUES (8, 'https://pingh5.com/appreviews?page=8');
+INSERT INTO games_page (page_index, page_url) VALUES (9, 'https://pingh5.com/appreviews?page=9');
+COMMIT;
