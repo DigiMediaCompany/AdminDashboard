@@ -29,6 +29,20 @@
       "when": 1759924411179,
       "tag": "0003_normal_midnight",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1760019991768,
+      "tag": "0004_broad_cammi",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1760020332866,
+      "tag": "0005_round_valkyrie",
+      "breakpoints": true
     }
   ]
 }

@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { sqliteTable, integer, text, index } from "drizzle-orm/sqlite-core";
 
 // -------------------------- Blog Pages ----------------------------
@@ -61,7 +61,9 @@ export const blogThumbnails = sqliteTable("blog_thumbnails", {
   title: text("title").notNull(),
   excerpt: text("excerpt"),
   thumbnail: text("thumbnail").notNull(),
-  createdAt: text("created_at").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
 });
 // index phục vụ JOIN, filter, sort
 export const idxBlogThumbnailsPage = index("idx_blog_thumbnails_page_id").on(
