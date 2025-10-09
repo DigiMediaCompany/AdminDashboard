@@ -101,7 +101,7 @@ app.post('/files', async (c) => {
         const arrayBuffer = await file.arrayBuffer();
 
         // Upload to R2
-        await c.env.BUCKET.put(uniqueName, arrayBuffer, {
+        await c.env.admin.put(uniqueName, arrayBuffer, {
             httpMetadata: {
                 contentType: file.type,
                 cacheControl: CACHE_HEADERS.CACHE_CONTROL,
@@ -140,7 +140,7 @@ app.get('/files/:filename', async (c) => {
             return cachedResponse;
         }
 
-        const object = await c.env.BUCKET.get(filename);
+        const object = await c.env.admin.get(filename);
         if (!object) {
             return createResponse(
                 { message: 'File not found' },
@@ -175,7 +175,7 @@ app.get('/files/:filename', async (c) => {
 app.delete('/files/:filename', async (c) => {
     try {
         const filename = c.req.param('filename');
-        const object = await c.env.BUCKET.head(filename);
+        const object = await c.env.admin.head(filename);
 
         if (!object) {
             return createResponse(
@@ -184,7 +184,7 @@ app.delete('/files/:filename', async (c) => {
             );
         }
 
-        await c.env.BUCKET.delete(filename);
+        await c.env.admin.delete(filename);
         
         // Invalidate cache
         const cacheUrl = new URL(`/files/${filename}`, c.req.url).toString();

@@ -9,7 +9,7 @@ import {
     StatusSchema,
     ProgressSchema,
     statuses,
-    UsagagVideos,
+    usagag_videos,
     UsagagSchema,
     signals, SignalSchema
 } from "./db/models";
@@ -27,8 +27,8 @@ const categoriesHandler = createCrudRoutes({
     schema: CategorySchema,
 });
 const UsagagVideosHandler = createCrudRoutes({
-    table: UsagagVideos,
-    columns: {id: UsagagVideos.id, title: UsagagVideos.title, slug: UsagagVideos.slug, thumbnail: UsagagVideos.thumbnail, video: UsagagVideos.video },
+    table: usagag_videos,
+    columns: {id: usagag_videos.id, title: usagag_videos.title, slug: usagag_videos.slug, thumbnail: usagag_videos.thumbnail, video: usagag_videos.video },
     schema: UsagagSchema
 });
 const seriesHandler = createCrudRoutes({

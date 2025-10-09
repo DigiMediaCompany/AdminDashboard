@@ -69,9 +69,9 @@ export const series = sqliteTable("series", {
 export const SeriesSchema = makeSchema(series, "series");
 
 /**
- * Videos
+ * Usagag Videos
  */
-export const UsagagVideos = sqliteTable('usagag_videos', {
+export const usagag_videos = sqliteTable('usagag_videos', {
     id: integer('id').primaryKey({ autoIncrement: true }),
     title: text('title').notNull(),
     slug: text('slug').notNull().unique(),
@@ -80,7 +80,7 @@ export const UsagagVideos = sqliteTable('usagag_videos', {
     createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
     updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
   });
-  export const UsagagSchema = makeSchema(UsagagVideos, "usagag_videos");
+  export const UsagagSchema = makeSchema(usagag_videos, "usagag_videos");
 /**
  * Jobs
  */
@@ -142,7 +142,7 @@ export const tableRegistry: Record<string, any> = {
     categories,
     progress,
     statuses,
-    UsagagVideos,
+    UsagagVideos: usagag_videos,
     signals
 };
 

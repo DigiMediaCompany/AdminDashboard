@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "r2-usagag-video",
+	"name": "r2-admin",
 	"main": "src/index.js",
 	"compatibility_date": "2025-07-04",
 	"observability": {
@@ -24,8 +24,8 @@
 	 */
 	"r2_buckets": [
 		{
-			"binding": "BUCKET",
-			"bucket_name": "videos",
+			"binding": "admin",
+			"bucket_name": "admin"
 		}
 	]
 
