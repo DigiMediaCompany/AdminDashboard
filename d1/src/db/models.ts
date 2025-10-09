@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import {getTableColumns, relations} from "drizzle-orm";
 import {FieldSchema, ModelSchema} from "../types";
+import { sql } from 'drizzle-orm';
 
 function colToFieldType(col: any): "number" | "string" {
     if (col instanceof SQLiteInteger || col instanceof SQLiteReal) return "number";
@@ -67,6 +68,19 @@ export const series = sqliteTable("series", {
 });
 export const SeriesSchema = makeSchema(series, "series");
 
+/**
+ * Videos
+ */
+export const UsagagVideos = sqliteTable('usagag_videos', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    title: text('title').notNull(),
+    slug: text('slug').notNull().unique(),
+    thumbnail: text('thumbnail').notNull(),
+    video: text('video').notNull(),
+    createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
+  });
+  export const UsagagSchema = makeSchema(UsagagVideos, "usagag_videos");
 /**
  * Jobs
  */
@@ -128,6 +142,7 @@ export const tableRegistry: Record<string, any> = {
     categories,
     progress,
     statuses,
+    UsagagVideos,
     signals
 };
 
@@ -150,7 +165,6 @@ export const relationMap: Record<
             many: true,             // 1 job → many progress
         },
     },
-
     series: {
         category: {
             foreignKey: "category_id", // series.category_id → categories.id

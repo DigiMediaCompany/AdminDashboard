@@ -9,6 +9,8 @@ import {
     StatusSchema,
     ProgressSchema,
     statuses,
+    UsagagVideos,
+    UsagagSchema,
     signals, SignalSchema
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
@@ -24,7 +26,11 @@ const categoriesHandler = createCrudRoutes({
     columns: { id: categories.id, name: categories.name },
     schema: CategorySchema,
 });
-
+const UsagagVideosHandler = createCrudRoutes({
+    table: UsagagVideos,
+    columns: {id: UsagagVideos.id, title: UsagagVideos.title, slug: UsagagVideos.slug, thumbnail: UsagagVideos.thumbnail, video: UsagagVideos.video },
+    schema: UsagagSchema
+});
 const seriesHandler = createCrudRoutes({
     table: series,
     columns: {
@@ -134,6 +140,9 @@ export default {
         }
         if (url.pathname.startsWith(`${articleGroup}/progress`)) {
             return progressHandler(req, env);
+        }
+        if (url.pathname.startsWith(`/usagag-videos`)) {
+            return UsagagVideosHandler(req, env);
         }
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
             return signalHandler(req, env);
