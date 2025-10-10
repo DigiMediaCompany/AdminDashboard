@@ -38,6 +38,7 @@ import Profile from "./pages/Profile.tsx";
 import Job from "./pages/YoutubeArticle/Job.tsx";
 import Translate from "./pages/YoutubeArticle/Translate.tsx";
 import Series from "./pages/YoutubeArticle/Series.tsx";
+import UsagagVideosPage from "./pages/Usagag/Videos";
 
 export default function App() {
   useAuthListener();
@@ -61,6 +62,9 @@ export default function App() {
               <Route path="post-funny/info" element={<PostFunnyInfo />} />
               <Route path="post-funny/quizzes" element={<Quizzes />} />
               <Route path="post-funny/ads" element={<PostFunnyAds />} />
+
+              {/* Usagag */}
+              <Route path="usagag-videos" element={<UsagagVideosPage />} />
 
               {/* FreeApk */}
               <Route path="free-apk/info" element={<FreeApkInfo />} />

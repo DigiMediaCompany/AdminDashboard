@@ -22,25 +22,10 @@
    * https://developers.cloudflare.com/workers/runtime-apis/bindings/
    */
   "d1_databases": [
-    // {
-    // 	"binding": "D1_DATABASE",
-    // 	"database_name": "admin",
-    // 	"database_id": "bdd146d5-9081-4d94-960d-857103bd808a"
-    // },
-    // {
-    // 	"binding": "clear",
-    // 	"database_name": "admin_dashboard",
-    // 	"database_id": "197c82bc-1f1c-4723-b1ee-63061306d282"
-    // },
-    // {
-    // 	"binding": "D1_DATABASE",
-    // 	"database_name": "admin",
-    // 	"database_id": "e86f035e-4f8c-4b0b-a182-8dd6df978917"
-    // }
     {
       "binding": "D1_DATABASE",
       "database_name": "admin",
-      "database_id": "1a1c0c33-8b37-4e56-a33b-2426e3832f2e"
+      "database_id": "4dfa03fd-4b54-4871-b057-3199dcbf1bec"
     }
   ],
   /**

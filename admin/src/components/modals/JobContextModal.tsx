@@ -132,12 +132,12 @@ export default function JobContextModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        <Button size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                            e.preventDefault();
-                            handleSave();
-                        }}>
-                            Save Changes
-                        </Button>
+                        {/*<Button size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {*/}
+                        {/*    e.preventDefault();*/}
+                        {/*    handleSave();*/}
+                        {/*}}>*/}
+                        {/*    Save Changes*/}
+                        {/*</Button>*/}
                         <Button
                             disabled={!isFormValid}
                             size="sm" onClick={(e: React.MouseEvent<HTMLButtonElement>) => {

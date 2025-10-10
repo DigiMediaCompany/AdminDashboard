@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { getTableColumns, relations } from "drizzle-orm";
 import { FieldSchema, ModelSchema } from "../types";
+import { sql } from "drizzle-orm";
 
 function colToFieldType(col: any): "number" | "string" {
   if (col instanceof SQLiteInteger || col instanceof SQLiteReal)
@@ -74,6 +75,19 @@ export const series = sqliteTable("series", {
 export const SeriesSchema = makeSchema(series, "series");
 
 /**
+ * Usagag Videos
+ */
+export const usagag_videos = sqliteTable("usagag_videos", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  thumbnail: text("thumbnail").notNull(),
+  video: text("video").notNull(),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
+});
+export const UsagagSchema = makeSchema(usagag_videos, "usagag_videos");
+/**
  * Jobs
  */
 export const jobs = sqliteTable("jobs", {
@@ -118,12 +132,24 @@ export const progress = sqliteTable("progress", {
 
 export const ProgressSchema = makeSchema(progress, "progress");
 
+/**
+ * Signals
+ */
+export const signals = sqliteTable("signals", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  status: integer("status").notNull(),
+});
+
+export const SignalSchema = makeSchema(signals, "signals");
+
 export const tableRegistry: Record<string, any> = {
   jobs,
   series,
   categories,
   progress,
   statuses,
+  UsagagVideos: usagag_videos,
+  signals,
 };
 
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
@@ -148,6 +174,18 @@ export const relationMap: Record<
       many: true, // 1 job → many progress
     },
   },
+  //   series: {
+  //     foreignKey: "series_id", // jobs.series_id → series.id
+  //     target: "series",
+  //     targetKey: "id",
+  //   },
+  //   progress: {
+  //     foreignKey: "id", // jobs.id
+  //     target: "progress", // progress.job_id
+  //     targetKey: "job_id",
+  //     many: true, // 1 job → many progress
+  //   },
+  // },
 
   series: {
     category: {

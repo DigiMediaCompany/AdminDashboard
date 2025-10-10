@@ -9,6 +9,10 @@ import {
   StatusSchema,
   ProgressSchema,
   statuses,
+  usagag_videos,
+  UsagagSchema,
+  signals,
+  SignalSchema,
 } from "./db/models";
 import { createCrudRoutes } from "./utils/crud";
 
@@ -29,7 +33,17 @@ const categoriesHandler = createCrudRoutes({
   columns: { id: categories.id, name: categories.name },
   schema: CategorySchema,
 });
-
+const UsagagVideosHandler = createCrudRoutes({
+  table: usagag_videos,
+  columns: {
+    id: usagag_videos.id,
+    title: usagag_videos.title,
+    slug: usagag_videos.slug,
+    thumbnail: usagag_videos.thumbnail,
+    video: usagag_videos.video,
+  },
+  schema: UsagagSchema,
+});
 const seriesHandler = createCrudRoutes({
   table: series,
   columns: {
@@ -112,6 +126,15 @@ app.use("*", useDb());
 app.route("/api/games", gamesRoutes);
 app.route("/api/h5", h5Routes);
 app.route("/api/news", newsRoutes);
+const signalHandler = createCrudRoutes({
+  table: signals,
+  columns: {
+    id: signals.id,
+    status: signals.status,
+  },
+  schema: SignalSchema,
+});
+
 export default {
   async fetch(
     req: Request,
@@ -143,7 +166,12 @@ export default {
     if (url.pathname.startsWith(`${articleGroup}/progress`)) {
       return progressHandler(req, env);
     }
-
+    if (url.pathname.startsWith(`/usagag-videos`)) {
+      return UsagagVideosHandler(req, env);
+    }
+    if (url.pathname.startsWith(`${articleGroup}/signals`)) {
+      return signalHandler(req, env);
+    }
     return new Response("Not Found", { status: 404 });
   },
 };

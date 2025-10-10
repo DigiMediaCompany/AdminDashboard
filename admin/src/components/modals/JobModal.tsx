@@ -1,21 +1,28 @@
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import {Modal} from "../ui/modal";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
 import {getApi} from "../../services/adminArticleService.ts";
-import {Series} from "../../types/Article.ts";
+import {Job, Series} from "../../types/Article.ts";
 import Select from "../form/Select.tsx";
 import {isValidYouTubeUrl} from "../../utils/helper.ts";
 import {constants} from "../../utils/constants.ts";
+import {useAppSelector} from "../../store";
 
 interface JobData {
-    type: string | null;
-    series: number | null;
+    type: string;
+    series: string;
     // Job type 1
     link?: string;
     // Job type 2,
     link2?: string;
+    episode?: string;
+    // Job type 3,
+    link3?: string;
+    episode2?: string;
+    summary?: string;
+    title?: string;
 }
 
 interface BaseModalProps {
@@ -29,16 +36,33 @@ export default function JobModal({
                                      onClose,
                                      onSave,
                                  }: BaseModalProps) {
-    const [series, setSeries] = useState<Series[]>([]);
-    const [selectedSeries, setSelectedSeries] = useState<number | null>(null);
-
+    const [seriesList, setSeriesList] = useState<Series[]>([]);
+    const [mapping, setMapping] = useState<Record<string, never[]>>({});
 
     const [jobData, setJobData] = useState<JobData>({
-        series: selectedSeries,
+        series: "",
         link: "",
         link2: "",
-        type: null,
+        link3: "",
+        type: "",
+        episode: "",
+        episode2: "",
+        summary: "",
+        title: "",
     });
+
+    const episodeOptions = useMemo(
+        () => Object.keys(mapping).map(ep => ({ value: ep, label: ep })),
+        [mapping]
+    );
+
+    const summaryOptions = useMemo(
+        () =>
+            jobData.episode2
+                ? mapping[jobData.episode2]?.map(sum => ({ value: sum.title, label: sum.title }))
+                : [],
+        [mapping, jobData.episode2]
+    );
 
     const handleSave = () => {
         if (!jobData.type) return;
@@ -50,13 +74,59 @@ export default function JobModal({
     useEffect(() => {
         getApi<Series>('series')
             .then(result => {
-                setSeries(result.data);
+                setSeriesList(result.data);
             })
             .catch(() => {
             })
     }, [])
 
+    const authState = useAppSelector((state) => state.auth)
+    const userRole = authState.user?.user_metadata?.role
+
+    useEffect(() => {
+        if (!jobData.series) return;
+
+        getApi<Job>('jobs', 1, 'progress', '-id', {
+            series_id: jobData.series,
+            type: 2
+        })
+            .then(result => {
+                const filtered = result.data
+                    .filter((job) => {
+                        const second = job.progress?.[1];
+                        return second && second.status === "Success";
+                    })
+                    .reduce((acc: Record<string, { title: string; text: string; link: string }[]>, job) => {
+                        let detail: any = {};
+                        try {
+                            detail = JSON.parse(job.detail);
+                        } catch {
+                            detail = {};
+                        }
+
+                        const episode = job.episode ?? detail.episode ?? `job-${job.id}`;
+                        const summaries = detail.summaries
+                            ? detail.summaries.map((s: any) => ({
+                                title: s.title,
+                                text: s.text,
+                                link: detail.link ?? "",
+                            }))
+                            : [];
+
+                        acc[episode] = (acc[episode] || []).concat(summaries);
+                        return acc;
+                    }, {});
+
+                setMapping(filtered);
+            })
+            .catch(() => {
+                console.log("nay");
+            });
+    }, [jobData.series]);
+
+
     const isFormValid = (() => {
+
         if (!jobData.type) return false;
         // if (!jobData.series) return false;
 
@@ -74,12 +144,33 @@ export default function JobModal({
             return (
                 link &&
                 link !== "" &&
-                isValidYouTubeUrl(link)
+                isValidYouTubeUrl(link) &&
+                jobData.series &&
+                jobData.episode
+
+            );
+        }
+
+        if (jobData.type === constants.JOB_TYPES[2].value) {
+            const link = jobData.link3?.trim()
+            return (
+                link &&
+                link !== "" &&
+                isValidYouTubeUrl(link) &&
+                jobData.series &&
+                jobData.episode2 &&
+                jobData.summary &&
+                jobData.title
             );
         }
 
         return false;
     })();
+
+    const findSummary = (episode: string, summaryTitle: string) => {
+        const summaries = mapping[episode] ?? [];
+        return summaries.find(s => s.title === summaryTitle);
+    };
 
     return (
         <Modal
@@ -111,9 +202,10 @@ export default function JobModal({
                             <div>
                                 <Label>Type</Label>
                                 <Select
-                                    options={ constants.JOB_TYPES.map((a) => ({
+                                    options={ constants.JOB_TYPES.filter(jobType => userRole === constants.ROLES.ADMIN ? jobType.value === constants.JOB_TYPES[1].value: true  )
+                                        .map((a) => ({
                                         value: a.value,
-                                        label: a.label,
+                                        label: `${a.value}. ${a.label}`,
                                     }))}
                                     defaultValue={jobData.type ?? ""}
                                     placeholder="Select type"
@@ -127,21 +219,26 @@ export default function JobModal({
                             <div>
                                 <Label>Series</Label>
                                 <Select
-                                    options={series.map(a => ({
+                                    options={seriesList.map(a => ({
                                         value: a.id.toString(),
                                         label: a.name
                                     }))}
-                                    // defaultValue={""}
+                                    defaultValue={""}
                                     placeholder="Select series"
-                                    onChange={(change) => {
-                                        setSelectedSeries(parseInt(change))
-                                    }}
+                                    onChange={(option) =>
+                                        setJobData((prev) => ({
+                                            ...prev,
+                                            series: option,
+                                            episode2: "",
+                                            summary: "",
+                                        }))
+                                    }
                                     className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
                             {jobData.type === constants.JOB_TYPES[0].value && (
                                 <div>
-                                    <Label>Youtube Id</Label>
+                                    <Label>Youtube Link</Label>
                                     <Input
                                         type="text"
                                         value={jobData.link}
@@ -155,19 +252,91 @@ export default function JobModal({
                                 </div>
                             )}
                             {jobData.type === constants.JOB_TYPES[1].value && (
-                                <div>
-                                    <Label>Youtube Id</Label>
-                                    <Input
-                                        type="text"
-                                        value={jobData.link2}
-                                        onChange={(e) =>
-                                            setJobData((prev) => ({
-                                                ...prev,
-                                                link2: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                </div>
+                                <>
+                                    <div>
+                                        <Label>Youtube Link</Label>
+                                        <Input
+                                            type="text"
+                                            value={jobData.link2}
+                                            onChange={(e) =>
+                                                setJobData((prev) => ({
+                                                    ...prev,
+                                                    link2: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label>Episode</Label>
+                                        <Input
+                                            type="text"
+                                            value={jobData.episode}
+                                            onChange={(e) =>
+                                                setJobData((prev) => ({
+                                                    ...prev,
+                                                    episode: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    </div>
+                                </>
+                            )}
+                            {jobData.type === constants.JOB_TYPES[2].value && (
+                                <>
+                                    <div>
+                                        <Label>Episode</Label>
+
+                                        <Select
+                                            disabled={!jobData.series}
+                                            options={episodeOptions.map(ep => ({
+                                                value: ep.value,
+                                                label: ep.label
+                                            }))}
+                                            defaultValue={""}
+                                            placeholder="Select Episode"
+                                            onChange={(option) =>
+                                                setJobData((prev) => ({
+                                                    ...prev,
+                                                    episode2: option,
+                                                    summary: ""
+                                                }))
+
+                                            }
+                                            className={`col-span-3 lg:col-span-4`}
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label>Summary</Label>
+                                        <Select
+                                            disabled={!jobData.episode2}
+                                            options={summaryOptions.map(sum => ({
+                                                value: sum.value,
+                                                label: sum.label
+                                            }))}
+                                            defaultValue={""}
+                                            placeholder="Select Summary"
+                                            onChange={(option) =>
+                                                {
+                                                    if (jobData.episode2){
+                                                        const s = findSummary(jobData.episode2, option)
+                                                        if (s) {
+                                                            setJobData((prev) => ({
+                                                                ...prev,
+                                                                summary: s.text,
+                                                                link3: s.link,
+                                                                title: option
+                                                            }))
+                                                        }
+
+                                                    }
+
+                                                }
+                                            }
+                                            className={`col-span-3 lg:col-span-4`}
+                                        />
+                                    </div>
+                                </>
+
                             )}
                         </div>
                     </div>
