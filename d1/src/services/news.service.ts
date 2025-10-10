@@ -6,8 +6,11 @@ import {
   blogThumbnails,
   blogThumbnailTags,
   blogDetailImages,
+  detailRelations,
 } from "../db/news";
+import { BlogDetailDTO, BlogThumbnailDTO } from "../dto/NewsDTO";
 import { CrudRepository } from "../repositories/CRUDRepository";
+import { eq } from "drizzle-orm";
 
 export class NewsService {
   private pagesRepo: CrudRepository<typeof blogPages, "id">;
@@ -83,5 +86,39 @@ export class NewsService {
   }
   async getImageById(id: number) {
     return await this.imagesRepo.findById(id);
+  }
+
+  async getDetailDataById(id: number): Promise<BlogDetailDTO> {
+    const detail = await this.detailsRepo.findById(id);
+    const data = new BlogDetailDTO(
+      detail.id,
+      detail.slug,
+      detail.title,
+      detail.content
+    );
+    const images = await this.imagesRepo.findByField("blogDetailId", id);
+    const categories = await this.categoriesRepo.findByField(
+      "blogDetailId",
+      id
+    );
+    data.images = images.map((i) => i.image);
+    data.categories = categories.map((c) => c.category);
+    return data;
+  }
+
+  async getThumbnailDataById(id: number): Promise<BlogThumbnailDTO> {
+    const thumb = await this.thumbnailsRepo.findById(id);
+    const tags = await this.tagsRepo.findByField("blogThumbnailId", id);
+    const data = new BlogThumbnailDTO(
+      thumb.id,
+      thumb.title,
+      thumb.excerpt,
+      thumb.thumbnail,
+      thumb.createdAt
+    );
+    data.pageId = thumb.pageId;
+    data.tags = tags[0].tag;
+    data.detailId = thumb.blogDetailId;
+    return data;
   }
 }

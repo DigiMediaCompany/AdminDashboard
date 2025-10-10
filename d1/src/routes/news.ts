@@ -59,3 +59,19 @@ newsRoutes.get("/details/:detailId/images", async (c) => {
   );
   return c.json(tags);
 });
+
+// * GET /api/news/:detailId --> get detail data
+newsRoutes.get("/details/:detailId", async (c) => {
+  const service = new NewsService(c.get("db"));
+  const data = await service.getDetailDataById(Number(c.req.param("detailId")));
+  return c.json(data);
+});
+
+// * GET /api/news/thumbnails/:thumbnailId --> get thumbnail data
+newsRoutes.get("/thumbnails/:thumbnailId", async (c) => {
+  const service = new NewsService(c.get("db"));
+  const data = await service.getThumbnailDataById(
+    Number(c.req.param("thumbnailId"))
+  );
+  return c.json(data);
+});

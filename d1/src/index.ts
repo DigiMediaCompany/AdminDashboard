@@ -20,6 +20,7 @@ import { Hono } from "hono";
 import { useDb } from "./middleware/useDB";
 import { gamesRoutes } from "./routes/games";
 import { h5Routes } from "./routes/h5_games";
+import { newsRoutes } from "./routes/news";
 
 const articleGroup = "/article";
 
@@ -110,6 +111,7 @@ const app = new Hono();
 app.use("*", useDb());
 app.route("/api/games", gamesRoutes);
 app.route("/api/h5", h5Routes);
+app.route("/api/news", newsRoutes);
 export default {
   async fetch(
     req: Request,
@@ -121,6 +123,9 @@ export default {
       return app.fetch(req, env, ctx);
     }
     if (url.pathname.startsWith("/api/h5")) {
+      return app.fetch(req, env, ctx);
+    }
+    if (url.pathname.startsWith("/api/news")) {
       return app.fetch(req, env, ctx);
     }
     if (url.pathname.startsWith(`${articleGroup}/categories`)) {
