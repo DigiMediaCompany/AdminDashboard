@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1759725001819,
+      "tag": "0000_reflective_sister_grimm",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1759920207691,
+      "tag": "0001_overconfident_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1759920693927,
+      "tag": "0002_swift_newton_destine",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1759924411179,
+      "tag": "0003_normal_midnight",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1760019991768,
+      "tag": "0004_broad_cammi",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1760020332866,
+      "tag": "0005_round_valkyrie",
+      "breakpoints": true
+    }
+  ]
+}
