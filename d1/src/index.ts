@@ -10,6 +10,8 @@ import {
     ProgressSchema,
     statuses,
     signals, SignalSchema
+    ,articles, ArticleSchema,
+    machines, MachineSchema
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
 
@@ -18,7 +20,7 @@ import {STATUS_SEED} from "./utils/constant";
 import { sql } from "drizzle-orm";
 
 const articleGroup = "/article"
-
+const MaquininhaGroup = "/maquininha"
 const categoriesHandler = createCrudRoutes({
     table: categories,
     columns: { id: categories.id, name: categories.name },
@@ -116,13 +118,38 @@ const signalHandler = createCrudRoutes({
 });
 
 
+const articlesHandler = createCrudRoutes({
+    table: articles,
+    columns: {
+        title: articles.title,
+        link: articles.link,
+        thumbnail: articles.thumbnail,
+        category: articles.category,
+        date: articles.date,
+        duration: articles.duration,
+        content: articles.content,
+    },
+    schema: ArticleSchema,
+});
+const machinesHandler = createCrudRoutes({
+    table: machines,
+    columns: {
+        title: machines.title,
+        link: machines.link,
+        thumbnail: machines.thumbnail,
+        content: machines.content,
+    },
+    schema: MachineSchema,
+});
+
+
 export default {
     async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         const url = new URL(req.url);
 
-        if (url.pathname.startsWith(`${articleGroup}/categories`)) {
-            return categoriesHandler(req, env);
-        }
+            if (url.pathname.startsWith(`${articleGroup}/categories`)) {
+                return categoriesHandler(req, env);
+            }
         if (url.pathname.startsWith(`${articleGroup}/series`)) {
             return seriesHandler(req, env);
         }
@@ -137,6 +164,12 @@ export default {
         }
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
             return signalHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${MaquininhaGroup}/articles`)) {
+            return articlesHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${MaquininhaGroup}/machines`)) {
+            return machinesHandler(req, env);
         }
 
         return new Response("Not Found", { status: 404 });

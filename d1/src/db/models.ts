@@ -122,13 +122,38 @@ export const signals = sqliteTable("signals", {
 
 export const SignalSchema = makeSchema(signals, "signals");
 
+/** Articles
+ */
+export const articles = sqliteTable("articles", {
+    title: text("title").notNull(),
+    link: text("link").notNull().unique(),
+    thumbnail: text("thumbnail"),
+    category: text("category"),
+    date: text("date"),
+    duration: text("duration"),
+    content: text("content"),
+});
+export const ArticleSchema = makeSchema(articles, "articles");
+
+/** Machines
+ */
+export const machines = sqliteTable("machines", {
+    title: text("title").notNull(),
+    link: text("link").notNull().unique(),
+    thumbnail: text("thumbnail"),
+    content: text("content"),
+});
+export const MachineSchema = makeSchema(machines, "machines");
+
 export const tableRegistry: Record<string, any> = {
     jobs,
     series,
     categories,
     progress,
     statuses,
-    signals
+    signals,
+    articles,
+    machines,
 };
 
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
