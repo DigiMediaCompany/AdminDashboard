@@ -33,13 +33,12 @@ function withCors(res: Response, status?: number) {
     });
 }
 
-export function createCrudRoutes<T extends AnySQLiteTable>(
-    {
-        table,
-        columns,
-        schema,
-        custom,
-    }: CrudOptions<T>) {
+export function createCrudRoutes<T extends AnySQLiteTable>({
+    table,
+    columns,
+    schema,
+    custom,
+}: CrudOptions<T>) {
     return async (req: Request, env: Env, ctx?: any) => {
         const db = drizzle(env.D1_DATABASE, { schema });
         const url = new URL(req.url);
@@ -56,9 +55,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
             if (custom) {
                 custom(app, db);
                 const res = await app.fetch(req, env, ctx);
-                if (res.status !== 404) {
-                    return withCors(res);
-                }
+                if (res.status !== 404) return withCors(res);
             }
 
             // OPTIONS
@@ -117,50 +114,180 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
 
             // POST (Create)
             if (req.method === "POST") {
+                const isBulkOperation = url.searchParams.get("bulk") === "true";
                 const body: any = await req.json();
-                validateData(schema, body);
 
-                // @ts-ignore
-                const [row] = await db.insert(table).values(body).returning();
-                return withCors(Response.json(row, { status: 201 }));
+                if (isBulkOperation) {
+                    if (!Array.isArray(body) || !body.length) {
+                        return new Response(
+                            JSON.stringify({ error: "Body must be a non-empty array" }),
+                            { status: 400 }
+                        );
+                    }
+
+                    const insertedRows: any[] = [];
+                    const errors: any[] = [];
+
+                    for (let i = 0; i < body.length; i++) {
+                        const item = body[i];
+                        try {
+                            // Validate schema
+                            validateData(schema, item);
+
+                            // Insert single record
+                            // @ts-ignore
+                            const [row] = await db.insert(table).values(item).returning();
+                            insertedRows.push(row);
+                        } catch (err: any) {
+                            // Record error for each failed item
+                            errors.push({ index: i, error: err.message });
+                        }
+                    }
+
+                    return withCors(
+                        Response.json(
+                            {
+                                success: errors.length === 0,
+                                inserted: insertedRows,
+                                errors,
+                            },
+                            { status: errors.length ? 207 : 201 } // 207 = Multi-Status
+                        )
+                    );
+                } else {
+                    try {
+                        validateData(schema, body);
+                        // @ts-ignore
+                        const [row] = await db.insert(table).values(body).returning();
+                        return withCors(Response.json(row, { status: 201 }));
+                    } catch (err: any) {
+                        return new Response(
+                            JSON.stringify({ error: "Insert failed", details: err.message }),
+                            { status: 500 }
+                        );
+                    }
+                }
             }
+
 
             // PATCH (Update)
             if (req.method === "PATCH") {
-                if (!id) {
+                const isBulkOperation = url.searchParams.get("bulk") === "true";
+                const body: { id: number; data: any }[] = await req.json();
+
+                if (isBulkOperation) {
+                    if (!Array.isArray(body) || !body.length) {
+                        return new Response(JSON.stringify({ error: "Body must be a non-empty array of {id, data}" }), { status: 400 });
+                    }
+
+                    const updatedRows: any[] = [];
+                    const errors: any[] = [];
+
+                    for (const { id, data } of body) {
+                        try {
+                            if (!id || !data) {
+                                throw new Error("Each item must have id and data");
+                            }
+
+                            validateData(schema, data, true);
+
+                            // @ts-ignore
+                            const [row] = await db.update(table).set(data).where(eq(columns.id, Number(id))).returning();
+
+                            if (!row) {
+                                throw new Error(`Record with id ${id} not found`);
+                            }
+
+                            updatedRows.push(row);
+                        } catch (err: any) {
+                            errors.push({ id, error: err.message });
+                        }
+                    }
+
                     return withCors(
-                        Response.json({ error: "ID required" }, { status: 400 })
+                        Response.json({
+                            success: updatedRows.length === body.length,
+                            updated: updatedRows,
+                            errors,
+                        }, { status: errors.length ? 207 : 200 }) // 207 = Multi-Status
+                    );
+                } 
+                else {
+                    if (!id) return withCors(Response.json({ error: "ID required" }, { status: 400 }));
+
+                    validateData(schema, body, true);
+
+                    // @ts-ignore
+                    const [row] = await db.update(table).set(body).where(eq(columns.id, Number(id))).returning();
+                    return withCors(
+                        row
+                            ? Response.json(row)
+                            : Response.json({ error: "Not found" }, { status: 404 })
                     );
                 }
-
-                const body: any = await req.json();
-                validateData(schema, body, true);
-
-
-                // @ts-ignore
-                const [row] = await db
-                    .update(table)
-                    .set(body)
-                    .where(eq(columns.id, Number(id)))
-                    .returning();
-
-                return withCors(
-                    row
-                        ? Response.json(row)
-                        : Response.json({ error: "Not found" }, { status: 404 })
-                );
             }
 
             // DELETE
             if (req.method === "DELETE") {
-                if (!id) {
-                    return withCors(
-                        Response.json({ error: "ID required" }, { status: 400 })
-                    );
-                }
+                const isBulkOperation = url.searchParams.get("bulk") === "true";
 
-                await db.delete(table).where(eq(columns.id, Number(id)));
-                return withCors(new Response(null, { status: 204 }));
+                if (isBulkOperation) {
+                    const body: { ids: number[] } = await req.json();
+                    if (!body.ids || !Array.isArray(body.ids) || !body.ids.length) {
+                        return withCors(
+                            Response.json({ error: "Body must contain array of IDs" }, { status: 400 })
+                        );
+                    }
+
+                    const deleted: number[] = [];
+                    const errors: any[] = [];
+
+                    for (const id of body.ids) {
+                        try {
+                            // @ts-ignore
+                            const [row] = await db.delete(table).where(eq(columns.id, Number(id))).returning();
+
+                            if (!row) {
+                                throw new Error(`Record with id ${id} not found`);
+                            }
+
+                            deleted.push(id);
+                        } catch (err: any) {
+                            errors.push({ id, error: err.message });
+                        }
+                    }
+
+                    return withCors(
+                        Response.json({
+                            success: errors.length === 0,
+                            result: { deleted, errors },
+                        }, { status: errors.length ? 207 : 200 })
+                    );
+                } else {
+                    if (!id) {
+                        return withCors(
+                            Response.json({ error: "ID required" }, { status: 400 })
+                        );
+                    }
+
+                    try {
+                        await db.delete(table).where(eq(columns.id, Number(id)));
+
+                        return withCors(
+                            Response.json({
+                                success: true,
+                                result: { deleted: [Number(id)], errors: [] },
+                            }, { status: 207 })
+                        );
+                    } catch (err: any) {
+                        return withCors(
+                            Response.json({
+                                success: false,
+                                result: { deleted: [], errors: [{ id, error: err.message }] },
+                            }, { status: 207 })
+                        );
+                    }
+                }
             }
 
             return withCors(
@@ -168,11 +295,9 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
             );
         } catch (err: any) {
             return withCors(
-                Response.json(
-                    { success: false, error: err.message || "Unknown error" },
-                    { status: 400 }
-                )
+                Response.json({ success: false, error: err.message || "Unknown error" }, { status: 400 })
             );
         }
     };
 }
+
