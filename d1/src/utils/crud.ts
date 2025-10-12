@@ -124,6 +124,24 @@ export function createCrudRoutes<T extends AnySQLiteTable>(
                 const [row] = await db.insert(table).values(body).returning();
                 return withCors(Response.json(row, { status: 201 }));
             }
+            // POST /bulk 
+            if (req.method === "POST" && url.pathname.endsWith("/bulk")) {
+                const body: any[] = await req.json();
+
+                if (!Array.isArray(body) || body.length === 0) {
+                    return withCors(
+                        Response.json({ error: "Body must be a non-empty array" }, { status: 400 })
+                    );
+                }
+
+                for (const item of body) {
+                    validateData(schema, item);
+                }
+
+                const rows = await db.insert(table).values(body).returning();
+
+                return withCors(Response.json(rows, { status: 201 }));
+            }
 
             // PATCH (Update)
             if (req.method === "PATCH") {
