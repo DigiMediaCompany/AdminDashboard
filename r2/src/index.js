@@ -130,6 +130,7 @@ app.post('/files', async (c) => {
 });
 
 // Bulk upload endpoint
+// TODO: this need redo, bulk should be a query param, not an actual endpoint
 app.post('/files/bulk', async (c) => {
     try {
         const formData = await c.req.formData();
