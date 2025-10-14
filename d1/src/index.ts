@@ -20,6 +20,7 @@ import {STATUS_SEED} from "./utils/constant";
 import { sql } from "drizzle-orm";
 
 const articleGroup = "/article"
+const usagagGroup = "/usagag"
 
 const categoriesHandler = createCrudRoutes({
     table: categories,
@@ -141,7 +142,7 @@ export default {
         if (url.pathname.startsWith(`${articleGroup}/progress`)) {
             return progressHandler(req, env);
         }
-        if (url.pathname.startsWith(`/usagag-videos`)) {
+        if (url.pathname.startsWith(`${usagagGroup}/videos`)) {
             return usagagVideosHandler(req, env);
         }
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
