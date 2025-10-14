@@ -138,7 +138,7 @@ export const SignalSchema = makeSchema(signals, "signals");
 
 /** Articles
  */
-export const articles = sqliteTable("articles", {
+export const maquininha_articles = sqliteTable("maquininha_articles", {
     title: text("title").notNull(),
     link: text("link").notNull().unique(),
     thumbnail: text("thumbnail"),
@@ -147,17 +147,17 @@ export const articles = sqliteTable("articles", {
     duration: text("duration"),
     content: text("content"),
 });
-export const ArticleSchema = makeSchema(articles, "articles");
+export const ArticleSchema = makeSchema(maquininha_articles, "maquininha_articles");
 
 /** Machines
  */
-export const machines = sqliteTable("machines", {
+export const maquininha_machines = sqliteTable("maquininha_machines", {
     title: text("title").notNull(),
     link: text("link").notNull().unique(),
     thumbnail: text("thumbnail"),
     content: text("content"),
 });
-export const MachineSchema = makeSchema(machines, "machines");
+export const MachineSchema = makeSchema(maquininha_machines, "maquininha_machines");
 
 export const tableRegistry: Record<string, any> = {
     jobs,
@@ -165,8 +165,8 @@ export const tableRegistry: Record<string, any> = {
     categories,
     progress,
     statuses,
-    articles,
-    machines,
+    maquininha_articles,
+    maquininha_machines,
     usagag_videos,
     signals
 };

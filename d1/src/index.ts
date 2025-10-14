@@ -12,8 +12,8 @@ import {
     usagag_videos,
     UsagagSchema,
     signals, SignalSchema
-    ,articles, ArticleSchema,
-    machines, MachineSchema
+    ,maquininha_articles, ArticleSchema,
+    maquininha_machines, MachineSchema
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
 
@@ -125,25 +125,25 @@ const signalHandler = createCrudRoutes({
 
 
 const articlesHandler = createCrudRoutes({
-    table: articles,
+    table: maquininha_articles,
     columns: {
-        title: articles.title,
-        link: articles.link,
-        thumbnail: articles.thumbnail,
-        category: articles.category,
-        date: articles.date,
-        duration: articles.duration,
-        content: articles.content,
+        title: maquininha_articles.title,
+        link: maquininha_articles.link,
+        thumbnail: maquininha_articles.thumbnail,
+        category: maquininha_articles.category,
+        date: maquininha_articles.date,
+        duration: maquininha_articles.duration,
+        content: maquininha_articles.content,
     },
     schema: ArticleSchema,
 });
 const machinesHandler = createCrudRoutes({
-    table: machines,
+    table: maquininha_machines,
     columns: {
-        title: machines.title,
-        link: machines.link,
-        thumbnail: machines.thumbnail,
-        content: machines.content,
+        title: maquininha_machines.title,
+        link: maquininha_machines.link,
+        thumbnail: maquininha_machines.thumbnail,
+        content: maquininha_machines.content,
     },
     schema: MachineSchema,
 });
