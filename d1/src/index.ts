@@ -22,7 +22,6 @@ import {STATUS_SEED} from "./utils/constant";
 import { sql } from "drizzle-orm";
 
 const articleGroup = "/article"
-const MaquininhaGroup = "/maquininha"
 const categoriesHandler = createCrudRoutes({
     table: categories,
     columns: { id: categories.id, name: categories.name },
