@@ -142,7 +142,7 @@ export const tableRegistry: Record<string, any> = {
     categories,
     progress,
     statuses,
-    UsagagVideos: usagag_videos,
+    usagag_videos,
     signals
 };
 

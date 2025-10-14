@@ -26,7 +26,7 @@ const categoriesHandler = createCrudRoutes({
     columns: { id: categories.id, name: categories.name },
     schema: CategorySchema,
 });
-const UsagagVideosHandler = createCrudRoutes({
+const usagagVideosHandler = createCrudRoutes({
     table: usagag_videos,
     columns: {id: usagag_videos.id, title: usagag_videos.title, slug: usagag_videos.slug, thumbnail: usagag_videos.thumbnail, video: usagag_videos.video },
     schema: UsagagSchema
@@ -142,7 +142,7 @@ export default {
             return progressHandler(req, env);
         }
         if (url.pathname.startsWith(`/usagag-videos`)) {
-            return UsagagVideosHandler(req, env);
+            return usagagVideosHandler(req, env);
         }
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
             return signalHandler(req, env);
