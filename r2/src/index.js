@@ -129,6 +129,83 @@ app.post('/files', async (c) => {
     }
 });
 
+// Bulk upload endpoint
+app.post('/files/bulk', async (c) => {
+    try {
+        const formData = await c.req.formData();
+    const files = formData.getAll('files');
+
+    if (!files || files.length === 0) {
+        return createResponse(
+            { message: 'No files uploaded' },
+            { status: 400 }
+        );
+    }
+
+        const results = [];
+
+        for (const file of files) {
+            if (!file || !(file instanceof File)) {
+                results.push({ success: false, message: 'Invalid file object', filename: file?.name });
+                continue;
+            }
+
+            // Validate file size
+            if (file.size > MAX_FILE_SIZE) {
+                results.push({
+                    success: false,
+                    message: `File too large. Max ${MAX_FILE_SIZE / 1024 / 1024}MB allowed.`,
+                    filename: file.name
+                });
+                continue;
+            }
+
+            try {
+                const fileExt = file.name.split('.').pop() || 'bin'; 
+                const uniqueName = `${Date.now()}-${nanoid()}.${fileExt}`;
+                const arrayBuffer = await file.arrayBuffer();
+
+                // Upload to R2
+                await c.env.BUCKET.put(uniqueName, arrayBuffer, {
+                    httpMetadata: {
+                        contentType: file.type || 'application/octet-stream',
+                        cacheControl: CACHE_HEADERS.CACHE_CONTROL,
+                    },
+                    customMetadata: {
+                        originalName: file.name,
+                        uploadedAt: new Date().toISOString(),
+                    },
+                });
+
+                results.push({
+                    success: true,
+                    filename: uniqueName,
+                    originalName: file.name,
+                    size: file.size,
+                    mimeType: file.type,
+                });
+
+            } catch (err) {
+                console.error(`Upload error for ${file.name}:`, err);
+                results.push({
+                    success: false,
+                    filename: file.name,
+                    message: `Failed to upload: ${err.message}`
+                });
+            }
+        }
+
+        return createResponse({ results }, { cacheControl: 'no-store' }); 
+
+    } catch (error) {
+        console.error('Bulk upload error:', error);
+        return createResponse(
+            { error: 'Failed to process bulk upload', details: error.message },
+            { status: 500 }
+        );
+    }
+});
+
 // Get file endpoint
 app.get('/files/:filename', async (c) => {
     try {
