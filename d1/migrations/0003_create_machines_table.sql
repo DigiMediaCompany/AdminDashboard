@@ -1,0 +1,6 @@
+CREATE TABLE maquininha_machines (
+    title TEXT PRIMARY KEY,
+    link TEXT UNIQUE NOT NULL,
+    thumbnail TEXT,
+    content TEXT
+);

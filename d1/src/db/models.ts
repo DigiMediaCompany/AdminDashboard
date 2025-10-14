@@ -136,12 +136,37 @@ export const signals = sqliteTable("signals", {
 
 export const SignalSchema = makeSchema(signals, "signals");
 
+/** Articles
+ */
+export const maquininha_articles = sqliteTable("maquininha_articles", {
+    title: text("title").notNull(),
+    link: text("link").notNull().unique(),
+    thumbnail: text("thumbnail"),
+    category: text("category"),
+    date: text("date"),
+    duration: text("duration"),
+    content: text("content"),
+});
+export const ArticleSchema = makeSchema(maquininha_articles, "maquininha_articles");
+
+/** Machines
+ */
+export const maquininha_machines = sqliteTable("maquininha_machines", {
+    title: text("title").notNull(),
+    link: text("link").notNull().unique(),
+    thumbnail: text("thumbnail"),
+    content: text("content"),
+});
+export const MachineSchema = makeSchema(maquininha_machines, "maquininha_machines");
+
 export const tableRegistry: Record<string, any> = {
     jobs,
     series,
     categories,
     progress,
     statuses,
+    maquininha_articles,
+    maquininha_machines,
     usagag_videos,
     signals
 };
