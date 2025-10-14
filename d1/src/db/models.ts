@@ -10,6 +10,7 @@ import {
 import {getTableColumns, relations} from "drizzle-orm";
 import {FieldSchema, ModelSchema} from "../types";
 import { sql } from 'drizzle-orm';
+import { id } from "zod/v4/locales";
 
 function colToFieldType(col: any): "number" | "string" {
     if (col instanceof SQLiteInteger || col instanceof SQLiteReal) return "number";
@@ -139,6 +140,7 @@ export const SignalSchema = makeSchema(signals, "signals");
 /** Articles
  */
 export const maquininha_articles = sqliteTable("maquininha_articles", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     link: text("link").notNull().unique(),
     thumbnail: text("thumbnail"),
@@ -152,6 +154,7 @@ export const ArticleSchema = makeSchema(maquininha_articles, "maquininha_article
 /** Machines
  */
 export const maquininha_machines = sqliteTable("maquininha_machines", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
     link: text("link").notNull().unique(),
     thumbnail: text("thumbnail"),

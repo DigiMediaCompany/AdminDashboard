@@ -127,6 +127,7 @@ const signalHandler = createCrudRoutes({
 const articlesHandler = createCrudRoutes({
     table: maquininha_articles,
     columns: {
+        id: maquininha_articles.id,
         title: maquininha_articles.title,
         link: maquininha_articles.link,
         thumbnail: maquininha_articles.thumbnail,
@@ -140,6 +141,7 @@ const articlesHandler = createCrudRoutes({
 const machinesHandler = createCrudRoutes({
     table: maquininha_machines,
     columns: {
+        id: maquininha_machines.id,
         title: maquininha_machines.title,
         link: maquininha_machines.link,
         thumbnail: maquininha_machines.thumbnail,
@@ -174,10 +176,10 @@ export default {
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
             return signalHandler(req, env);
         }
-        if (url.pathname.startsWith(`${MaquininhaGroup}/articles`)) {
+        if (url.pathname.startsWith(`/maquininha_articles`)) {
             return articlesHandler(req, env);
         }
-        if (url.pathname.startsWith(`${MaquininhaGroup}/machines`)) {
+        if (url.pathname.startsWith(`/maquininha_machines`)) {
             return machinesHandler(req, env);
         }
 
