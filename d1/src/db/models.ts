@@ -148,6 +148,8 @@ export const maquininha_articles = sqliteTable("maquininha_articles", {
     date: text("date"),
     duration: text("duration"),
     content: text("content"),
+    createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 });
 export const ArticleSchema = makeSchema(maquininha_articles, "maquininha_articles");
 
@@ -159,6 +161,8 @@ export const maquininha_machines = sqliteTable("maquininha_machines", {
     slug: text("slug").notNull().unique(),
     thumbnail: text("thumbnail"),
     content: text("content"),
+    createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 });
 export const MachineSchema = makeSchema(maquininha_machines, "maquininha_machines");
 

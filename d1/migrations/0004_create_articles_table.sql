@@ -7,5 +7,7 @@ CREATE TABLE maquininha_articles (
     category TEXT,
     date TEXT,
     duration TEXT,
-    content TEXT
+    content TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );

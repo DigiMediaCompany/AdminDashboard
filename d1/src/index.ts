@@ -134,6 +134,8 @@ const articlesHandler = createCrudRoutes({
         date: maquininha_articles.date,
         duration: maquininha_articles.duration,
         content: maquininha_articles.content,
+        createdAt: maquininha_articles.createdAt,
+        updatedAt: maquininha_articles.updatedAt,
     },
     schema: ArticleSchema,
 });
@@ -145,6 +147,8 @@ const machinesHandler = createCrudRoutes({
         slug: maquininha_machines.slug,
         thumbnail: maquininha_machines.thumbnail,
         content: maquininha_machines.content,
+        createdAt: maquininha_machines.createdAt,
+        updatedAt: maquininha_machines.updatedAt,
     },
     schema: MachineSchema,
 });
@@ -175,10 +179,10 @@ export default {
         if (url.pathname.startsWith(`${articleGroup}/signals`)) {
             return signalHandler(req, env);
         }
-        if (url.pathname.startsWith(`/maquininha_articles`)) {
+        if (url.pathname.startsWith(`/maquininha-articles`)) {
             return articlesHandler(req, env);
         }
-        if (url.pathname.startsWith(`/maquininha_machines`)) {
+        if (url.pathname.startsWith(`/maquininha-machines`)) {
             return machinesHandler(req, env);
         }
 

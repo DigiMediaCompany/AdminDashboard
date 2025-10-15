@@ -108,6 +108,14 @@ const showcase: NavItem[] = [
     ],
   },
   {
+    name:"Maquinha",
+    icon: <VideoIcon />,
+    subItems: [
+      { name: "Articles", path: "/maquininha-articles", pro: false },
+      { name: "Machines", path: "/maquininha-machines", pro: false },
+    ],
+  },
+  {
     name: "Youtube Article",
     icon: <PlayCircleIcon />,
     subItems: [
