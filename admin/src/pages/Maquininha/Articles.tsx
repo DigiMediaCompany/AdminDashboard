@@ -207,9 +207,10 @@ const Articles: React.FC = () => {
           <thead className="bg-gray-50">
             <tr>
               <th className="text-left p-3">ID</th>
+              <th className="text-left p-3">Thumbnail</th>
               <th className="text-left p-3">Title</th>
               <th className="text-left p-3">Slug</th>
-              <th className="text-left p-3">Thumbnail</th>
+              
               <th className="text-left p-3">Actions</th>
             </tr>
           </thead>
@@ -217,8 +218,6 @@ const Articles: React.FC = () => {
             {items.map((v) => (
               <tr key={v.id} className="border-t">
                 <td className="p-3">{v.id}</td>
-                <td className="p-3">{v.title}</td>
-                <td className="p-3">{v.slug}</td>
                 <td className="p-3">
                   {v.thumbnail ? (
                     <img
@@ -231,6 +230,9 @@ const Articles: React.FC = () => {
                     <span className="text-gray-400">No image</span>
                   )}
                 </td>
+                <td className="p-3">{v.title}</td>
+                <td className="p-3">{v.slug}</td>
+                
                 
                 <td className="p-3 space-x-2">
                   <button className="px-2 py-1 border rounded" onClick={() => startEdit(v)}>
