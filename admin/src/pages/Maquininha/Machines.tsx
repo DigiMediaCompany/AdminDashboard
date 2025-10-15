@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import {
-  getMaquininhaArticles
+  getMaquininhaMachines
 
-} from "../../services/maquinhaArticleService";
+} from "../../services/maquinhaMachineService";
 
-import type { maquininha_articles } from "../../types/MaquininhaArticles";
+import type { maquininha_machines } from "../../types/MaquininhaMachines";
 import type { Pagination } from "../../types/Common";
 
 const DEFAULT_LIMIT = 20;
 
 const Articles: React.FC = () => {
-  const [items, setItems] = useState<maquininha_articles[]>([]);
+  const [items, setItems] = useState<maquininha_machines[]>([]);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +19,7 @@ const Articles: React.FC = () => {
   const load = async (p = page) => {
     setLoading(true);
     try {
-      const res: Pagination<maquininha_articles> = await getMaquininhaArticles(p, DEFAULT_LIMIT);
+      const res: Pagination<maquininha_machines> = await getMaquininhaMachines(p, DEFAULT_LIMIT);
       setItems(res.data);
       setPage(res.current_page);
       setTotalPages(res.total_pages);
@@ -38,7 +38,7 @@ const Articles: React.FC = () => {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold">Maquininha Articles</h1>
+        <h1 className="text-xl font-semibold">Maquininha Machines</h1>
       </div>
 
       {/* Table */}

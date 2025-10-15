@@ -40,7 +40,7 @@ import Translate from "./pages/YoutubeArticle/Translate.tsx";
 import Series from "./pages/YoutubeArticle/Series.tsx";
 import UsagagVideosPage from "./pages/Usagag/Videos";
 import MaquininhaAticlesPage from "./pages/Maquininha/Articles";
-// import MaquininhaMachinesPage from "./pages/Maquininha/Machines";
+import MaquininhaMachinesPage from "./pages/Maquininha/Machines";
 export default function App() {
   useAuthListener();
   return (
@@ -69,7 +69,7 @@ export default function App() {
 
               {/* Maquinha */}
               <Route path="maquininha-articles" element={<MaquininhaAticlesPage />} />
-              {/* <Route path="maquininha-machines" element={<MaquininhaMachinesPage />} /> */}
+              <Route path="maquininha-machines" element={<MaquininhaMachinesPage />} />
               {/* FreeApk */}
               <Route path="free-apk/info" element={<FreeApkInfo />} />
               <Route path="free-apk/ads" element={<FreeApkAds />} />
