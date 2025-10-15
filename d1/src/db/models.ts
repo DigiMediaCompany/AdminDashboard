@@ -142,7 +142,7 @@ export const SignalSchema = makeSchema(signals, "signals");
 export const maquininha_articles = sqliteTable("maquininha_articles", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
-    link: text("link").notNull().unique(),
+    slug: text("slug").notNull().unique(),
     thumbnail: text("thumbnail"),
     category: text("category"),
     date: text("date"),
@@ -156,7 +156,7 @@ export const ArticleSchema = makeSchema(maquininha_articles, "maquininha_article
 export const maquininha_machines = sqliteTable("maquininha_machines", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     title: text("title").notNull(),
-    link: text("link").notNull().unique(),
+    slug: text("slug").notNull().unique(),
     thumbnail: text("thumbnail"),
     content: text("content"),
 });

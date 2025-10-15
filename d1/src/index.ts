@@ -128,7 +128,7 @@ const articlesHandler = createCrudRoutes({
     columns: {
         id: maquininha_articles.id,
         title: maquininha_articles.title,
-        link: maquininha_articles.link,
+        slug: maquininha_articles.slug,
         thumbnail: maquininha_articles.thumbnail,
         category: maquininha_articles.category,
         date: maquininha_articles.date,
@@ -142,7 +142,7 @@ const machinesHandler = createCrudRoutes({
     columns: {
         id: maquininha_machines.id,
         title: maquininha_machines.title,
-        link: maquininha_machines.link,
+        slug: maquininha_machines.slug,
         thumbnail: maquininha_machines.thumbnail,
         content: maquininha_machines.content,
     },
