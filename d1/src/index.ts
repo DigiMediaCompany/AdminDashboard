@@ -242,9 +242,13 @@ export default {
     if (url.pathname.startsWith(`/blogs`)) {
       return blogsHandler(req, env);
     }
-    if (url.pathname.startsWith(`/h5-game`)) {
+    if (url.pathname.startsWith("/h5_games_tags")) {
+      return h5GamesTagsHandler(req, env);
+    }
+    if (url.pathname.startsWith(`/h5-games`)) {
       return h5GamesHandler(req, env);
     }
+
     if (url.pathname.startsWith(`/appreviews`)) {
       return appReviewsHandler(req, env);
     }
