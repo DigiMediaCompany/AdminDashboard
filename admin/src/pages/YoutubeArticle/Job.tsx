@@ -4,7 +4,7 @@ import PageMeta from "../../components/common/PageMeta";
 import ArticleJobTable from "../../components/tables/ArticleJobTable.tsx";
 import {useModal} from "../../hooks/useModal.ts";
 import JobModal from "../../components/modals/JobModal.tsx";
-import {postApi, updateApi} from "../../services/adminArticleService.ts";
+import {postApi, updateApi,deleteApi } from "../../services/adminArticleService.ts";
 import Toast from "../UiElements/Toast.tsx";
 import {useState} from "react";
 import {constants} from "../../utils/constants.ts";
@@ -22,6 +22,24 @@ export default function Job() {
         title: "",
         message: ""
     });
+    const handleDeleteJob = async (id: number) => {
+        try {
+            await deleteApi("jobs", id);
+            setToast({
+                show: true,
+                variant: "success",
+                title: "Deleted",
+                message: "Job deleted successfully.",
+            });
+        } catch {
+            setToast({
+                show: true,
+                variant: "error",
+                title: "Error",
+                message: "Failed to delete job.",
+            });
+        }
+    };
     return (
         <>
             {toast.show && (
@@ -41,13 +59,14 @@ export default function Job() {
             <div className="space-y-6">
                 <ComponentCard title="Jobs" desc="Create an article from Youtube link jobs"
                                onClick={()=>{openModal()}}>
-                    <ArticleJobTable />
+                    <ArticleJobTable onDeleteJob={handleDeleteJob} />
                 </ComponentCard>
             </div>
             <JobModal
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(data) => {
+                    debugger
                     const job: { link: string; episode?: string, title?: string, summary?: string } = {
                         link: "",
                         title: "",
@@ -67,6 +86,9 @@ export default function Job() {
                             job.episode = data.episode2 ?? ""
                             job.summary = data.summary ?? ""
                             job.title = data.title ?? ""
+                            break;
+                        case constants.JOB_TYPES[3].value:
+                            job.link = data.link ?? ""
                             break;
                         default:
                             throw new Error("No valid type");
