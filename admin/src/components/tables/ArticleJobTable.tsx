@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import { getApi } from "../../services/adminArticleService.ts";
+import { getApi, deleteApi } from "../../services/adminArticleService.ts";
 import {Job} from "../../types/Article.ts";
 import ArticleJobItem from "./items/ArticleJobItem.tsx";
 import Toast from "../../pages/UiElements/Toast.tsx";
@@ -8,7 +8,9 @@ import {useSearchParams} from "react-router";
 import {useAppSelector} from "../../store";
 import {constants} from "../../utils/constants.ts";
 
-
+interface Props {
+    onDeleteJob?: (id: number) => void;
+}
 export default function ArticleJobTable() {
     const [jobs, setJobs] = useState<Job[]>([])
     const [searchParams, setSearchParams] = useSearchParams()
@@ -34,10 +36,7 @@ export default function ArticleJobTable() {
     useEffect(() => {
 
         setLoading(true)
-        getApi<Job>('jobs', 1, 'progress, series', '-id',
-            userRole === constants.ROLES.ADMIN ? {
-                type: constants.JOB_TYPES[2].value
-            } : {}
+        getApi<Job>('jobs', 1, 'progress, series', '-id'
         )
             .then(result => {
                 setJobs(result.data);
@@ -53,14 +52,37 @@ export default function ArticleJobTable() {
             })
             .finally(() => setLoading(false))
     }, [])
-    const updateJob = (id: number, newJob: Job) => {
+    const updateJob = (id: number, newJob?: Job) => {
+        if (!newJob) {
+        setJobs((prev) => prev.filter((job) => job.id !== id));
+        return;
+    }
         setJobs((prev) =>
             prev.map((job) =>
                 job.id === id ? newJob : job
             )
         );
     };
-
+    const handleDelete = async (id: number) => {
+        try {
+            await deleteApi("jobs", id);
+            setJobs((prev) => prev.filter((job) => job.id !== id));
+            setToast({
+                show: true,
+                variant: "success",
+                title: "Deleted",
+                message: "Job deleted successfully.",
+            });
+            onDeleteJob?.(id);
+        } catch {
+            setToast({
+                show: true,
+                variant: "error",
+                title: "Error",
+                message: "Failed to delete job.",
+            });
+        }
+    };
     if (loading) return <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">Loading quizzes...</p>
     return (
         <>
@@ -80,6 +102,7 @@ export default function ArticleJobTable() {
                 <div className="max-w-full overflow-x-auto">
                     <ArticleJobItem jobs={jobs}
                                     onUpdateJob={updateJob}
+                                    onDeleteJob={handleDelete}
                     />
                 </div>
             </div>

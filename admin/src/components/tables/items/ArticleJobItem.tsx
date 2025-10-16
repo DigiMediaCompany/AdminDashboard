@@ -8,13 +8,14 @@ import {
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
-import {postApi, updateApi} from "../../../services/adminArticleService.ts";
+import {postApi, updateApi,deleteApi } from "../../../services/adminArticleService.ts";
 import JobContextModal from "../../modals/JobContextModal.tsx";
 import {useState} from "react";
 import {deleteFile, downloadFile, uploadR2File} from "../../../services/postFunnyService.ts";
 import JobSummaryModal from "../../modals/JobSummaryModal.tsx";
 import JobSelectSummaryModal from "../../modals/JobSelectSummaryModal.tsx";
-
+import Toast from "../../../pages/UiElements/Toast.tsx";
+import { Trash2 } from "lucide-react";
 interface ArticleJobItemProps {
     jobs: Job[];
     onUpdateJob: (id: number, newJob: Job) => void;
@@ -88,9 +89,55 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
     const [status, setStatus] = useState<string | null>(null);
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     // const {statuses, loading, error, refresh} = useGlobalData();
-
+    const [toast, setToast] = useState<{
+        show: boolean;
+        variant: "success" | "error";
+        title: string;
+        message: string;
+    }>({
+        show: false,
+        variant: "success",
+        title: "",
+        message: "",
+    });
+    const handleDelete = (id: number) => {
+        if (!confirm("Are you sure you want to delete this job?")) return;
+        deleteApi("jobs", id)
+            .then(() => {
+                setToast({
+                    show: true,
+                    variant: "success",
+                    title: "Deleted",
+                    message: "Job deleted successfully.",
+                });
+                onUpdateJob(id, undefined as any);
+            })
+            .catch(() => {
+                setToast({
+                    show: true,
+                    variant: "error",
+                    title: "Error",
+                    message: "Failed to delete job.",
+                });
+            });
+    };
     return (
         <>
+        {toast.show && (
+                <Toast
+                    variant={toast.variant}
+                    title={toast.title}
+                    message={toast.message}
+                    changeState={() =>
+                        setToast({
+                            show: false,
+                            variant: "success",
+                            title: "",
+                            message: "",
+                        })
+                    }
+                />
+            )}
             <Table>
                 {/* Table Header */}
                 <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -138,13 +185,20 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         >
                             Priority
                         </TableCell>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                        >
+                            Actions
+                        </TableCell>
                     </TableRow>
                 </TableHeader>
 
                 {/* Table Body */}
                 <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                     {jobs.map((job) => {
-                        const jobDetail: JobDetail = JSON.parse(job.detail)
+                        const jobDetail: JobDetail = job.detail ? JSON.parse(job.detail) : {};
+
 
                         const statusColorMap: Record<string, BadgeColor> = {
                             Failed: "error",
@@ -162,7 +216,8 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                         const jobTypeMap = {
                             1: "1. Youtube -> Article",
                             2: "2. Youtube -> Summaries",
-                            3: "3. Summary -> Article"
+                            3: "3. Summary -> Article",
+                            4: "4. YT -> Video"
                         }
                         return (
                             <TableRow key={job.id}>
@@ -285,6 +340,15 @@ export default function ArticleJobItem({jobs, onUpdateJob}: ArticleJobItemProps)
                                                     : "Urgent"
                                         }
                                     </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <button
+                                        onClick={() => handleDelete(job.id)}
+                                        className="text-red-600 hover:text-red-800 flex items-center gap-1"
+                                    >
+                                        <Trash2 size={16} />
+                                        Delete
+                                    </button>
                                 </TableCell>
 
 
