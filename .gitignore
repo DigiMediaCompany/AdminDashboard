@@ -26,3 +26,4 @@ dist-ssr
 
 admin/node_modules
 admin/.env
+admin/.env.dev
