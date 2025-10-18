@@ -136,6 +136,73 @@ export const signals = sqliteTable("signals", {
 
 export const SignalSchema = makeSchema(signals, "signals");
 
+/**
+ * Users
+ */
+export const users = sqliteTable("users", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    supabase_id: text("supabase_id").notNull().unique(),
+    email: text("email").notNull().unique(),
+    name: text("name").notNull(),
+});
+export const UserSchema = makeSchema(users, "users");
+
+/**
+ * Roles
+ */
+export const roles = sqliteTable("roles", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    description: text("description"),
+});
+export const RoleSchema = makeSchema(roles, "roles");
+
+/**
+ * Permissions
+ */
+export const permissions = sqliteTable("permissions", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    name: text("name").notNull(),
+    description: text("description"),
+});
+export const PermissionSchema = makeSchema(permissions, "permissions");
+
+/**
+ * Role Permissions
+ */
+export const role_permissions = sqliteTable("role_permissions", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    role_id: integer("role_id").notNull().references(() => roles.id, { onDelete: "cascade" }),
+    permission_id: integer("permission_id").notNull().references(() => permissions.id, { onDelete: "cascade" }),
+});
+export const RolePermissionSchema = makeSchema(role_permissions, "role_permissions");
+
+/**
+ * User Roles
+ */
+export const user_roles = sqliteTable("user_roles", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    user_id: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    role_id: integer("role_id").notNull().references(() => roles.id, { onDelete: "cascade" }),
+    assigned_by: integer("assigned_by").references(() => users.id, { onDelete: "set null" }),
+    updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+export const UserRoleSchema = makeSchema(user_roles, "user_roles");
+
+/**
+ * User Permissions
+ */
+export const user_permissions = sqliteTable("user_permissions", {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    user_id: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+    permission_id: integer("permission_id").notNull().references(() => permissions.id, { onDelete: "cascade" }),
+    allowed: integer("allowed").notNull().default(1),
+    assigned_by: integer("assigned_by").references(() => users.id, { onDelete: "set null" }),
+    updated_at: text("updated_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+export const UserPermissionSchema = makeSchema(user_permissions, "user_permissions");
+
+
 export const tableRegistry: Record<string, any> = {
     jobs,
     series,
@@ -143,7 +210,13 @@ export const tableRegistry: Record<string, any> = {
     progress,
     statuses,
     usagag_videos,
-    signals
+    signals,
+    users,
+    roles,
+    permissions,
+    role_permissions,
+    user_roles,
+    user_permissions,
 };
 
 // Note: use custom relationship here since Drizzle relationships does not work well with dynamic setup
@@ -207,6 +280,90 @@ export const relationMap: Record<
             target: "progress",     // progress.status_id
             targetKey: "status_id",
             many: true,             // 1 status → many progress
+        },
+    },
+
+    users: {
+        user_roles: {
+            foreignKey: "id", // users.id → user_roles.user_id
+            target: "user_roles",
+            targetKey: "user_id",
+            many: true,
+        },
+        user_permissions: {
+            foreignKey: "id", // users.id → user_permissions.user_id
+            target: "user_permissions",
+            targetKey: "user_id",
+            many: true,
+        },
+    },
+
+    roles: {
+        role_permissions: {
+            foreignKey: "id", // roles.id → role_permissions.role_id
+            target: "role_permissions",
+            targetKey: "role_id",
+            many: true,
+        },
+        user_roles: {
+            foreignKey: "id", // roles.id → user_roles.role_id
+            target: "user_roles",
+            targetKey: "role_id",
+            many: true,
+        },
+    },
+
+    permissions: {
+        role_permissions: {
+            foreignKey: "id", // permissions.id → role_permissions.permission_id
+            target: "role_permissions",
+            targetKey: "permission_id",
+            many: true,
+        },
+        user_permissions: {
+            foreignKey: "id", // permissions.id → user_permissions.permission_id
+            target: "user_permissions",
+            targetKey: "permission_id",
+            many: true,
+        },
+    },
+
+    role_permissions: {
+        role: {
+            foreignKey: "role_id",
+            target: "roles",
+            targetKey: "id",
+        },
+        permission: {
+            foreignKey: "permission_id",
+            target: "permissions",
+            targetKey: "id",
+        },
+    },
+
+    user_roles: {
+        user: {
+            foreignKey: "user_id",
+            target: "users",
+            targetKey: "id",
+        },
+        role: {
+            foreignKey: "role_id",
+            target: "roles",
+            targetKey: "id",
+        },
+    },
+
+    user_permissions: {
+        user: {
+            foreignKey: "user_id",
+            target: "users",
+            targetKey: "id",
+        },
+        permission: {
+            foreignKey: "permission_id",
+            target: "permissions",
+            targetKey: "id",
         },
     },
 };

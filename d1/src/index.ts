@@ -11,7 +11,13 @@ import {
     statuses,
     usagag_videos,
     UsagagSchema,
-    signals, SignalSchema
+    signals, SignalSchema, users, UserSchema,
+    roles, RoleSchema,
+    permissions, PermissionSchema,
+    role_permissions,
+    RolePermissionSchema,
+    user_roles,
+    UserRoleSchema, user_permissions, UserPermissionSchema
 } from "./db/models";
 import {createCrudRoutes} from "./utils/crud";
 
@@ -21,17 +27,22 @@ import { sql } from "drizzle-orm";
 
 const articleGroup = "/article"
 const usagagGroup = "/usagag"
+const adminGroup = "/admin"
 
-const categoriesHandler = createCrudRoutes({
-    table: categories,
-    columns: { id: categories.id, name: categories.name },
-    schema: CategorySchema,
-});
+// Usagag
 const usagagVideosHandler = createCrudRoutes({
     table: usagag_videos,
     columns: {id: usagag_videos.id, title: usagag_videos.title, slug: usagag_videos.slug, thumbnail: usagag_videos.thumbnail, video: usagag_videos.video },
     schema: UsagagSchema
 });
+
+// Article
+const categoriesHandler = createCrudRoutes({
+    table: categories,
+    columns: { id: categories.id, name: categories.name },
+    schema: CategorySchema,
+});
+
 const seriesHandler = createCrudRoutes({
     table: series,
     columns: {
@@ -122,11 +133,80 @@ const signalHandler = createCrudRoutes({
     schema: SignalSchema,
 });
 
+// Admin
+
+const usersHandler = createCrudRoutes({
+    table: users,
+    columns: {
+        id: users.id,
+        supabase_id: users.supabase_id,
+        email: users.email,
+        name: users.name,
+    },
+    schema: UserSchema,
+});
+
+const rolesHandler = createCrudRoutes({
+    table: roles,
+    columns: {
+        id: roles.id,
+        name: roles.name,
+        description: roles.description,
+    },
+    schema: RoleSchema,
+});
+
+const permissionsHandler = createCrudRoutes({
+    table: permissions,
+    columns: {
+        id: permissions.id,
+        name: permissions.name,
+        description: permissions.description,
+    },
+    schema: PermissionSchema,
+});
+
+const rolePermissionsHandler = createCrudRoutes({
+    table: role_permissions,
+    columns: {
+        id: role_permissions.id,
+        role_id: role_permissions.role_id,
+        permission_id: role_permissions.permission_id,
+    },
+    schema: RolePermissionSchema,
+});
+
+const userRolesHandler = createCrudRoutes({
+    table: user_roles,
+    columns: {
+        id: user_roles.id,
+        user_id: user_roles.user_id,
+        role_id: user_roles.role_id,
+        assigned_by: user_roles.assigned_by,
+        updated_at: user_roles.updated_at,
+    },
+    schema: UserRoleSchema,
+});
+
+const userPermissionsHandler = createCrudRoutes({
+    table: user_permissions,
+    columns: {
+        id: user_permissions.id,
+        user_id: user_permissions.user_id,
+        permission_id: user_permissions.permission_id,
+        allowed: user_permissions.allowed,
+        assigned_by: user_permissions.assigned_by,
+        updated_at: user_permissions.updated_at,
+    },
+    schema: UserPermissionSchema,
+});
+
 
 export default {
     async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         const url = new URL(req.url);
 
+        // Article
         if (url.pathname.startsWith(`${articleGroup}/categories`)) {
             return categoriesHandler(req, env);
         }
@@ -142,11 +222,31 @@ export default {
         if (url.pathname.startsWith(`${articleGroup}/progress`)) {
             return progressHandler(req, env);
         }
+        if (url.pathname.startsWith(`${articleGroup}/signals`)) {
+            return signalHandler(req, env);
+        }
+        // Usagag
         if (url.pathname.startsWith(`${usagagGroup}/videos`)) {
             return usagagVideosHandler(req, env);
         }
-        if (url.pathname.startsWith(`${articleGroup}/signals`)) {
-            return signalHandler(req, env);
+        // Admin
+        if (url.pathname.startsWith(`${adminGroup}/users`)) {
+            return usersHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${adminGroup}/roles`)) {
+            return rolesHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${adminGroup}/permissions`)) {
+            return permissionsHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${adminGroup}/role_permissions`)) {
+            return rolePermissionsHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${adminGroup}/user_roles`)) {
+            return userRolesHandler(req, env);
+        }
+        if (url.pathname.startsWith(`${adminGroup}/user_permissions`)) {
+            return userPermissionsHandler(req, env);
         }
 
         return new Response("Not Found", { status: 404 });
