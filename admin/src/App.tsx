@@ -39,6 +39,9 @@ import Job from "./pages/YoutubeArticle/Job.tsx";
 import Translate from "./pages/YoutubeArticle/Translate.tsx";
 import Series from "./pages/YoutubeArticle/Series.tsx";
 import UsagagVideosPage from "./pages/Usagag/Videos";
+import User from "./pages/Admin/User.tsx";
+import Role from "./pages/Admin/Role.tsx";
+import Permission from "./pages/Admin/Permission.tsx";
 
 export default function App() {
   useAuthListener();
@@ -88,6 +91,11 @@ export default function App() {
               {/*<Route path="youtube-article/jobs" element={<Job />} />*/}
               {/*<Route path="youtube-article/jobs" element={<Job />} />*/}
               <Route path="youtube-article/categories" element={<Translate />} />
+
+              {/* Admin */}
+              <Route path="admin/users" element={<User />} />
+              <Route path="admin/roles" element={<Role />} />
+              <Route path="admin/permissions" element={<Permission />} />
 
             </Route>
           </Route>
