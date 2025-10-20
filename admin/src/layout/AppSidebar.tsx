@@ -50,124 +50,124 @@ const sidebarSections: Section[] = [
                 icon: <UserGroupIcon />,
                 subItems: [
                     { name: "Users", path: "/admin/users" },
-                    { name: "Roles", path: "/admin/roles" },
+                    // { name: "Roles", path: "/admin/roles" },
                     { name: "Permissions", path: "/admin/permissions" },
                 ]
             },
-            {
-                name: "Usagag Video",
-                icon: <VideoIcon />,
-                subItems: [{ name: "Videos", path: "/usagag-videos" }],
-            },
-            {
-                name: "Youtube Article",
-                icon: <PlayCircleIcon />,
-                subItems: [
-                    { name: "Job", path: "/youtube-article/jobs" },
-                    { name: "Series", path: "/youtube-article/series" },
-                    { name: "Categories", path: "/youtube-article/categories" },
-                ],
-            },
-            {
-                name: "PostFunny",
-                icon: <FaceSmileIcon />,
-                subItems: [
-                    { name: "Info", path: "/post-funny/info" },
-                    { name: "Quizzes", path: "/post-funny/quizzes" },
-                    { name: "Ads", path: "/post-funny/ads" },
-                ],
-            },
-            {
-                name: "FreeApk",
-                icon: <FolderArrowDownIcon />,
-                subItems: [
-                    { name: "Info", path: "/free-apk/info" },
-                    { name: "Ads", path: "/free-apk/ads" },
-                ],
-            },
-            {
-                name: "GonoGame",
-                icon: <PuzzlePieceIcon />,
-                subItems: [
-                    { name: "Info", path: "/gono-game/info" },
-                    { name: "Ads", path: "/gono-game/ads" },
-                ],
-            },
-            {
-                name: "MzGenz",
-                icon: <PuzzlePieceIcon />,
-                subItems: [
-                    { name: "Info", path: "/mz-genz/info" },
-                    { name: "Ads", path: "/mz-genz/ads" },
-                ],
-            },
-            {
-                name: "TikGame",
-                icon: <PuzzlePieceIcon />,
-                subItems: [
-                    { name: "Info", path: "/tik-game/info" },
-                    { name: "Ads", path: "/tik-game/ads" },
-                ],
-            },
+            // {
+            //     name: "Usagag Video",
+            //     icon: <VideoIcon />,
+            //     subItems: [{ name: "Videos", path: "/usagag-videos" }],
+            // },
+            // {
+            //     name: "Youtube Article",
+            //     icon: <PlayCircleIcon />,
+            //     subItems: [
+            //         { name: "Job", path: "/youtube-article/jobs" },
+            //         { name: "Series", path: "/youtube-article/series" },
+            //         { name: "Categories", path: "/youtube-article/categories" },
+            //     ],
+            // },
+            // {
+            //     name: "PostFunny",
+            //     icon: <FaceSmileIcon />,
+            //     subItems: [
+            //         { name: "Info", path: "/post-funny/info" },
+            //         { name: "Quizzes", path: "/post-funny/quizzes" },
+            //         { name: "Ads", path: "/post-funny/ads" },
+            //     ],
+            // },
+            // {
+            //     name: "FreeApk",
+            //     icon: <FolderArrowDownIcon />,
+            //     subItems: [
+            //         { name: "Info", path: "/free-apk/info" },
+            //         { name: "Ads", path: "/free-apk/ads" },
+            //     ],
+            // },
+            // {
+            //     name: "GonoGame",
+            //     icon: <PuzzlePieceIcon />,
+            //     subItems: [
+            //         { name: "Info", path: "/gono-game/info" },
+            //         { name: "Ads", path: "/gono-game/ads" },
+            //     ],
+            // },
+            // {
+            //     name: "MzGenz",
+            //     icon: <PuzzlePieceIcon />,
+            //     subItems: [
+            //         { name: "Info", path: "/mz-genz/info" },
+            //         { name: "Ads", path: "/mz-genz/ads" },
+            //     ],
+            // },
+            // {
+            //     name: "TikGame",
+            //     icon: <PuzzlePieceIcon />,
+            //     subItems: [
+            //         { name: "Info", path: "/tik-game/info" },
+            //         { name: "Ads", path: "/tik-game/ads" },
+            //     ],
+            // },
 
         ],
     },
-    {
-        title: "Showcase",
-        items: [
-            {
-                icon: <PieChartIcon />,
-                name: "Charts",
-                subItems: [
-                    { name: "Line Chart", path: "/line-chart" },
-                    { name: "Bar Chart", path: "/bar-chart" },
-                ],
-            },
-            {
-                icon: <BoxCubeIcon />,
-                name: "UI Elements",
-                subItems: [
-                    { name: "Alerts", path: "/alerts" },
-                    { name: "Buttons", path: "/buttons" },
-                    { name: "Avatar", path: "/avatars" },
-                    { name: "Badge", path: "/badge" },
-                    { name: "Images", path: "/images" },
-                    { name: "Videos", path: "/videos" }
-                ],
-            },
-            {
-                icon: <CalenderIcon />, name: "Calendar", path: "/calendar"
-            },
-            {
-                name: "Tables",
-                icon: <TableIcon />,
-                path: "/basic-tables"
-            },
-            {
-                name: "Pages",
-                icon: <PageIcon />,
-                subItems: [
-                    { name: "Blank Page", path: "/blank" },
-                    { name: "404 Error", path: "/error-404" },
-                ],
-            },
-            {
-                name: "Forms",
-                icon: <ListIcon />,
-                path: "/form-elements"
-            },
-            {
-                name: "Dashboard",
-                icon: <GridIcon />,
-                path: "/dashboard"
-            },
-            {
-                name: "User Profile",
-                icon: <UserCircleIcon />,
-                path: "/profile"
-            },
-        ],
-    },
+    // {
+    //     title: "Showcase",
+    //     items: [
+    //         {
+    //             icon: <PieChartIcon />,
+    //             name: "Charts",
+    //             subItems: [
+    //                 { name: "Line Chart", path: "/line-chart" },
+    //                 { name: "Bar Chart", path: "/bar-chart" },
+    //             ],
+    //         },
+    //         {
+    //             icon: <BoxCubeIcon />,
+    //             name: "UI Elements",
+    //             subItems: [
+    //                 { name: "Alerts", path: "/alerts" },
+    //                 { name: "Buttons", path: "/buttons" },
+    //                 { name: "Avatar", path: "/avatars" },
+    //                 { name: "Badge", path: "/badge" },
+    //                 { name: "Images", path: "/images" },
+    //                 { name: "Videos", path: "/videos" }
+    //             ],
+    //         },
+    //         {
+    //             icon: <CalenderIcon />, name: "Calendar", path: "/calendar"
+    //         },
+    //         {
+    //             name: "Tables",
+    //             icon: <TableIcon />,
+    //             path: "/basic-tables"
+    //         },
+    //         {
+    //             name: "Pages",
+    //             icon: <PageIcon />,
+    //             subItems: [
+    //                 { name: "Blank Page", path: "/blank" },
+    //                 { name: "404 Error", path: "/error-404" },
+    //             ],
+    //         },
+    //         {
+    //             name: "Forms",
+    //             icon: <ListIcon />,
+    //             path: "/form-elements"
+    //         },
+    //         {
+    //             name: "Dashboard",
+    //             icon: <GridIcon />,
+    //             path: "/dashboard"
+    //         },
+    //         {
+    //             name: "User Profile",
+    //             icon: <UserCircleIcon />,
+    //             path: "/profile"
+    //         },
+    //     ],
+    // },
 ];
 
 const AppSidebar: React.FC = () => {

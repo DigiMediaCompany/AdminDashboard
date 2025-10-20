@@ -2,7 +2,7 @@ import {constants} from "../utils/constants.ts";
 import {Pagination} from "../types/Common.ts";
 import {getAdminApiInstance} from "../utils/helper.ts";
 
-const api = getAdminApiInstance('article')
+const api = getAdminApiInstance('/article')
 
 export const getApi = async <T>(
     model: string,

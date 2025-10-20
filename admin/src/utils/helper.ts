@@ -11,7 +11,7 @@ export function snakeToTitleCase(input: string): string {
 
 export function getAdminApiInstance(module: string) {
     const api = axios.create({
-        baseURL: `${import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL}/${module}`,
+        baseURL: `${import.meta.env.VITE_PUBLIC_CLOUDFLARE_D1_ADMIN_URL}${module}`,
         headers: {
             "Content-Type": "application/json",
             // "Access-Control-Allow-Origin": "*"
