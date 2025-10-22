@@ -6,6 +6,8 @@ import Label from "../form/Label.tsx";
 import {Permission, UserPermission} from "../../types/Admin.ts";
 import {getApi} from "../../services/commonApiService.ts";
 import Select from "../form/Select.tsx";
+import {useAppSelector} from "../../store";
+import {constants} from "../../utils/constants.ts";
 
 interface BaseModalProps {
     isOpen: boolean;
@@ -36,11 +38,15 @@ export default function UserModal({
             permissions: userPermissions,
             userId
         })
+        setUserPermissions([])
         onClose()
     };
+    const authState = useAppSelector((state) => state.auth)
+    const role = authState.user?.user_metadata?.role;
 
     // TODO: get permission list from outside
     useEffect(() => {
+        if (!userId) return;
         getApi<Permission>({
             model: 'permissions',
             module: '/admin'
@@ -50,7 +56,16 @@ export default function UserModal({
             })
             .catch(() => {
             })
-    }, [])
+        getApi<UserPermission>({
+            model: 'user_permissions',
+            module: '/admin'
+        })
+            .then(result => {
+                setUserPermissions(result.data)
+            })
+            .catch(() => {
+            })
+    }, [userId, isOpen])
 
     // const permissionOptions = [
     //     { value: "1", label: "Showcase" },
@@ -139,31 +154,34 @@ export default function UserModal({
                             <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-1">
                                 {/* Composer */}
                                 <div>
-                                    <Label>Permission</Label>
+                                    {role === constants.ROLES.SUPER_ADMIN ? (<>
+                                        <Label>Permission</Label>
 
-                                    {/* Dropdown with only available (non-duplicate) permissions */}
-                                    <Select
-                                        value={selectedPermissionId ?? ""}
-                                        options={availableOptions}
-                                        placeholder={availableOptions.length ? "Select permission to add" : "All permissions added"}
-                                        onChange={(opt) => {
-                                            setSelectedPermissionId(opt);
-                                        }}
-                                        className="dark:bg-dark-900"
-                                    />
-
-                                    <div className="mt-3">
-                                        <Button
-                                            size="sm"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleAddPermission();
+                                        {/* Dropdown with only available (non-duplicate) permissions */}
+                                        <Select
+                                            value={selectedPermissionId ?? ""}
+                                            options={availableOptions}
+                                            placeholder={availableOptions.length ? "Select permission to add" : "All permissions added"}
+                                            onChange={(opt) => {
+                                                setSelectedPermissionId(opt);
                                             }}
-                                            disabled={!selectedPermissionId}
-                                        >
-                                            Add
-                                        </Button>
-                                    </div>
+                                            className="dark:bg-dark-900"
+                                        />
+
+                                        <div className="mt-3">
+                                            <Button
+                                                size="sm"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    handleAddPermission();
+                                                }}
+                                                disabled={!selectedPermissionId}
+                                            >
+                                                Add
+                                            </Button>
+                                        </div>
+                                    </>) : ("")}
+
 
                                     {/* Render current userPermissions as removable chips */}
                                     <div className="mt-4 flex flex-wrap gap-2">
@@ -214,9 +232,12 @@ export default function UserModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        <Button size="sm" onClick={handleSave}>
-                            Save Changes
-                        </Button>
+                        {role === constants.ROLES.SUPER_ADMIN ? (<>
+                            <Button size="sm" onClick={handleSave}>
+                                Save Changes
+                            </Button>
+                        </>) : null}
+
                     </div>
                 </form>
             </div>

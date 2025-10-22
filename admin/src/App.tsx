@@ -94,13 +94,14 @@ export default function App() {
 
               {/* Admin */}
               <Route path="admin/users" element={<User />} />
-              <Route path="admin/roles" element={<Role />} />
-              <Route path="admin/permissions" element={<Permission />} />
+              {/*<Route path="admin/roles" element={<Role />} />*/}
+
 
             </Route>
           </Route>
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
             <Route element={<AppLayout />}>
+              <Route path="admin/permissions" element={<Permission />} />
               {/* Showcases */}
               <Route path="/profile-showcase" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
