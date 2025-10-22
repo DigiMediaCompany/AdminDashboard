@@ -1,5 +1,6 @@
 import {supabase} from "../utils/supabase.ts";
 import {constants} from "../utils/constants.ts";
+import {postApi} from "./commonApiService.ts";
 
 export const signIn = async (email: string, password: string) => {
     return supabase.auth.signInWithPassword({ email, password })

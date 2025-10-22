@@ -76,6 +76,7 @@ export const postApi = async <T = unknown>({
     const response = await api.post(`/${model}`, payload);
     return response.data as T;
 };
+
 export const updateApi = async <T, R = T>({
     model,
     id,
@@ -90,4 +91,49 @@ export const updateApi = async <T, R = T>({
     const api = getAdminApiInstance(module);
     const response = await api.patch(`/${model}/${id}`, payload);
     return response.data as R;
+};
+
+export const bulkDeleteApi = async <T = unknown>({
+                                                     model,
+                                                     ids,
+                                                     module = '',
+                                                 }: {
+    model: string;
+    ids: number[];
+    module?: string;
+}): Promise<T> => {
+    if (!Array.isArray(ids) || ids.length === 0) {
+        throw new Error("Bulk delete requires a non-empty array of IDs");
+    }
+
+    const api = getAdminApiInstance(module);
+
+    const response = await api.delete(`/${model}?bulk=true`, {
+        data: { ids },
+        validateStatus: (status) => status === 200 || status === 207, // allow multi-status
+    });
+
+    return response.data as T;
+};
+
+export const bulkInsertApi = async <T = unknown>({
+                                                     model,
+                                                     payload,
+                                                     module = '',
+                                                 }: {
+    model: string;
+    payload: object[];
+    module?: string;
+}): Promise<T> => {
+    if (!Array.isArray(payload) || payload.length === 0) {
+        throw new Error("Bulk insert payload must be a non-empty array");
+    }
+
+    const api = getAdminApiInstance(module);
+
+    const response = await api.post(`/${model}?bulk=true`, payload, {
+        validateStatus: (status) => status === 201 || status === 207,
+    });
+
+    return response.data as T;
 };

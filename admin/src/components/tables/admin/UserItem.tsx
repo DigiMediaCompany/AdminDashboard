@@ -5,11 +5,12 @@ import {
     TableHeader,
     TableRow,
 } from "../../ui/table";
-import {User} from "../../../types/Admin.ts";
+import {User, UserPermission} from "../../../types/Admin.ts";
 import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
 import UserModal from "../../modals/UserModal.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
 import {useState} from "react";
+import {bulkDeleteApi, bulkInsertApi, getApi} from "../../../services/commonApiService.ts";
 
 interface UserItemProps {
     users: User[];
@@ -17,34 +18,39 @@ interface UserItemProps {
 
 export default function UserItem({ users }: UserItemProps) {
     const { isOpen, openModal, closeModal } = useModal();
+    const [selectedUserId, setSelectedUserId] = useState<string | null>("");
+
 
     return (
         <>
             <UserModal
                 isOpen={isOpen}
                 onClose={closeModal}
-                onSave={(permission) => {
-                    console.log(permission);
-                    // postApi({
-                    //     model: 'permissions',
-                    //     payload: permission,
-                    //     module: '/admin'
-                    // }).then(() => {
-                    //     setToast({
-                    //         show: true,
-                    //         variant: "success",
-                    //         title: "Created",
-                    //         message: "Created successfully."
-                    //     });
-                    //     window.location.reload();
-                    // }).catch(() => {
-                    //     setToast({
-                    //         show: true,
-                    //         variant: "error",
-                    //         title: "Error",
-                    //         message: "Failed."
-                    //     });
-                    // })
+                userId={selectedUserId}
+                onSave={(result) => {
+                    getApi<UserPermission>({
+                        model: 'user_permissions',
+                        module: '/admin',
+                        filter: {
+                            user_id: result.userId
+                        }
+                    }).then((data) => {
+                        bulkDeleteApi({
+                            model: 'user_permissions',
+                            module: '/admin',
+                            ids: data.data.map((item) => item.id),
+                        }).then(() => {
+                            bulkInsertApi({
+                                model: 'user_permissions',
+                                module: '/admin',
+                                payload: result.permissions.map((item) => ({
+                                    permission_id: parseInt(item.permission_id),
+                                    user_id: parseInt(result.userId),
+                                })),
+                            });
+                        })
+                    }).catch(() => console.log("crap"))
+
                 }}
             />
             <Table>
@@ -99,7 +105,12 @@ export default function UserItem({ users }: UserItemProps) {
                                 <div className="flex items-center gap-3">
                                     <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
                                         // setSelectedQuiz(quizzes[index]);
-                                        openModal();
+                                        setSelectedUserId(s.id.toString())
+                                        if (selectedUserId !== null && selectedUserId !== undefined && selectedUserId.trim() !== "") {
+
+                                            openModal();
+
+                                        }
                                     }}>
                                         <PencilSquareIcon className="w-6 h-6" />
                                     </button>

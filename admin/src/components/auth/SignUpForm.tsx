@@ -6,6 +6,7 @@ import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import { signUp } from "../../services/authService";
 import Toast from "../../pages/UiElements/Toast.tsx";
+import {postApi} from "../../services/commonApiService.ts";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +62,7 @@ export default function SignUpForm() {
 
       setLoading(true)
 
-      const { error } = await signUp(email, password, name)
+      const { data, error } = await signUp(email, password, name)
       setLoading(false)
 
       if (error) {
@@ -72,6 +73,21 @@ export default function SignUpForm() {
           message: error.message
         })
       } else {
+        if (data) {
+          postApi({
+              model: 'users',
+              payload: {
+                  name,
+                  email,
+                  supabase_id: data.user?.id
+              },
+              module: '/admin'
+          }).then(() => {
+              console.log("yay")
+          }).catch(() => {
+              console.log("nay")
+          })
+        }
         setToast({
           show: true,
           variant: "success",
