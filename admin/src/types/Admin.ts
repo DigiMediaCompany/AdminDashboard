@@ -15,6 +15,7 @@ export interface Permission {
     id: number;
     name: string;
     description?: string | null;
+    user_permissions?: UserPermission[];
 }
 
 export interface RolePermission {

@@ -47,7 +47,6 @@ export default function BaseTable<T>({
         setLoading(true);
         fetchData(currentPage)
             .then((result) => {
-                console.log(result);
                 setItems(result.data);
                 setTotalPages(result.total_pages);
             })

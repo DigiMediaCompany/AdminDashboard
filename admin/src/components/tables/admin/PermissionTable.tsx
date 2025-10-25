@@ -12,6 +12,7 @@ export default function PermissionTable() {
                     model: 'permissions',
                     page: page,
                     module: '/admin',
+                    relation: 'user_permissions.user'
                 })}
                 renderRows={(items) => <PermissionItem permissions={items} />}
             />

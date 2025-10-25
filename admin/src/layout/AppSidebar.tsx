@@ -11,14 +11,9 @@ import {
     ListIcon,
     PageIcon,
     TableIcon,
-    VideoIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 import {
-    FaceSmileIcon,
-    FolderArrowDownIcon,
-    PlayCircleIcon,
-    PuzzlePieceIcon,
     UserGroupIcon
 } from "@heroicons/react/24/outline";
 
@@ -112,62 +107,62 @@ const sidebarSections: Section[] = [
 
         ],
     },
-    // {
-    //     title: "Showcase",
-    //     items: [
-    //         {
-    //             icon: <PieChartIcon />,
-    //             name: "Charts",
-    //             subItems: [
-    //                 { name: "Line Chart", path: "/line-chart" },
-    //                 { name: "Bar Chart", path: "/bar-chart" },
-    //             ],
-    //         },
-    //         {
-    //             icon: <BoxCubeIcon />,
-    //             name: "UI Elements",
-    //             subItems: [
-    //                 { name: "Alerts", path: "/alerts" },
-    //                 { name: "Buttons", path: "/buttons" },
-    //                 { name: "Avatar", path: "/avatars" },
-    //                 { name: "Badge", path: "/badge" },
-    //                 { name: "Images", path: "/images" },
-    //                 { name: "Videos", path: "/videos" }
-    //             ],
-    //         },
-    //         {
-    //             icon: <CalenderIcon />, name: "Calendar", path: "/calendar"
-    //         },
-    //         {
-    //             name: "Tables",
-    //             icon: <TableIcon />,
-    //             path: "/basic-tables"
-    //         },
-    //         {
-    //             name: "Pages",
-    //             icon: <PageIcon />,
-    //             subItems: [
-    //                 { name: "Blank Page", path: "/blank" },
-    //                 { name: "404 Error", path: "/error-404" },
-    //             ],
-    //         },
-    //         {
-    //             name: "Forms",
-    //             icon: <ListIcon />,
-    //             path: "/form-elements"
-    //         },
-    //         {
-    //             name: "Dashboard",
-    //             icon: <GridIcon />,
-    //             path: "/dashboard"
-    //         },
-    //         {
-    //             name: "User Profile",
-    //             icon: <UserCircleIcon />,
-    //             path: "/profile"
-    //         },
-    //     ],
-    // },
+    {
+        title: "Showcase",
+        items: [
+            {
+                icon: <PieChartIcon />,
+                name: "Charts",
+                subItems: [
+                    { name: "Line Chart", path: "/line-chart" },
+                    { name: "Bar Chart", path: "/bar-chart" },
+                ],
+            },
+            {
+                icon: <BoxCubeIcon />,
+                name: "UI Elements",
+                subItems: [
+                    { name: "Alerts", path: "/alerts" },
+                    { name: "Buttons", path: "/buttons" },
+                    { name: "Avatar", path: "/avatars" },
+                    { name: "Badge", path: "/badge" },
+                    { name: "Images", path: "/images" },
+                    { name: "Videos", path: "/videos" }
+                ],
+            },
+            {
+                icon: <CalenderIcon />, name: "Calendar", path: "/calendar"
+            },
+            {
+                name: "Tables",
+                icon: <TableIcon />,
+                path: "/basic-tables"
+            },
+            {
+                name: "Pages",
+                icon: <PageIcon />,
+                subItems: [
+                    { name: "Blank Page", path: "/blank" },
+                    { name: "404 Error", path: "/error-404" },
+                ],
+            },
+            {
+                name: "Forms",
+                icon: <ListIcon />,
+                path: "/form-elements"
+            },
+            {
+                name: "Dashboard",
+                icon: <GridIcon />,
+                path: "/dashboard"
+            },
+            {
+                name: "User Profile",
+                icon: <UserCircleIcon />,
+                path: "/profile"
+            },
+        ],
+    },
 ];
 
 const AppSidebar: React.FC = () => {

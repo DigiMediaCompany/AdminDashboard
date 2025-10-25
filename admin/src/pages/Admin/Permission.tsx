@@ -5,7 +5,7 @@ import PermissionTable from "../../components/tables/admin/PermissionTable.tsx";
 import Toast from "../UiElements/Toast.tsx";
 import {useState} from "react";
 import {useModal} from "../../hooks/useModal.ts";
-import PermissionModal from "../../components/modals/PermissionModel.tsx";
+import PermissionModal from "../../components/modals/PermissionModal.tsx";
 import {postApi} from "../../services/commonApiService.ts";
 
 export default function Permission() {
