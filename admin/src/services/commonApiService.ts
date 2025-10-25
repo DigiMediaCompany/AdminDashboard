@@ -93,6 +93,22 @@ export const updateApi = async <T, R = T>({
     return response.data as R;
 };
 
+
+export const deleteApi = async  <T = unknown> ({
+    model,
+    id,
+    module = "",
+}: {
+    model: string;
+    id: number | string;
+    module?: string;
+}): Promise<T> => {
+    const api = getAdminApiInstance(module);
+    const response = await api.delete(`/${model}/${id}`);
+    return response.data as T;
+};
+
+
 export const bulkDeleteApi = async <T = unknown>({
                                                      model,
                                                      ids,

@@ -30,6 +30,7 @@ export default function UserEditModal({
 
     const authState = useAppSelector((state) => state.auth)
     const role = authState.user?.user_metadata?.role;
+    const currentUserId = authState.user?.user_metadata?.id;
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
@@ -46,6 +47,10 @@ export default function UserEditModal({
         if (!user) return;
         setUserData(user)
     }, [user, isOpen])
+
+    const handleChange = (field: keyof User, value: string) => {
+        setUserData((prev) => (prev ? { ...prev, [field]: value } : prev));
+    };
 
     return (
         <Modal
@@ -69,10 +74,21 @@ export default function UserEditModal({
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-1">
                             <div>
                                 <Label>Name</Label>
-                                <Input type="text" value=""/>
+                                <Input type="text" value={userData?.name}
+                                       onChange={(e) => handleChange("name", e.target.value)}
+                                />
                             </div>
-                            <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-1">
-
+                            <div>
+                                <Label>Email</Label>
+                                <Input
+                                disabled={true}
+                                    type="text" value={userData?.email} />
+                            </div>
+                            <div>
+                                <Label>Supabase ID</Label>
+                                <Input
+                                    disabled={true}
+                                    type="text" value={userData?.supabase_id} />
                             </div>
                         </div>
 
@@ -84,7 +100,7 @@ export default function UserEditModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        {role === constants.ROLES.SUPER_ADMIN ? (<>
+                        {role === constants.ROLES.SUPER_ADMIN || currentUserId === user?.supabase_id ? (<>
                             <Button size="sm" onClick={handleSave}>
                                 Save Changes
                             </Button>
