@@ -11,8 +11,13 @@ import {constants} from "../../utils/constants.ts";
 interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (quiz: unknown) => void;
+    onSave: (result: OnSaveType) => void;
     permission: Permission | null;
+}
+
+interface OnSaveType {
+    permission: Permission | null;
+    users: UserPermission[]
 }
 
 
@@ -26,14 +31,13 @@ export default function PermissionUserModal({
     const [users, setUsers] = useState<User[]>([]);
     const [userPermissions, setUserPermissions] = useState<UserPermission[]>([]);
 
-    // Track which permission_id is currently selected (but not yet added)
-    const [selectedPermissionId, setSelectedPermissionId] = useState<string | null>(null);
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
         onSave({
-            permissions: userPermissions,
+            users: userPermissions,
             permission
         })
         setUserPermissions([])
@@ -53,22 +57,32 @@ export default function PermissionUserModal({
             })
             .catch(() => {
             })
+        getApi<UserPermission>({
+            model: 'user_permissions',
+            filter: {
+                permission_id: permission.id.toString()
+            },
+            module: '/admin'
+        })
+            .then(result => {
+                setUserPermissions(result.data)
+            })
+            .catch(() => {
+            })
 
-        setUserPermissions(permission.user_permissions);
+
 
     }, [permission, isOpen])
 
 
-    // Map permission_id -> label for quick lookup when rendering the chips
     const optionLabelById = useMemo(() => {
         const map = new Map<string, string>();
         users.forEach(o => map.set(o.id.toString(), o.name));
         return map;
     }, [users]);
 
-    // Prevent duplicates: available options are those not already present in userPermissions (by permission_id)
     const availableOptions = useMemo(() => {
-        const chosen = new Set(userPermissions.map(up => String(up.permission_id)));
+        const chosen = new Set(userPermissions.map(up => String(up.user_id)));
         return users
             .filter(per => !chosen.has(String(per.id)))
             .map(perm => ({
@@ -79,27 +93,27 @@ export default function PermissionUserModal({
 
     // Add a new UserPermission (default allowed = 1); you can tweak defaults as needed
     const handleAddPermission = () => {
-        if (!selectedPermissionId) return;
-        const already = userPermissions.some(up => String(up.permission_id) === selectedPermissionId);
+        if (!selectedUserId) return;
+        const already = userPermissions.some(up => String(up.user_id) === selectedUserId);
         if (already) return;
 
         // Build a new UserPermission object (id can be undefined or temp; backend should assign)
         const now = new Date().toISOString();
         const newUP: UserPermission = {
             id: 0,
-            user_id: 0,
-            permission_id: Number(selectedPermissionId),
+            user_id: Number(selectedUserId),
+            permission_id: 0,
             allowed: 1,
             assigned_by: null,
             updated_at: now,
         };
 
         setUserPermissions(prev => [...prev, newUP]);
-        setSelectedPermissionId(null);
+        setSelectedUserId(null);
     };
 
     const handleRemovePermission = (permissionId: number) => {
-        setUserPermissions(prev => prev.filter(up => up.permission_id !== permissionId));
+        setUserPermissions(prev => prev.filter(up => up.user_id !== permissionId));
     };
     return (
         <Modal
@@ -139,11 +153,11 @@ export default function PermissionUserModal({
 
                                         {/* Dropdown with only available (non-duplicate) permissions */}
                                         <Select
-                                            value={selectedPermissionId ?? ""}
+                                            value={selectedUserId ?? ""}
                                             options={availableOptions}
                                             placeholder={availableOptions.length ? "Select user to add" : "All users added"}
                                             onChange={(opt) => {
-                                                setSelectedPermissionId(opt);
+                                                setSelectedUserId(opt);
                                             }}
                                             className="dark:bg-dark-900"
                                         />
@@ -155,7 +169,7 @@ export default function PermissionUserModal({
                                                     e.preventDefault();
                                                     handleAddPermission();
                                                 }}
-                                                disabled={!selectedPermissionId}
+                                                disabled={!selectedUserId}
                                             >
                                                 Add
                                             </Button>
@@ -166,7 +180,7 @@ export default function PermissionUserModal({
                                     {/* Render current userPermissions as removable chips */}
                                     <div className="mt-4 flex flex-wrap gap-2">
                                         {userPermissions.map((up) => {
-                                            const key = String(up.permission_id);
+                                            const key = String(up.user_id);
                                             const label = optionLabelById.get(key) ?? `Permission #${key}`;
                                             return (
                                                 <div
@@ -178,7 +192,7 @@ export default function PermissionUserModal({
                                                     {/* Delete icon */}
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleRemovePermission(up.permission_id)}
+                                                        onClick={() => handleRemovePermission(up.user_id)}
                                                         className="group inline-flex h-5 w-5 items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
                                                         aria-label={`Remove ${label}`}
                                                         title={`Remove ${label}`}

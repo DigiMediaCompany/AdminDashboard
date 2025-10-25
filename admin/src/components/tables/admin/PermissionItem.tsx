@@ -9,6 +9,7 @@ import {Permission} from "../../../types/Admin.ts";
 import {useModal} from "../../../hooks/useModal.ts";
 import {useState} from "react";
 import PermissionUserModal from "../../modals/PermissionUserModal.tsx";
+import {bulkDeleteApi, bulkInsertApi} from "../../../services/commonApiService.ts";
 
 interface PermissionItemProps {
     permissions: Permission[];
@@ -24,13 +25,38 @@ export default function PermissionItem({ permissions }: PermissionItemProps) {
                 onClose={closeModal}
                 permission={selectedPermission}
                 onSave={(result) => {
-                    console.log(result)
+                    if (result.permission?.user_permissions &&
+                        result.permission.user_permissions.length > 0) {
+                        bulkDeleteApi({
+                            model: 'user_permissions',
+                            module: '/admin',
+                            ids: result.permission?.user_permissions.map((item) => item.id),
+                        }).then(() => {})
+                            .catch(() => {})
+                    }
+                    bulkInsertApi({
+                        model: 'user_permissions',
+                        module: '/admin',
+                        payload: result.users.map((item) => ({
+                            permission_id: result.permission?.id,
+                            user_id: item.user_id,
+                        })),
+                    })
+                        .then(() => {})
+                        .catch(() => {})
+
                 }}
             />
             <Table>
                 {/* Table Header */}
                 <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                     <TableRow>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                        >
+                            ID
+                        </TableCell>
                         <TableCell
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
@@ -50,6 +76,9 @@ export default function PermissionItem({ permissions }: PermissionItemProps) {
                 <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                     {permissions.map((s) => (
                         <TableRow key={s.id}>
+                            <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                {s.id || "—"}
+                            </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start"
                             >
                                 <div  onClick={() => {
@@ -63,7 +92,7 @@ export default function PermissionItem({ permissions }: PermissionItemProps) {
                                     }
                                 }}
                                       className="cursor-pointer hover:text-brand-500">
-                                    {s?.id && s?.name ? `${s.id}. ${s.name}` : "—"}
+                                    {s.name || "—"}
 
                                 </div>
                             </TableCell>

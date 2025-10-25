@@ -18,7 +18,7 @@ interface UserItemProps {
 
 export default function UserItem({ users }: UserItemProps) {
     const { isOpen, openModal, closeModal } = useModal();
-    const [selectedUserId, setSelectedUserId] = useState<string | null>("");
+    const [selectedUserId, setSelectedUserId] = useState<string>("");
 
 
     return (
@@ -44,10 +44,10 @@ export default function UserItem({ users }: UserItemProps) {
                                 model: 'user_permissions',
                                 module: '/admin',
                                 payload: result.permissions.map((item) => ({
-                                    permission_id: parseInt(item.permission_id),
+                                    permission_id: item.permission_id,
                                     user_id: parseInt(result.userId),
                                 })),
-                            });
+                            }).then(() => {}).catch(() => {});
                         })
                     }).catch(() => console.log("crap"))
 

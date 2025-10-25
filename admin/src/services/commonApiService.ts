@@ -43,7 +43,7 @@ export const getApi = async <T>({
     page?: number;
     relation?: string;
     sort?: string;
-    filter?: Record<string, never>;
+    filter?: Record<string, string>;
     module?: string;
 }): Promise<Pagination<T>> => {
     const api = getAdminApiInstance(module)

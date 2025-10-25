@@ -12,10 +12,14 @@ import {constants} from "../../utils/constants.ts";
 interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (quiz: unknown) => void;
-    userId: string | null;
+    onSave: (quiz: OnSaveType) => void;
+    userId: string;
 }
 
+interface OnSaveType {
+    permissions: UserPermission[];
+    userId: string
+}
 
 export default function UserModal({
                                             isOpen,
@@ -58,7 +62,10 @@ export default function UserModal({
             })
         getApi<UserPermission>({
             model: 'user_permissions',
-            module: '/admin'
+            module: '/admin',
+            filter: {
+                user_id: userId
+            }
         })
             .then(result => {
                 setUserPermissions(result.data)
@@ -67,19 +74,7 @@ export default function UserModal({
             })
     }, [userId, isOpen])
 
-    // const permissionOptions = [
-    //     { value: "1", label: "Showcase" },
-    //     { value: "3", label: "Admin dashboard"},
-    //     { value: "4", label: "Usagag" },
-    //     { value: "5", label: "Youtube Article"},
-    //     { value: "6", label: "PostFunny" },
-    //     { value: "7", label: "FreeApk" },
-    //     { value: "8", label: "GonoGame" },
-    //     { value: "9", label: "MzGenz" },
-    //     { value: "10", label: "TikGame"},
-    // ];
 
-    // Map permission_id -> label for quick lookup when rendering the chips
     const optionLabelById = useMemo(() => {
         const map = new Map<string, string>();
         permissions.forEach(o => map.set(o.id.toString(), o.name));
