@@ -3,7 +3,7 @@ import {useEffect, useMemo, useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import {Modal} from "../ui/modal";
 import Label from "../form/Label.tsx";
-import {Permission, UserPermission} from "../../types/Admin.ts";
+import {Permission, User, UserPermission} from "../../types/Admin.ts";
 import {getApi} from "../../services/commonApiService.ts";
 import Select from "../form/Select.tsx";
 import {useAppSelector} from "../../store";
@@ -13,21 +13,20 @@ interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSave: (quiz: OnSaveType) => void;
-    userId: string;
+    user: User | null;
 }
 
 interface OnSaveType {
     permissions: UserPermission[];
-    userId: string
+    user: User
 }
 
 export default function UserModal({
                                             isOpen,
                                             onClose,
                                             onSave,
-                                            userId
+                                      user
                                         }: BaseModalProps) {
-    // const [quiz, setQuiz] = useState<string>();
 
     const [permissions, setPermissions] = useState<Permission[]>([]);
     const [userPermissions, setUserPermissions] = useState<UserPermission[]>([]);
@@ -38,10 +37,13 @@ export default function UserModal({
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
 
-        onSave({
-            permissions: userPermissions,
-            userId
-        })
+        if (user) {
+            onSave({
+                permissions: userPermissions,
+                user: user
+            })
+        }
+
         setUserPermissions([])
         onClose()
     };
@@ -50,7 +52,7 @@ export default function UserModal({
 
     // TODO: get permission list from outside
     useEffect(() => {
-        if (!userId) return;
+        if (!user) return;
         getApi<Permission>({
             model: 'permissions',
             module: '/admin'
@@ -64,7 +66,7 @@ export default function UserModal({
             model: 'user_permissions',
             module: '/admin',
             filter: {
-                user_id: userId
+                user_id: user.id.toString()
             }
         })
             .then(result => {
@@ -72,7 +74,7 @@ export default function UserModal({
             })
             .catch(() => {
             })
-    }, [userId, isOpen])
+    }, [user, isOpen])
 
 
     const optionLabelById = useMemo(() => {

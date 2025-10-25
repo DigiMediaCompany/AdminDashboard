@@ -8,13 +8,14 @@ import Input from "../form/input/InputField.tsx";
 interface BaseModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (quiz: unknown) => void;
+    onSave: (data: PermissionData) => void;
 }
 
 interface PermissionData {
     name: string,
     description: string,
 }
+
 
 export default function PermissionModal({
                                         isOpen,

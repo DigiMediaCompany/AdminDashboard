@@ -19,7 +19,7 @@ export default function UserTable() {
                     module: '/admin',
                     filter:
                         role !== constants.ROLES.SUPER_ADMIN
-                            ? { email: authState.user?.email }
+                            ? { email: authState.user?.email?.toString() || "" }
                             : {}
                 })}
                 renderRows={(items) => <UserItem users={items} />}
