@@ -1,4 +1,3 @@
-
 import {useState} from "react";
 import Button from "../ui/button/Button.tsx";
 import {Modal} from "../ui/modal";
@@ -53,7 +52,8 @@ export default function UserCreateModel({
             onClose={onClose}
             className="w-full m-4 lg:max-w-[900px]"
         >
-            <div className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+            <div
+                className="no-scrollbar relative w-full h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
                 <div className="px-2 pr-14 mb-10">
                     <h4 className=" text-2xl font-semibold text-gray-800 dark:text-white/90">
                         Create a new permission
@@ -113,7 +113,7 @@ export default function UserCreateModel({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        {role === constants.ROLES.SUPER_ADMIN  ? (<>
+                        {role === constants.ROLES.SUPER_ADMIN ? (<>
                             <Button size="sm" onClick={handleSave}>
                                 Save Changes
                             </Button>
