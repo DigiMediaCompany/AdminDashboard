@@ -19,7 +19,7 @@ export default function UserDetailTable({
                     model: 'user_permissions',
                     page: page,
                     module: '/admin',
-                    relation: 'user_permissions.user',
+                    relation: 'permission',
                     filter: {
                         user_id: userId || ""
                     }

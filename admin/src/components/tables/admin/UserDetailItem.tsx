@@ -75,7 +75,7 @@ export default function UserDetailItem({ userPermissions }: UserDetailItemProps)
                     {userPermissions.map((s) => (
                         <TableRow key={s.id}>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                {s.id || "—"}
+                                {s.permission?.id || "—"}
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
                                 {s.permission?.name || "—"}

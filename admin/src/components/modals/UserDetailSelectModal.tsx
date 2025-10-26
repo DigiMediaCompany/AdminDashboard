@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import Button from "../ui/button/Button.tsx";
 import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
-import {Permission, UserPermission } from "../../types/Admin.ts";
-import Select, {Option} from "../form/Select.tsx";
-import {getApi} from "../../services/commonApiService.ts";
+import Select, { Option } from "../form/Select.tsx";
+import { getApi } from "../../services/commonApiService.ts";
+import { Permission, UserPermission } from "../../types/Admin.ts";
 
 interface BaseModalProps {
     isOpen: boolean;
@@ -23,48 +23,77 @@ export default function UserDetailSelectModal({
                                                   onSave,
                                                   userId,
                                               }: BaseModalProps) {
-    const [userPermissions, setUserPermissions] = useState<UserPermission[] >([]);
-
-    const availableUserPerms: Option[] = useMemo(() => {
-        if (userPermissions) {
-            userPermissions.map<Option>((up) => ({
-                value: up.permission_id.toString(),
-                label: up.permission?.name || "-",
-            }));
-        } else {
-            return []
-        }
-    }, [userPermissions]);
-
-
+    const [allPermissions, setAllPermissions] = useState<Permission[]>([]);
+    const [currentUserPermissions, setCurrentUserPermissions] = useState<UserPermission[]>([]);
     const [selected, setSelected] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [err, setErr] = useState<string | null>(null);
 
+    // Fetch data
     useEffect(() => {
         if (!userId) return;
-       getApi<UserPermission>({
-            model: 'user_permissions',
-            module: '/admin',
-            relation: 'user_permissions.user',
-            filter: {
-                user_id: `!${userId}`
+        let cancelled = false;
+        (async () => {
+            try {
+                setLoading(true);
+                setErr(null);
+
+                // 1) All permissions
+                const permsRes = await getApi<Permission>({
+                    model: "permissions",
+                    module: "/admin",
+                });
+
+                // 2) Current user's user_permissions (include permission if your API supports relations)
+                const userPermsRes = await getApi<UserPermission>({
+                    model: "user_permissions",
+                    module: "/admin",
+                    relation: "user_permissions.permission",
+                    filter: { user_id: userId }, // equality; remove '!' — you want THIS user's permissions
+                });
+
+                if (cancelled) return;
+                setAllPermissions(permsRes.data ?? []);
+                setCurrentUserPermissions(userPermsRes.data ?? []);
+            } catch (e: any) {
+                if (!cancelled) setErr(e?.message ?? "Failed to load permissions");
+            } finally {
+                if (!cancelled) setLoading(false);
             }
-        }).then((result) => setUserPermissions(result.data) )
-
-
+        })();
+        return () => {
+            cancelled = true;
+        };
     }, [userId]);
+
+    // Compute available permissions = all - already assigned
+    const availableUserPerms: Option[] = useMemo(() => {
+        const assignedIds = new Set(
+            (currentUserPermissions ?? []).map((up) => up.permission_id)
+        );
+        return (allPermissions ?? [])
+            .filter((p) => !assignedIds.has(p.id))
+            .map<Option>((p) => ({
+                value: String(p.id),
+                label: p.name ?? "-",
+            }));
+    }, [allPermissions, currentUserPermissions]);
+
+    const nothingAvailable = availableUserPerms.length === 0;
 
     const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!selected) return;
-        const selectedPermission = userPermissions.find(a => a.id.toString() === selected)
-        if (selectedPermission) {
-            onSave({ permission: selectedPermission});
-        }
+
+        const selectedPermission = allPermissions.find(
+            (p) => String(p.id) === selected
+        );
+        if (!selectedPermission) return;
+
+        onSave({ permission: selectedPermission });
         setSelected(null);
         onClose();
     };
-
-    const nothingAvailable = availableUserPerms.length === 0;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="w-full m-4 lg:max-w-[900px]">
@@ -73,6 +102,11 @@ export default function UserDetailSelectModal({
                     <h4 className="text-2xl font-semibold text-gray-800 dark:text-white/90">
                         Add user to permission
                     </h4>
+                    {err && (
+                        <p className="mt-2 text-sm text-red-600">
+                            {err}
+                        </p>
+                    )}
                 </div>
 
                 <form className="flex flex-col">
@@ -84,10 +118,14 @@ export default function UserDetailSelectModal({
                                     value={selected}
                                     options={availableUserPerms}
                                     placeholder={
-                                        nothingAvailable ? "All permissions added" : "Select a permission"
+                                        loading
+                                            ? "Loading permissions…"
+                                            : nothingAvailable
+                                                ? "All permissions already assigned"
+                                                : "Select a permission"
                                     }
-                                    onChange={(opt) => setSelected(opt)}
-                                    disabled={nothingAvailable}
+                                    onChange={(value) => setSelected(value)}
+                                    disabled={loading || nothingAvailable}
                                     className="dark:bg-dark-900"
                                 />
                             </div>
@@ -98,7 +136,11 @@ export default function UserDetailSelectModal({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        <Button size="sm" onClick={handleSave} disabled={!selected || nothingAvailable}>
+                        <Button
+                            size="sm"
+                            onClick={handleSave}
+                            disabled={!selected || loading || nothingAvailable}
+                        >
                             Save Changes
                         </Button>
                     </div>

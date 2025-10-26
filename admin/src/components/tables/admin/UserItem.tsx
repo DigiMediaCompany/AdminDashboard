@@ -6,33 +6,34 @@ import {
     TableRow,
 } from "../../ui/table";
 import {User, UserPermission} from "../../../types/Admin.ts";
-import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
+import {TrashIcon} from "@heroicons/react/24/outline";
 import UserModal from "../../modals/UserModal.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
 import {useState} from "react";
 import {bulkDeleteApi, bulkInsertApi, deleteApi, getApi, updateApi} from "../../../services/commonApiService.ts";
 import UserEditModal from "../../modals/UserEditModal.tsx";
-import {useAppSelector} from "../../../store";
-import {constants} from "../../../utils/constants.ts";
 import DeleteModal from "../../modals/DeleteModal.tsx";
+import { Link } from "react-router-dom";
 
 interface UserItemProps {
     users: User[];
 }
 
 export default function UserItem({users}: UserItemProps) {
-    const {isOpen, openModal, closeModal} = useModal();
-    const {isOpen: isOpen2, openModal: openModal2, closeModal: closeModal2} = useModal();
+    const {
+        isOpen: isOpen,
+        // openModal,
+        closeModal :closeModal
+    } = useModal();
+    const {
+        isOpen: isOpen2,
+        // openModal: openModal2,
+        closeModal: closeModal2} = useModal();
     const {isOpen: isOpen3, openModal: openModal3, closeModal: closeModal3} = useModal();
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-    const authState = useAppSelector((state) => state.auth)
-    const role = authState.user?.user_metadata?.role;
-    const currentUserId = authState.user?.user_metadata?.id
 
-    const isAllowedToEdit = (user: User) => {
-        return role === constants.ROLES.SUPER_ADMIN || currentUserId === user?.supabase_id
-    };
+
 
     return (
         <>
@@ -146,48 +147,36 @@ export default function UserItem({users}: UserItemProps) {
                                 {s.id || "—"}
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                <div  onClick={() => {
-                                    if (isAllowedToEdit(s)) {
-                                        setSelectedUser(s)
-                                        if (s) {
-                                            openModal();
-                                        }
-                                    }
 
-                                }}
-                                      className={`${isAllowedToEdit(s) ? "cursor-pointer hover:text-brand-500" : ""}`}
-                                >
+
+                                <Link className="cursor-pointer hover:text-brand-500" to={`/admin/users/${s.id}`}>
                                     {s.name || "—"}
-
-                                </div>
+                                </Link>
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
                                 {s.email || "—"}
                             </TableCell>
 
-                            {isAllowedToEdit(s) ?
-                            (
-                                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                                    <div className="flex items-center gap-3">
-                                        <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
-                                            setSelectedUser(s)
-                                            if (s) {
-                                                openModal2();
-                                            }
-                                        }}>
-                                            <PencilSquareIcon className="w-6 h-6"/>
-                                        </button>
-                                        <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
-                                            setSelectedUser(s)
-                                            if (s) {
-                                                openModal3();
-                                            }
-                                        }}>
-                                            <TrashIcon className="w-6 h-6"/>
-                                        </button>
-                                    </div>
-                                </TableCell>
-                            ): null}
+                            <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                                <div className="flex items-center gap-3">
+                                    {/*<button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {*/}
+                                    {/*    setSelectedUser(s)*/}
+                                    {/*    if (s) {*/}
+                                    {/*        openModal2();*/}
+                                    {/*    }*/}
+                                    {/*}}>*/}
+                                    {/*    <PencilSquareIcon className="w-6 h-6"/>*/}
+                                    {/*</button>*/}
+                                    <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
+                                        setSelectedUser(s)
+                                        if (s) {
+                                            openModal3();
+                                        }
+                                    }}>
+                                        <TrashIcon className="w-6 h-6"/>
+                                    </button>
+                                </div>
+                            </TableCell>
 
 
                         </TableRow>
