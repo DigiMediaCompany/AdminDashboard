@@ -6,6 +6,7 @@ interface ComponentCardProps {
   className?: string; // Additional custom classes for styling
   desc?: string; // Description text
   onClick?: () => void;
+  showCreateButton?: boolean;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({
@@ -13,7 +14,8 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
   children,
   className = "",
   desc = "",
-    onClick = () => {}
+    onClick = () => {},
+    showCreateButton = true,
 }) => {
   return (
     <div
@@ -31,9 +33,12 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
               </p>
           )}
         </div>
-        <Button size="sm" variant="primary" onClick={() => {onClick()}}>
-          Create {title.toLowerCase()}
-        </Button>
+        {showCreateButton ? (
+            <Button size="sm" variant="primary" onClick={() => {onClick()}}>
+              Create {title.toLowerCase()}
+            </Button>
+        ) : null}
+
       </div>
 
       {/* Card Body */}

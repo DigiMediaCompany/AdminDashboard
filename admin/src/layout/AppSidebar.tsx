@@ -1,21 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { useAppSelector } from "../store";
+import { useSidebar } from "../context/SidebarContext";
 import {
     UserCircleIcon,
     ChevronDownIcon,
     HorizontaLDots,
     GridIcon,
 } from "../icons";
-import { useSidebar } from "../context/SidebarContext";
-import {
-    UserGroupIcon
-} from "@heroicons/react/24/outline";
+import { UserGroupIcon } from "@heroicons/react/24/outline";
+import { constants } from "../utils/constants";
+
+type NavSubItem = {
+    name: string;
+    path: string;
+    pro?: boolean;
+    new?: boolean;
+    roles?: string[];
+};
 
 type NavItem = {
     name: string;
     icon: React.ReactNode;
     path?: string;
-    subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+    subItems?: NavSubItem[];
+    roles?: string[];
 };
 
 type Section = {
@@ -23,6 +32,9 @@ type Section = {
     items: NavItem[];
 };
 
+const { ROLES } = constants;
+
+/** ====== ROLE-GATED MENU CONFIG ====== */
 const sidebarSections: Section[] = [
     {
         title: "Home",
@@ -37,12 +49,36 @@ const sidebarSections: Section[] = [
             {
                 name: "Admin",
                 icon: <UserGroupIcon />,
+                roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CREATOR],
                 subItems: [
-                    { name: "Users", path: "/admin/users" },
-                    // { name: "Roles", path: "/admin/roles" },
-                    // { name: "Permissions", path: "/admin/permissions" },
-                ]
+                    { name: "Users", path: "/admin/users", roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN] },
+                    { name: "Websites", path: "/admin/websites", roles: [ROLES.CREATOR] },
+                ],
             },
+        ],
+    },
+];
+
+// const sidebarSections: Section[] = [
+//     {
+//         title: "Home",
+//         items: [
+//             { icon: <GridIcon />, name: "Dashboard", path: "/" },
+//             { icon: <UserCircleIcon />, name: "Profile", path: "/profile" },
+//         ],
+//     },
+//     {
+//         title: "Manage",
+//         items: [
+//             {
+//                 name: "Admin",
+//                 icon: <UserGroupIcon />,
+//                 subItems: [
+//                     { name: "Users", path: "/admin/users" },
+//                     // { name: "Roles", path: "/admin/roles" },
+//                     // { name: "Permissions", path: "/admin/permissions" },
+//                 ]
+//             },
             // {
             //     name: "Usagag Video",
             //     icon: <VideoIcon />,
@@ -99,8 +135,8 @@ const sidebarSections: Section[] = [
             //     ],
             // },
 
-        ],
-    },
+    //     ],
+    // },
     // {
     //     title: "Showcase",
     //     items: [
@@ -157,24 +193,66 @@ const sidebarSections: Section[] = [
     //         },
     //     ],
     // },
-];
+// ];
 
+/** ====== COMPONENT ====== */
 const AppSidebar: React.FC = () => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
     const location = useLocation();
+
     const [openSubmenu, setOpenSubmenu] = useState<{ section: number; index: number } | null>(null);
     const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
     const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+    /** ---- current user's role(s) ---- */
+    const authState = useAppSelector((state) => state.auth);
+    const userRoleRaw = authState.user?.user_metadata?.role;
+
+    // Normalize role(s) to a Set<string> to support string or string[]
+    const roleSet = useMemo<Set<string>>(() => {
+        if (!userRoleRaw) return new Set(); // treat as guest
+        if (Array.isArray(userRoleRaw)) return new Set(userRoleRaw.map(String));
+        return new Set([String(userRoleRaw)]);
+    }, [userRoleRaw]);
+
+    // canSee: visible if no roles specified OR there is an intersection
+    const canSee = useCallback(
+        (allowed?: string[]) => {
+            if (!allowed || allowed.length === 0) return true;
+            for (const r of allowed) if (roleSet.has(r)) return true;
+            return false;
+        },
+        [roleSet]
+    );
+
+    /** ---- filter sections/items/subitems by role ---- */
+    const filteredSections = useMemo<Section[]>(() => {
+        return sidebarSections
+            .map((section) => {
+                const filteredItems = section.items
+                    .filter((item) => canSee(item.roles))
+                    .map((item) => {
+                        if (!item.subItems) return item;
+                        const visibleSubs = item.subItems.filter((sub) => canSee(sub.roles));
+                        if (item.subItems.length > 0 && visibleSubs.length === 0) return null; // hide parent if no visible subs
+                        return { ...item, subItems: visibleSubs };
+                    })
+                    .filter(Boolean) as NavItem[];
+
+                return { ...section, items: filteredItems };
+            })
+            .filter((section) => section.items.length > 0);
+    }, [canSee]);
 
     const isActive = useCallback(
         (path: string) => location.pathname === path,
         [location.pathname]
     );
 
-    // Auto-open submenu if URL matches
+    /** Auto-open submenu matching current URL */
     useEffect(() => {
         let matched = false;
-        sidebarSections.forEach((section, sIndex) => {
+        filteredSections.forEach((section, sIndex) => {
             section.items.forEach((nav, index) => {
                 nav.subItems?.forEach((sub) => {
                     if (isActive(sub.path)) {
@@ -185,9 +263,9 @@ const AppSidebar: React.FC = () => {
             });
         });
         if (!matched) setOpenSubmenu(null);
-    }, [location, isActive]);
+    }, [location, isActive, filteredSections]);
 
-    // Measure submenu height
+    /** Measure submenu height for smooth accordion */
     useEffect(() => {
         if (openSubmenu) {
             const key = `${openSubmenu.section}-${openSubmenu.index}`;
@@ -207,8 +285,6 @@ const AppSidebar: React.FC = () => {
         );
     };
 
-    
-    
     const renderItems = (items: NavItem[], sectionIndex: number) => (
         <ul className="flex flex-col gap-4">
             {items.map((nav, index) => (
@@ -223,7 +299,9 @@ const AppSidebar: React.FC = () => {
                             } ${!isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"}`}
                         >
                             <span className="menu-item-icon-size">{nav.icon}</span>
-                            {(isExpanded || isHovered || isMobileOpen) && <span className="menu-item-text">{nav.name}</span>}
+                            {(isExpanded || isHovered || isMobileOpen) && (
+                                <span className="menu-item-text">{nav.name}</span>
+                            )}
                             {(isExpanded || isHovered || isMobileOpen) && (
                                 <ChevronDownIcon
                                     className={`ml-auto w-5 h-5 transition-transform duration-200 ${
@@ -243,10 +321,13 @@ const AppSidebar: React.FC = () => {
                                 }`}
                             >
                                 <span className="menu-item-icon-size">{nav.icon}</span>
-                                {(isExpanded || isHovered || isMobileOpen) && <span className="menu-item-text">{nav.name}</span>}
+                                {(isExpanded || isHovered || isMobileOpen) && (
+                                    <span className="menu-item-text">{nav.name}</span>
+                                )}
                             </Link>
                         )
                     )}
+
                     {nav.subItems && (isExpanded || isHovered || isMobileOpen) && (
                         <div
                             ref={(el) => (subMenuRefs.current[`${sectionIndex}-${index}`] = el)}
@@ -290,6 +371,7 @@ const AppSidebar: React.FC = () => {
             onMouseEnter={() => !isExpanded && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
+            {/* Logo */}
             <div className={`py-8 flex ${!isExpanded && !isHovered ? "lg:justify-center" : "justify-start"}`}>
                 <Link to="/">
                     {isExpanded || isHovered || isMobileOpen ? (
@@ -303,10 +385,11 @@ const AppSidebar: React.FC = () => {
                 </Link>
             </div>
 
+            {/* Nav */}
             <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
                 <nav className="mb-6">
                     <div className="flex flex-col gap-8">
-                        {sidebarSections.map((section, sectionIndex) => (
+                        {filteredSections.map((section, sectionIndex) => (
                             <div key={section.title}>
                                 <h2
                                     className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${

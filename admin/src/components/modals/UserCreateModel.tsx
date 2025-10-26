@@ -3,8 +3,6 @@ import Button from "../ui/button/Button.tsx";
 import { Modal } from "../ui/modal";
 import Label from "../form/Label.tsx";
 import Input from "../form/input/InputField.tsx";
-import { constants } from "../../utils/constants.ts";
-import { useAppSelector } from "../../store";
 
 interface BaseModalProps {
     isOpen: boolean;
@@ -61,8 +59,6 @@ export default function UserCreateModel({
         }
     };
 
-    const authState = useAppSelector((state) => state.auth);
-    const role = authState.user?.user_metadata?.role;
 
     return (
         <Modal
@@ -136,15 +132,13 @@ export default function UserCreateModel({
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close
                         </Button>
-                        {role === constants.ROLES.SUPER_ADMIN && (
-                            <Button
-                                size="sm"
-                                onClick={handleSave}
-                                disabled={!userData.email || !userData.password}
-                            >
-                                Save Changes
-                            </Button>
-                        )}
+                        <Button
+                            size="sm"
+                            onClick={handleSave}
+                            disabled={!userData.email || !userData.password}
+                        >
+                            Save Changes
+                        </Button>
                     </div>
                 </form>
             </div>

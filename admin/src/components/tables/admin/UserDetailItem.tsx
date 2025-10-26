@@ -11,6 +11,8 @@ import {useState} from "react";
 import { deleteApi} from "../../../services/commonApiService.ts";
 import { TrashIcon} from "@heroicons/react/24/outline";
 import DeleteModal from "../../modals/DeleteModal.tsx";
+import {useAppSelector} from "../../../store";
+import {constants} from "../../../utils/constants.ts";
 
 interface UserDetailItemProps {
     userPermissions: UserPermission[];
@@ -19,6 +21,9 @@ interface UserDetailItemProps {
 export default function UserDetailItem({ userPermissions }: UserDetailItemProps) {
     const {isOpen, openModal, closeModal} = useModal();
     const [selectedUserPermission, setSelectedUserPermission] = useState<UserPermission | null>(null);
+    const authState = useAppSelector((state) => state.auth)
+    const role = authState.user?.user_metadata.role;
+    const isAllowEdit = role === constants.ROLES.ADMIN || role === constants.ROLES.SUPER_ADMIN;
 
     return (
         <>
@@ -63,12 +68,15 @@ export default function UserDetailItem({ userPermissions }: UserDetailItemProps)
                         >
                             Description
                         </TableCell>
-                        <TableCell
-                            isHeader
-                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
-                            Action
-                        </TableCell>
+                        {isAllowEdit ? (
+                            <TableCell
+                                isHeader
+                                className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                            >
+                                Action
+                            </TableCell>
+                        ) : null}
+
                     </TableRow>
                 </TableHeader>
 
@@ -86,19 +94,22 @@ export default function UserDetailItem({ userPermissions }: UserDetailItemProps)
                                 {s.permission?.description || "—"}
                             </TableCell>
 
-                            <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                                <div className="flex items-center gap-3">
+                            {isAllowEdit ? (
+                                <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
+                                    <div className="flex items-center gap-3">
 
-                                    <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
-                                        setSelectedUserPermission(s || null)
-                                        if (s) {
-                                            openModal();
-                                        }
-                                    }}>
-                                        <TrashIcon className="w-6 h-6"/>
-                                    </button>
-                                </div>
-                            </TableCell>
+                                        <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
+                                            setSelectedUserPermission(s || null)
+                                            if (s) {
+                                                openModal();
+                                            }
+                                        }}>
+                                            <TrashIcon className="w-6 h-6"/>
+                                        </button>
+                                    </div>
+                                </TableCell>
+                            ) : null}
+
 
                         </TableRow>
 

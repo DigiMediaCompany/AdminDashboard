@@ -8,8 +8,6 @@ import Toast from "../UiElements/Toast.tsx";
 import {postApi} from "../../services/commonApiService.ts";
 import UserCreateModel from "../../components/modals/UserCreateModel.tsx";
 import {signUp} from "../../services/authService.ts";
-import {useAppSelector} from "../../store";
-import {constants} from "../../utils/constants.ts";
 
 export default function User() {
 
@@ -25,8 +23,6 @@ export default function User() {
         title: "",
         message: ""
     });
-    const authState = useAppSelector((state) => state.auth)
-    const role = authState.user?.user_metadata?.role;
     return (
         <>
             {toast.show && (
@@ -43,14 +39,12 @@ export default function User() {
             )}
             <PageMeta/>
             <PageBreadcrumb pageTitle="Users" />
-            {role === constants.ROLES.SUPER_ADMIN ? (
-                <div className="space-y-6">
-                    <ComponentCard title="Users" desc="Manage your users and their roles"
-                                   onClick={()=>{openModal()}}>
-                        <UserTable />
-                    </ComponentCard>
-                </div>
-            ): null}
+            <div className="space-y-6">
+                <ComponentCard title="Users" desc="Manage your users and their roles"
+                               onClick={()=>{openModal()}}>
+                    <UserTable />
+                </ComponentCard>
+            </div>
 
             <UserCreateModel
                 isOpen={isOpen}

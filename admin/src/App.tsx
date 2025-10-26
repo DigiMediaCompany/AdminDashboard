@@ -58,7 +58,7 @@ export default function App() {
             </Route>
           </Route>
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.ADMIN,
-            constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
+            constants.ROLES.SUPER_ADMIN, constants.ROLES.CREATOR]}><Outlet /></ProtectedRoute>}>
 
             <Route element={<AppLayout />}>
               {/* PostFunny */}
@@ -93,16 +93,20 @@ export default function App() {
               <Route path="youtube-article/categories" element={<Translate />} />
 
               {/* Admin */}
-              <Route path="admin/users" element={<User />} />
-              {/*<Route path="admin/roles" element={<Role />} />*/}
+              <Route path="admin/websites" element={<Detail />} />
+
 
 
             </Route>
           </Route>
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
             <Route element={<AppLayout />}>
+              {/* Admin */}
+              <Route path="admin/users/:id" element={<Detail isCreator={false} />} />
               <Route path="admin/permissions" element={<Permission />} />
-              <Route path="admin/users/:id" element={<Detail />} />
+              <Route path="admin/users" element={<User />} />
+              {/*<Route path="admin/roles" element={<Role />} />*/}
+
               {/* Showcases */}
               <Route path="/profile-showcase" element={<UserProfiles />} />
               <Route path="/calendar" element={<Calendar />} />
