@@ -9,6 +9,7 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.76.1",
     "chanfana": "^2.6.3",
     "drizzle-orm": "^0.44.5",
     "hono": "^4.6.20",

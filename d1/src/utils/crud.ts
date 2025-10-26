@@ -10,17 +10,18 @@ import {
 } from "./helper";
 import { Env, ModelSchema } from "../types";
 import {Hono} from "hono";
+import {createClient, SupabaseClient} from "@supabase/supabase-js";
 
 type CrudOptions<T extends AnySQLiteTable> = {
     table: T;
     columns: ColumnMap;
     schema: ModelSchema;
     buildIncludes?: (paths: string[][]) => any;
-    custom?: (app: Hono, db: any, env: Env) => void;
+    custom?: (app: Hono, db: any, env: Env, supabaseClient: SupabaseClient, url: URL) => void;
 };
 
 
-function withCors(res: Response, status?: number) {
+export function withCors(res: Response, status?: number) {
     // TODO: whitelist here
     const headers = new Headers(res.headers);
     headers.set("Access-Control-Allow-Origin", "*");
@@ -49,11 +50,12 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
         const { limit, page, offset } = parsePagination(url);
         const includes = parseInclude(url);
         const app = new Hono();
+        const supabaseClient = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 
         try {
             // Custom
             if (custom) {
-                custom(app, db, env);
+                custom(app, db, env, supabaseClient, url);
                 const res = await app.fetch(req, env, ctx);
                 if (res.status !== 404) return withCors(res);
             }

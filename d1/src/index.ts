@@ -19,10 +19,11 @@ import {
     user_roles,
     UserRoleSchema, user_permissions, UserPermissionSchema
 } from "./db/models";
-import {createCrudRoutes} from "./utils/crud";
+import {createCrudRoutes, withCors} from "./utils/crud";
 
 import { Env } from "./types";
 import {STATUS_SEED} from "./utils/constant";
+import {eq} from "drizzle-orm";
 
 const articleGroup = "/article"
 const usagagGroup = "/usagag"
@@ -65,7 +66,7 @@ const jobsHandler = createCrudRoutes(
             type: jobs.type,
         },
         schema: JobSchema,
-        custom: (app, db, env) => {
+        custom: (app, db) => {
             app.post(`${articleGroup}/jobs`, async (c) => {
                 const body = await c.req.json();
 
@@ -143,6 +144,41 @@ const usersHandler = createCrudRoutes({
         name: users.name,
     },
     schema: UserSchema,
+    custom: (app, db, env, supabaseClient, url) => {
+        app.delete(`${adminGroup}/users/:id`, async (c) => {
+            const id = url.pathname.split("/").pop();
+            if (!id) {
+                return withCors(
+                    Response.json({ error: "ID required" }, { status: 400 })
+                );
+            }
+
+            try {
+                const result = await db
+                    .select()
+                    .from(users)
+                    .where(eq(users.id, Number(id)));
+                if (result[0] ?? null) {
+                    await supabaseClient.auth.admin.deleteUser(result[0].supabase_id)
+                }
+                await db.delete(users).where(eq(users.id, Number(id)));
+
+                return withCors(
+                    Response.json({
+                        success: true,
+                        result: { deleted: [Number(id)], errors: [] },
+                    }, { status: 207 })
+                );
+            } catch (err: any) {
+                return withCors(
+                    Response.json({
+                        success: false,
+                        result: { deleted: [], errors: [{ id, error: err.message }] },
+                    }, { status: 207 })
+                );
+            }
+        });
+    }
 });
 
 const rolesHandler = createCrudRoutes({

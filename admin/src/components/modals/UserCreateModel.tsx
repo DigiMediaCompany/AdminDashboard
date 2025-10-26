@@ -29,18 +29,17 @@ export default function UserCreateModel({
         password: "",
     });
     const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+    const [showPassword, setShowPassword] = useState(false);
 
     const validate = () => {
         const newErrors: typeof errors = {};
 
-        // Email validation
         if (!userData.email) {
             newErrors.email = "Email is required";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.email)) {
             newErrors.email = "Invalid email format";
         }
 
-        // Password validation (example rules: min 8 chars, at least 1 number)
         if (!userData.password) {
             newErrors.password = "Password is required";
         } else if (userData.password.length < 8) {
@@ -79,7 +78,6 @@ export default function UserCreateModel({
                 </div>
 
                 <form className="flex flex-col">
-                    {/* ===== BASIC INFO ===== */}
                     <div className="custom-scrollbar flex-1 overflow-y-auto px-2 pb-3">
                         <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-1">
                             <div>
@@ -92,6 +90,7 @@ export default function UserCreateModel({
                                     }
                                 />
                             </div>
+
                             <div>
                                 <Label>Email</Label>
                                 <Input
@@ -105,10 +104,11 @@ export default function UserCreateModel({
                                     <p className="text-sm text-red-500 mt-1">{errors.email}</p>
                                 )}
                             </div>
-                            <div>
+
+                            <div className="relative">
                                 <Label>Password</Label>
                                 <Input
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     value={userData.password}
                                     onChange={(e) =>
                                         setUserData((prev) => ({
@@ -117,6 +117,14 @@ export default function UserCreateModel({
                                         }))
                                     }
                                 />
+                                {/* Show/Hide toggle */}
+                                <button
+                                    type="button"
+                                    className="absolute right-3 top-[38px] text-sm text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                >
+                                    {showPassword ? "Hide" : "Show"}
+                                </button>
                                 {errors.password && (
                                     <p className="text-sm text-red-500 mt-1">{errors.password}</p>
                                 )}
@@ -124,7 +132,6 @@ export default function UserCreateModel({
                         </div>
                     </div>
 
-                    {/* ===== ACTIONS ===== */}
                     <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
                         <Button size="sm" variant="outline" onClick={onClose}>
                             Close

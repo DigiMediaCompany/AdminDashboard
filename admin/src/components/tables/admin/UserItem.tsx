@@ -14,6 +14,8 @@ import {bulkDeleteApi, bulkInsertApi, deleteApi, getApi, updateApi} from "../../
 import UserEditModal from "../../modals/UserEditModal.tsx";
 import DeleteModal from "../../modals/DeleteModal.tsx";
 import { Link } from "react-router-dom";
+import {deleteUser} from "../../../services/authService.ts";
+import {useAppSelector} from "../../../store";
 
 interface UserItemProps {
     users: User[];
@@ -31,7 +33,8 @@ export default function UserItem({users}: UserItemProps) {
         closeModal: closeModal2} = useModal();
     const {isOpen: isOpen3, openModal: openModal3, closeModal: closeModal3} = useModal();
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-
+    const authState = useAppSelector((state) => state.auth)
+    const userId = authState.user?.id
 
 
 
@@ -91,19 +94,25 @@ export default function UserItem({users}: UserItemProps) {
                 isOpen={isOpen3}
                 onClose={closeModal3}
                 onSave={(result) => {
-                    if (selectedUser?.user_permissions && result) {
-                        bulkDeleteApi<UserPermission>({
-                            model: 'user_permissions',
-                            module: '/admin',
-                            ids: selectedUser?.user_permissions?.map((item) => item.id),
-                        }).then(() => {}).catch(() => {})
-                        deleteApi<User>({
-                            model: 'users',
-                            module: '/admin',
-                            id: selectedUser?.id
-                        }).then(() => {
-                            window.location.reload();
-                        }).catch(() => {})
+                    if (selectedUser?.user_permissions && result && userId) {
+                        deleteUser(userId).then((r) => {
+                            console.log(r)
+                        }).catch((e) => {console.log(e)})
+                        // bulkDeleteApi<UserPermission>({
+                        //     model: 'user_permissions',
+                        //     module: '/admin',
+                        //     ids: selectedUser?.user_permissions?.map((item) => item.id),
+                        // }).then(() => {}).catch(() => {})
+                        // deleteApi<User>({
+                        //     model: 'users',
+                        //     module: '/admin',
+                        //     id: selectedUser?.id
+                        // }).then(() => {
+                        //     deleteUser(userId).then(() => {
+                        //         window.location.reload();
+                        //
+                        //     }).catch(() => {})
+                        // }).catch(() => {})
                     }
 
                 }}
