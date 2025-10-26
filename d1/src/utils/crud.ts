@@ -16,7 +16,7 @@ type CrudOptions<T extends AnySQLiteTable> = {
     columns: ColumnMap;
     schema: ModelSchema;
     buildIncludes?: (paths: string[][]) => any;
-    custom?: (app: Hono, db: any) => void;
+    custom?: (app: Hono, db: any, env: Env) => void;
 };
 
 
@@ -53,7 +53,7 @@ export function createCrudRoutes<T extends AnySQLiteTable>({
         try {
             // Custom
             if (custom) {
-                custom(app, db);
+                custom(app, db, env);
                 const res = await app.fetch(req, env, ctx);
                 if (res.status !== 404) return withCors(res);
             }

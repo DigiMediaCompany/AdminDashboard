@@ -23,7 +23,6 @@ import {createCrudRoutes} from "./utils/crud";
 
 import { Env } from "./types";
 import {STATUS_SEED} from "./utils/constant";
-import { sql } from "drizzle-orm";
 
 const articleGroup = "/article"
 const usagagGroup = "/usagag"
@@ -66,7 +65,7 @@ const jobsHandler = createCrudRoutes(
             type: jobs.type,
         },
         schema: JobSchema,
-        custom: (app, db) => {
+        custom: (app, db, env) => {
             app.post(`${articleGroup}/jobs`, async (c) => {
                 const body = await c.req.json();
 

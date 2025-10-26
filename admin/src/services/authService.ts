@@ -15,3 +15,7 @@ export const signUp = async (email: string, password: string, name: string) => {
         name: name,
     }}})
 }
+
+export const deleteUser = async (id: string) => {
+    return supabase.auth.admin.deleteUser(id)
+}
