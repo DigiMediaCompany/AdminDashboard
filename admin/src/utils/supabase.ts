@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_PUBLIC_SUPABASE_ADMIN_DASHBOARD_API_URL as string;
 // TODO: need to change var -> secret
-// const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ADMIN_DASHBOARD_ANON_KEY as string;
-const supabaseServiceRoleKey = import.meta.env.VITE_PUBLIC_SUPABASE_ADMIN_DASHBOARD_ANON_KEY as string;
+const supabaseAnonKey = import.meta.env.VITE_PUBLIC_SUPABASE_ADMIN_DASHBOARD_ANON_KEY as string;
+// const supabaseServiceRoleKey = import.meta.env.VITE_PUBLIC_SUPABASE_ADMIN_DASHBOARD_ANON_KEY as string;
 
 // export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
-export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

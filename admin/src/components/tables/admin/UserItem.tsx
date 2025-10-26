@@ -14,7 +14,6 @@ import {bulkDeleteApi, bulkInsertApi, deleteApi, getApi, updateApi} from "../../
 import UserEditModal from "../../modals/UserEditModal.tsx";
 import DeleteModal from "../../modals/DeleteModal.tsx";
 import { Link } from "react-router-dom";
-import {deleteUser} from "../../../services/authService.ts";
 import {useAppSelector} from "../../../store";
 
 interface UserItemProps {
@@ -95,24 +94,18 @@ export default function UserItem({users}: UserItemProps) {
                 onClose={closeModal3}
                 onSave={(result) => {
                     if (selectedUser?.user_permissions && result && userId) {
-                        deleteUser(userId).then((r) => {
-                            console.log(r)
-                        }).catch((e) => {console.log(e)})
-                        // bulkDeleteApi<UserPermission>({
-                        //     model: 'user_permissions',
-                        //     module: '/admin',
-                        //     ids: selectedUser?.user_permissions?.map((item) => item.id),
-                        // }).then(() => {}).catch(() => {})
-                        // deleteApi<User>({
-                        //     model: 'users',
-                        //     module: '/admin',
-                        //     id: selectedUser?.id
-                        // }).then(() => {
-                        //     deleteUser(userId).then(() => {
-                        //         window.location.reload();
-                        //
-                        //     }).catch(() => {})
-                        // }).catch(() => {})
+                        bulkDeleteApi<UserPermission>({
+                            model: 'user_permissions',
+                            module: '/admin',
+                            ids: selectedUser?.user_permissions?.map((item) => item.id),
+                        }).then(() => {}).catch(() => {})
+                        deleteApi<User>({
+                            model: 'users',
+                            module: '/admin',
+                            id: selectedUser?.id
+                        }).then(() => {
+                            window.location.reload();
+                        }).catch(() => {})
                     }
 
                 }}
