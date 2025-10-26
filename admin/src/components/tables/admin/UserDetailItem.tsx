@@ -11,6 +11,8 @@ import {useState} from "react";
 import { deleteApi} from "../../../services/commonApiService.ts";
 import { TrashIcon} from "@heroicons/react/24/outline";
 import DeleteModal from "../../modals/DeleteModal.tsx";
+import {deleteUser} from "../../../services/authService.ts";
+import {useAppSelector} from "../../../store";
 
 interface UserDetailItemProps {
     userPermissions: UserPermission[];
@@ -19,6 +21,8 @@ interface UserDetailItemProps {
 export default function UserDetailItem({ userPermissions }: UserDetailItemProps) {
     const {isOpen, openModal, closeModal} = useModal();
     const [selectedUserPermission, setSelectedUserPermission] = useState<UserPermission | null>(null);
+    const authState = useAppSelector((state) => state.auth)
+    const userId = authState.user?.id
     return (
         <>
 
@@ -26,13 +30,15 @@ export default function UserDetailItem({ userPermissions }: UserDetailItemProps)
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(result) => {
-                    if (selectedUserPermission && result) {
+                    if (selectedUserPermission && result && userId) {
                         deleteApi<UserPermission>({
                             model: 'user_permissions',
                             module: '/admin',
                             id: selectedUserPermission.id
                         }).then(() => {
-                            window.location.reload();
+                            deleteUser(userId).then(() => {
+                                window.location.reload();
+                            }).catch(() => {})
                         }).catch(() => {})
                     }
                     setSelectedUserPermission(null)
