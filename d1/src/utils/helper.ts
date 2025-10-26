@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, type SQL } from "drizzle-orm";
+import {and, asc, desc, eq, inArray, not, type SQL} from "drizzle-orm";
 import {ModelSchema} from "../types";
 import {relationMap, tableRegistry} from "../db/models";
 
@@ -104,7 +104,15 @@ export function parseFilters(url: URL, columns: ColumnMap) {
     const clauses: SQL[] = [];
     for (const [key, value] of url.searchParams.entries()) {
         if (!(key in columns)) continue;
-        if (value.includes(",")) {
+        if (value.startsWith("!")) {
+            const clean = value.slice(1);
+            if (clean.includes(",")) {
+                clauses.push(not(inArray(columns[key], clean.split(","))));
+            } else {
+                clauses.push(not(eq(columns[key], clean)));
+            }
+        }
+        else if (value.includes(",")) {
             clauses.push(inArray(columns[key], value.split(",")));
         } else {
             clauses.push(eq(columns[key], value));
