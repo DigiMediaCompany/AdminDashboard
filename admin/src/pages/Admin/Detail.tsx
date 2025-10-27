@@ -153,10 +153,10 @@ export default function Detail({ isCreator = true }: DetailProps) {
                 />
             )}
             <PageMeta/>
-            <PageBreadcrumb pageTitle={`${user.name}'s permissions `} />
+            <PageBreadcrumb pageTitle={`${user.name}'s domains `} />
 
             <div className="space-y-6">
-                <ComponentCard title="Permission"
+                <ComponentCard title="Domain"
                                onClick={()=>{openModal()}}
                                showCreateButton={isAllowedCreate}
                 >
