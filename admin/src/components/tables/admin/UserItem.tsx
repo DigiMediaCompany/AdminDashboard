@@ -119,12 +119,6 @@ export default function UserItem({users}: UserItemProps) {
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
-                            ID
-                        </TableCell>
-                        <TableCell
-                            isHeader
-                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
                             Name
                         </TableCell>
                         <TableCell
@@ -153,11 +147,6 @@ export default function UserItem({users}: UserItemProps) {
                     {users.map((s) => (
                         <TableRow key={s.id}>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                {s.id || "—"}
-                            </TableCell>
-                            <TableCell className="px-5 py-4 sm:px-6 text-start">
-
-
                                 <Link className="cursor-pointer hover:text-brand-500" to={`/admin/website?id=${s.id}`}>
                                     {s.name || "—"}
                                 </Link>

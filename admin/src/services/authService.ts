@@ -13,6 +13,13 @@ export const signIn = async (email: string, password: string) => {
         }
     })
     const user = result.data[0] as User;
+    if (!user) {
+        return {
+            error: {
+                message: "User doesn't exist"
+            }
+        }
+    }
     if (user && user.is_active !== 1) {
         return {
             error: {
@@ -20,7 +27,10 @@ export const signIn = async (email: string, password: string) => {
             }
         }
     }
-    return supabase.auth.signInWithPassword({ email: user.supabase_email, password })
+    return supabase.auth.signInWithPassword({
+        email:user.supabase_email,
+        password,
+    })
 }
 
 export const signOut = async () => {
