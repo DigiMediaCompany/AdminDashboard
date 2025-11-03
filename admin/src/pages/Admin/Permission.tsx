@@ -36,9 +36,9 @@ export default function Permission() {
                 />
             )}
             <PageMeta/>
-            <PageBreadcrumb pageTitle="Permissions" />
+            <PageBreadcrumb pageTitle="Websites" />
             <div className="space-y-6">
-                <ComponentCard title="Permissions"
+                <ComponentCard title="Websites"
                                onClick={()=>{openModal()}}>
                     <PermissionTable />
                 </ComponentCard>

@@ -15,6 +15,7 @@ import UserEditModal from "../../modals/UserEditModal.tsx";
 import DeleteModal from "../../modals/DeleteModal.tsx";
 import { Link } from "react-router-dom";
 import {useAppSelector} from "../../../store";
+import ToggleButton from "../../ui/button/Toggle.tsx";
 
 interface UserItemProps {
     users: User[];
@@ -136,6 +137,12 @@ export default function UserItem({users}: UserItemProps) {
                             isHeader
                             className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                         >
+                            Active
+                        </TableCell>
+                        <TableCell
+                            isHeader
+                            className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                        >
                             Action
                         </TableCell>
                     </TableRow>
@@ -151,12 +158,15 @@ export default function UserItem({users}: UserItemProps) {
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
 
 
-                                <Link className="cursor-pointer hover:text-brand-500" to={`/admin/users/${s.id}`}>
+                                <Link className="cursor-pointer hover:text-brand-500" to={`/admin/website?id=${s.id}`}>
                                     {s.name || "—"}
                                 </Link>
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
                                 {s.email || "—"}
+                            </TableCell>
+                            <TableCell className="px-5 py-4 sm:px-6 text-start">
+                                <ToggleButton />
                             </TableCell>
 
                             <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">

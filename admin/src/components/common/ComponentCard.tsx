@@ -35,7 +35,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
         </div>
         {showCreateButton ? (
             <Button size="sm" variant="primary" onClick={() => {onClick()}}>
-              Create {title.toLowerCase()}
+              Add {title.toLowerCase()}
             </Button>
         ) : null}
 

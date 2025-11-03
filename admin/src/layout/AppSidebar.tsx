@@ -8,7 +8,7 @@ import {
     HorizontaLDots,
     GridIcon,
 } from "../icons";
-import { UserGroupIcon } from "@heroicons/react/24/outline";
+import {GlobeAltIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { constants } from "../utils/constants";
 
 type NavSubItem = {
@@ -52,7 +52,24 @@ const sidebarSections: Section[] = [
                 roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CREATOR],
                 subItems: [
                     { name: "Users", path: "/admin/users", roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN] },
-                    { name: "Websites", path: "/admin/websites", roles: [ROLES.CREATOR] },
+                    { name: "Categories", path: "/admin/categories", roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN] },
+                ],
+            },
+            {
+                name: "Website",
+                icon: <GlobeAltIcon />,
+                roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.CREATOR],
+                subItems: [
+                    {
+                        name: "Website",
+                        path: "/admin/website",
+                        roles: [ROLES.CREATOR]
+                    },
+                    {
+                        name: "Website",
+                        path: "/admin/websites",
+                        roles: [ROLES.SUPER_ADMIN, ROLES.ADMIN]
+                    }
                 ],
             },
         ],
@@ -196,6 +213,11 @@ const sidebarSections: Section[] = [
 // ];
 
 /** ====== COMPONENT ====== */
+// Custom route-side bar mapping
+const fallbackActiveMap: Record<string, string> = {
+    "/admin/website": "/admin/websites",
+};
+
 const AppSidebar: React.FC = () => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
     const location = useLocation();
@@ -245,7 +267,13 @@ const AppSidebar: React.FC = () => {
     }, [canSee]);
 
     const isActive = useCallback(
-        (path: string) => location.pathname === path,
+        (path: string) => {
+            const currentPath = location.pathname;
+            if (currentPath === path) return true;
+            // handle hidden path fallback
+            const fallback = fallbackActiveMap[currentPath];
+            return fallback === path;
+        },
         [location.pathname]
     );
 

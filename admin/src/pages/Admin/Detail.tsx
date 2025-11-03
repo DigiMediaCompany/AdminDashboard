@@ -4,7 +4,7 @@ import Toast from "../UiElements/Toast.tsx";
 import {useEffect, useMemo, useState} from "react";
 import {useModal} from "../../hooks/useModal.ts";
 import PageMeta from "../../components/common/PageMeta.tsx";
-import {useParams} from "react-router";
+import {useSearchParams} from "react-router";
 import UserDetailTable from "../../components/tables/admin/UserDetailTable.tsx";
 import {getApi, postApi} from "../../services/commonApiService.ts";
 import PermissionModal from "../../components/modals/PermissionModal.tsx";
@@ -12,17 +12,19 @@ import {Permission, User} from "../../types/Admin.ts";
 import {useAppSelector} from "../../store";
 import {constants} from "../../utils/constants.ts";
 
-interface DetailProps {
-    isCreator?: boolean;
-}
 
-export default function Detail({ isCreator = true }: DetailProps) {
+
+export default function Detail() {
     const authState = useAppSelector((state) => state.auth)
     const supabaseId = authState.user?.id;
     const role = authState.user?.user_metadata.role;
     const isAllowedCreate = role === constants.ROLES.ADMIN || role === constants.ROLES.SUPER_ADMIN;
-    const params = useParams<{ id?: string }>();
-    const routeId = params.id ?? null;
+    const isCreator = !isAllowedCreate
+
+    const [searchParams] = useSearchParams();
+    const routeId = searchParams.get("id");
+    // const params = useParams<{ id?: string }>();
+    // const routeId = params.id ?? null;
 
 
     const [toast, setToast] = useState<{
@@ -153,10 +155,10 @@ export default function Detail({ isCreator = true }: DetailProps) {
                 />
             )}
             <PageMeta/>
-            <PageBreadcrumb pageTitle={`${user.name}'s domains `} />
+            <PageBreadcrumb pageTitle={`${user.name}'s websites`} />
 
             <div className="space-y-6">
-                <ComponentCard title="Domain"
+                <ComponentCard title="Websites"
                                onClick={()=>{openModal()}}
                                showCreateButton={isAllowedCreate}
                 >

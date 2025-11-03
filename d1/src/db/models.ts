@@ -144,6 +144,7 @@ export const users = sqliteTable("users", {
     supabase_id: text("supabase_id").notNull().unique(),
     email: text("email").notNull().unique(),
     name: text("name").notNull(),
+    is_active: integer("is_active").notNull().default(1),
 });
 export const UserSchema = makeSchema(users, "users");
 
@@ -154,6 +155,7 @@ export const roles = sqliteTable("roles", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
     description: text("description"),
+    is_active: integer("is_active").notNull().default(1),
 });
 export const RoleSchema = makeSchema(roles, "roles");
 
@@ -164,6 +166,8 @@ export const permissions = sqliteTable("permissions", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull(),
     description: text("description"),
+    is_active: integer("is_active").notNull().default(1),
+    category_id: integer("category_id").references(() => categories.id, { onDelete: "set null" }),
 });
 export const PermissionSchema = makeSchema(permissions, "permissions");
 
@@ -259,6 +263,12 @@ export const relationMap: Record<
             targetKey: "category_id",
             many: true,             // 1 category → many series
         },
+        permissions: {
+            foreignKey: "id",       // categories.id
+            target: "permissions",       // permissions.category_id
+            targetKey: "category_id",
+            many: true,             // 1 category → many permissions
+        }
     },
 
     progress: {
@@ -325,6 +335,11 @@ export const relationMap: Record<
             target: "user_permissions",
             targetKey: "permission_id",
             many: true,
+        },
+        category: {
+            foreignKey: "category_id", // permissions.category_id → categories.id
+            target: "categories",
+            targetKey: "id",
         },
     },
 

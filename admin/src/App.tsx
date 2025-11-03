@@ -93,7 +93,7 @@ export default function App() {
               <Route path="youtube-article/categories" element={<Translate />} />
 
               {/* Admin */}
-              <Route path="admin/websites" element={<Detail />} />
+              <Route path="admin/website" element={<Detail />} />
 
 
 
@@ -102,10 +102,11 @@ export default function App() {
           <Route element={<ProtectedRoute requiredRoles={[constants.ROLES.SUPER_ADMIN]}><Outlet /></ProtectedRoute>}>
             <Route element={<AppLayout />}>
               {/* Admin */}
-              <Route path="admin/users/:id" element={<Detail isCreator={false} />} />
               <Route path="admin/permissions" element={<Permission />} />
               <Route path="admin/users" element={<User />} />
+              <Route path="admin/categories" element={<Series />} />
               {/*<Route path="admin/roles" element={<Role />} />*/}
+              <Route path="admin/websites" element={<Permission />} />
 
               {/* Showcases */}
               <Route path="/profile-showcase" element={<UserProfiles />} />
