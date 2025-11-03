@@ -10,8 +10,6 @@ export default function SeriesTable() {
             <BaseTable<Series>
                 fetchData={(page) => getApi<Series>('series', page)}
                 renderRows={(items) => <ArticleSeriesItem series={items} />}
-                loadingText="Loading quizzes..."
-                errorMessage="Failed to load quizzes."
             />
 
         </>

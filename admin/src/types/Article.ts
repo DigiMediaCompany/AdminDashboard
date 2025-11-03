@@ -20,6 +20,7 @@ export interface JobDetail {
 export interface Category {
     id: number;
     name: string;
+    type: string;
 }
 
 export interface Series {

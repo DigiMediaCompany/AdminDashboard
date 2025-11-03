@@ -1,12 +1,12 @@
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
-import SeriesTable from "../../components/tables/article/SeriesTable.tsx";
 import {useModal} from "../../hooks/useModal.ts";
-import SeriesModal from "../../components/modals/SeriesModal.tsx";
 import {postApi} from "../../services/adminArticleService.ts";
 import {useState} from "react";
 import Toast from "../UiElements/Toast.tsx";
+import CategoriesTable from "../../components/tables/admin/CategoriesTable.tsx";
+import ComponentCard from "../../components/common/ComponentCard.tsx";
+import CategoriesModal from "../../components/modals/CategoriesModal.tsx";
 
 export default function Categories() {
     const { isOpen, openModal, closeModal } = useModal();
@@ -37,14 +37,14 @@ export default function Categories() {
                 />
             )}
             <PageMeta/>
-            <PageBreadcrumb pageTitle="Series" />
+            <PageBreadcrumb pageTitle="Categories" />
             <div className="space-y-6">
-                <ComponentCard title="Series" desc="For big context, add job to a series"
+                <ComponentCard title="Categories"
                 onClick={()=>{openModal()}}>
-                    <SeriesTable />
+                    <CategoriesTable />
                 </ComponentCard>
             </div>
-            <SeriesModal
+            <CategoriesModal
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={(series) => {

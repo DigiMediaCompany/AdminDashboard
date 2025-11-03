@@ -54,6 +54,7 @@ export function makeSchema(table: AnySQLiteTable, tableName: string): ModelSchem
 export const categories = sqliteTable("categories", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull().unique(),
+    description: text("description"),
 });
 export const CategorySchema = makeSchema(categories, "categories");
 

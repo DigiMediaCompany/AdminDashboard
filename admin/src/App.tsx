@@ -42,6 +42,7 @@ import UsagagVideosPage from "./pages/Usagag/Videos";
 import User from "./pages/Admin/User.tsx";
 import Permission from "./pages/Admin/Permission.tsx";
 import Detail from "./pages/Admin/Detail.tsx";
+import Categories from "./pages/Admin/Categories.tsx";
 
 export default function App() {
   useAuthListener();
@@ -104,7 +105,7 @@ export default function App() {
               {/* Admin */}
               <Route path="admin/permissions" element={<Permission />} />
               <Route path="admin/users" element={<User />} />
-              <Route path="admin/categories" element={<Series />} />
+              <Route path="admin/categories" element={<Categories />} />
               {/*<Route path="admin/roles" element={<Role />} />*/}
               <Route path="admin/websites" element={<Permission />} />
 
