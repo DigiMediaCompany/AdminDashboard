@@ -6,7 +6,7 @@ import {
     TableRow,
 } from "../../ui/table";
 import {User, UserPermission} from "../../../types/Admin.ts";
-import {TrashIcon} from "@heroicons/react/24/outline";
+import {PencilSquareIcon, TrashIcon} from "@heroicons/react/24/outline";
 import UserModal from "../../modals/UserModal.tsx";
 import {useModal} from "../../../hooks/useModal.ts";
 import {useState} from "react";
@@ -29,7 +29,7 @@ export default function UserItem({users}: UserItemProps) {
     } = useModal();
     const {
         isOpen: isOpen2,
-        // openModal: openModal2,
+        openModal: openModal2,
         closeModal: closeModal2} = useModal();
     const {isOpen: isOpen3, openModal: openModal3, closeModal: closeModal3} = useModal();
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -166,19 +166,19 @@ export default function UserItem({users}: UserItemProps) {
                                 {s.email || "—"}
                             </TableCell>
                             <TableCell className="px-5 py-4 sm:px-6 text-start">
-                                <ToggleButton />
+                                <ToggleButton checked={s.is_active === 1} />
                             </TableCell>
 
                             <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
                                 <div className="flex items-center gap-3">
-                                    {/*<button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {*/}
-                                    {/*    setSelectedUser(s)*/}
-                                    {/*    if (s) {*/}
-                                    {/*        openModal2();*/}
-                                    {/*    }*/}
-                                    {/*}}>*/}
-                                    {/*    <PencilSquareIcon className="w-6 h-6"/>*/}
-                                    {/*</button>*/}
+                                    <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
+                                        setSelectedUser(s)
+                                        if (s) {
+                                            openModal2();
+                                        }
+                                    }}>
+                                        <PencilSquareIcon className="w-6 h-6"/>
+                                    </button>
                                     <button className="flex items-center gap-2 text-sm text-gray-400" onClick={() => {
                                         setSelectedUser(s)
                                         if (s) {

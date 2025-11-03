@@ -1,18 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ToggleButtonProps {
+    checked?: boolean
     defaultChecked?: boolean
     onToggle?: (checked: boolean) => void
 }
 
-const ToggleButton = ({ defaultChecked = false, onToggle }: ToggleButtonProps) => {
-    const [isChecked, setIsChecked] = useState(defaultChecked)
+const ToggleButton = ({ checked, defaultChecked = false, onToggle }: ToggleButtonProps) => {
+    const [internalChecked, setInternalChecked] = useState(defaultChecked)
+
+    // Determine if controlled or uncontrolled
+    const isControlled = checked !== undefined
+    const isChecked = isControlled ? checked : internalChecked
 
     const handleCheckboxChange = () => {
         const newState = !isChecked
-        setIsChecked(newState)
+        if (!isControlled) setInternalChecked(newState)
         onToggle?.(newState)
     }
+
+    useEffect(() => {
+        if (isControlled) setInternalChecked(checked!)
+    }, [checked, isControlled])
 
     return (
         <label className="flex cursor-pointer select-none items-center">
@@ -23,6 +32,7 @@ const ToggleButton = ({ defaultChecked = false, onToggle }: ToggleButtonProps) =
                     onChange={handleCheckboxChange}
                     className="sr-only"
                 />
+
                 {/* Background of the switch */}
                 <div
                     className={`block h-8 w-14 rounded-full transition-colors duration-300 ${

@@ -1,9 +1,11 @@
 export interface User {
     id: number;
     supabase_id: string;
+    supabase_email: string;
     email: string;
     name: string;
     user_permissions?: UserPermission[];
+    is_active: number;
 }
 
 export interface Role {

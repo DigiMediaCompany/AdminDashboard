@@ -50,24 +50,17 @@ export default function User() {
                 isOpen={isOpen}
                 onClose={closeModal}
                 onSave={async  (user) => {
-                    const { data, error } = await signUp(
-                        user.email, user.password, user.name)
-
-                    if (error) {
-                        setToast({
-                            show: true,
-                            variant: "error",
-                            title: error.name,
-                            message: error.message
-                        })
-                    } else {
+                    signUp(
+                        user.email, user.password, user.name
+                    ).then((data) => {
                         if (data) {
                             postApi({
                                 model: 'users',
                                 payload: {
                                     name: user.name,
                                     email: user.email,
-                                    supabase_id: data.user?.id
+                                    supabase_id: data.user?.id,
+                                    supabase_email: data.supabaseEmail,
                                 },
                                 module: '/admin'
                             }).then(() => {
@@ -82,7 +75,16 @@ export default function User() {
                             message: "Signup successful! Check your email to confirm."
                         })
 
-                    }
+                    }).catch((error) => {
+                        if (error) {
+                            setToast({
+                                show: true,
+                                variant: "error",
+                                title: error.name,
+                                message: error.message
+                            })
+                        }
+                    })
                 }}
             />
         </>

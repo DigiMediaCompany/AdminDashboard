@@ -21,4 +21,7 @@ export const constants = {
         {value: "2", label: "YT - > Summary"},
         {value: "3", label: "Summary -> Article"},
     ],
+    CATEGORY_TYPES: {
+        WEBSITE: "WEBSITE"
+    }
 }

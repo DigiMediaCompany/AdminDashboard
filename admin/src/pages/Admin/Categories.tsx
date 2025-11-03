@@ -7,6 +7,7 @@ import Toast from "../UiElements/Toast.tsx";
 import CategoriesTable from "../../components/tables/admin/CategoriesTable.tsx";
 import ComponentCard from "../../components/common/ComponentCard.tsx";
 import CategoriesModal from "../../components/modals/CategoriesModal.tsx";
+import {constants} from "../../utils/constants.ts";
 
 export default function Categories() {
     const { isOpen, openModal, closeModal } = useModal();
@@ -47,9 +48,11 @@ export default function Categories() {
             <CategoriesModal
                 isOpen={isOpen}
                 onClose={closeModal}
-                onSave={(series) => {
-                    postApi('series', {
-                        name: series,
+                onSave={(category) => {
+                    postApi('categories', {
+                        name: category.name,
+                        description: category.description,
+                        type: constants.CATEGORY_TYPES.WEBSITE
                     }).then(() => {
                         setToast({
                             show: true,

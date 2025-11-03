@@ -54,6 +54,7 @@ export function makeSchema(table: AnySQLiteTable, tableName: string): ModelSchem
 export const categories = sqliteTable("categories", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     name: text("name").notNull().unique(),
+    type: text("type").notNull(),
     description: text("description"),
 });
 export const CategorySchema = makeSchema(categories, "categories");
@@ -144,6 +145,7 @@ export const users = sqliteTable("users", {
     id: integer("id").primaryKey({ autoIncrement: true }),
     supabase_id: text("supabase_id").notNull().unique(),
     email: text("email").notNull().unique(),
+    supabase_email: text("supabase_email").notNull().unique(),
     name: text("name").notNull(),
     is_active: integer("is_active").notNull().default(1),
 });

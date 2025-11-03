@@ -62,30 +62,22 @@ export default function SignUpForm() {
 
       setLoading(true)
 
-      const { data, error } = await signUp(email, password, name)
-      setLoading(false)
-
-      if (error) {
-        setToast({
-          show: true,
-          variant: "error",
-          title: error.name,
-          message: error.message
-        })
-      } else {
+      signUp(
+          email, password, name
+      ).then((data) => {
         if (data) {
           postApi({
-              model: 'users',
-              payload: {
-                  name,
-                  email,
-                  supabase_id: data.user?.id
-              },
-              module: '/admin'
+            model: 'users',
+            payload: {
+              name,
+              email,
+              supabase_id: data.user?.id
+            },
+            module: '/admin'
           }).then(() => {
-              console.log("yay")
+            console.log("yay")
           }).catch(() => {
-              console.log("nay")
+            console.log("nay")
           })
         }
         setToast({
@@ -99,8 +91,19 @@ export default function SignUpForm() {
           setLoading(false)
           navigate("/signin")
         }, 3000)
+      }).catch((error) => {
+        if (error) {
+          setToast({
+            show: true,
+            variant: "error",
+            title: error.name,
+            message: error.message
+          })
+        }
+      }).finally(() => {
+        setLoading(false)
+      })
 
-      }
     }
   }
 
