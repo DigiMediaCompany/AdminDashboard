@@ -130,7 +130,7 @@ export default function JobModal({
         if (!jobData.type) return false;
         // if (!jobData.series) return false;
 
-        if (jobData.type === constants.JOB_TYPES[0].value) {
+        if (jobData.type === constants.JOB_TYPES[0].value || jobData.type === constants.JOB_TYPES[3].value) {
             const link = jobData.link?.trim()
             return (
                 link &&
@@ -202,8 +202,7 @@ export default function JobModal({
                             <div>
                                 <Label>Type</Label>
                                 <Select
-                                    options={ constants.JOB_TYPES.filter(jobType => userRole === constants.ROLES.ADMIN ? jobType.value === constants.JOB_TYPES[1].value: true  )
-                                        .map((a) => ({
+                                    options={constants.JOB_TYPES.map((a) => ({
                                         value: a.value,
                                         label: `${a.value}. ${a.label}`,
                                     }))}
@@ -236,7 +235,7 @@ export default function JobModal({
                                     className={`col-span-3 lg:col-span-4`}
                                 />
                             </div>
-                            {jobData.type === constants.JOB_TYPES[0].value && (
+                            {(jobData.type === constants.JOB_TYPES[0].value || jobData.type === constants.JOB_TYPES[3].value) && (
                                 <div>
                                     <Label>Youtube Link</Label>
                                     <Input

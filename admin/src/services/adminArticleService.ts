@@ -43,3 +43,10 @@ export const updateApi = async <T, R = T>(
     const response = await api.patch(`/${model}/${id}`, payload);
     return response.data as R;
 };
+export const deleteApi = async (
+    model: string,
+    id: number | string
+): Promise<unknown> => {
+    const response = await api.delete(`/${model}/${id}`);
+    return response.data;
+};

@@ -20,6 +20,7 @@ export const constants = {
         {value: "1", label: "YT -> Article"},
         {value: "2", label: "YT - > Summary"},
         {value: "3", label: "Summary -> Article"},
+        {value: "4", label: "YT -> Video"},
     ],
     CATEGORY_TYPES: {
         WEBSITE: "WEBSITE"
